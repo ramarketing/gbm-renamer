@@ -21,7 +21,7 @@ logger = UploaderLogger()
 success_logger = UploaderLogger('success')
 
 
-class Uploader:
+class Renamer:
     service_cred = CredentialService()
     service_biz = BusinessService()
     biz_list = None
@@ -82,64 +82,6 @@ class Uploader:
             EC.url_contains('https://myaccount.google.com/')
         )
 
-    def do_upload(self, file):
-        self.driver.get('https://www.google.com/')
-
-        try:
-            alert = self.driver.switch_to_alert()
-            alert.accept()
-        except Exception:
-            pass
-
-        self.driver.get(
-            'https://business.google.com/manage/?noredirect=1#/upload'
-        )
-
-        try:
-            element = self.wait.until(
-                EC.presence_of_element_located(
-                    (By.XPATH, '//md-checkbox[@type="checkbox"]')
-                )
-            )
-            element.click()
-            element = self.driver.find_element_by_xpath(
-                '//md-dialog-actions/button'
-            )
-            element.click()
-        except Exception:
-            pass
-
-        try:
-            element = self.wait.until(
-                EC.presence_of_element_located(
-                    (By.NAME, 'spreadsheet')
-                )
-            )
-        except Exception:
-
-            element = self.driver.find_element_by_name('spreadsheet')
-        element.send_keys(file)
-
-        try:
-            element = self.wait.until(
-                EC.visibility_of_element_located(
-                    (By.ID, 'lm-conf-changes-btn-submit')
-                )
-            )
-            element.click()
-        except ElementNotVisibleException:
-            try:
-                element = self.wait.until(
-                    EC.visibility_of_element_located(
-                        (By.ID, 'lm-conf-changes-btn-got-it')
-                    )
-                )
-                element.click()
-                raise Exception('File uploaded already.')
-            except ElementNotVisibleException:
-                pass
-
-            raise Exception('Submit button not found.')
 
     def do_preparation(self):
         try:
