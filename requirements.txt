@@ -1,0 +1,4 @@
+openpyxl
+python-dotenv
+requests
+selenium
