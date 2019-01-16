@@ -1,8 +1,6 @@
 from logger import UploaderLogger
 
-
 logger = UploaderLogger()
-
 
 class CredentialInvalid(Exception):
     def __init__(self, msg=None):

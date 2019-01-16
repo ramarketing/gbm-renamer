@@ -1,7 +1,9 @@
+#Natives from Py
 import os
 import platform
 import time
 
+#Selenium Manager
 from selenium import webdriver
 from selenium.common.exceptions import ElementNotVisibleException
 from selenium.webdriver.common.action_chains import ActionChains
@@ -10,282 +12,114 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+#From project dirs
 from exceptions import CredentialInvalid
-from services import BusinessService, CredentialService
-from config import BASE_DIR, PER_CREDENTIAL, WAIT_TIME
+from services import BusinessService
+from config import BASE_DIR, WAIT_TIME
 from constants import TEXT_PHONE_VERIFICATION
 from logger import UploaderLogger
+from messages import *
 
 
 logger = UploaderLogger()
 success_logger = UploaderLogger('success')
 
+class Google_Bussiness_auth:
+    def __init__ (self):
+        pass
 
-class Renamer:
-    service_cred = CredentialService()
+    def RunDriver(self):
+        if platform.system() == 'Windows':
+           self.driver = webdriver.Chrome(
+               executable_path=os.path.join(BASE_DIR, 'chromedriver'),
+                # chrome_options=chrome_options
+            )
+        else:
+            self.driver = webdriver.Chrome(
+                # chrome_options=chrome_options
+            )
+        self.wait = WebDriverWait(self.driver, WAIT_TIME)
+        self.driver.get('https://accounts.google.com/ServiceLogin')
+
+    def do_login(self, credential):
+        logger(instance=credential)
+        target_element_in_browser = self.driver.find_element_by_id('identifierId')
+        target_element_in_browser.send_keys(credential.email + Keys.RETURN)
+        time.sleep(1)
+        
+        target_element_in_browser = self.wait.until(
+            EC.element_to_be_clickable((By.NAME, 'password'))
+        )
+        target_element_in_browser.send_keys(credential.password + Keys.RETURN)
+        time.sleep(1)
+        
+
+OGBAuth = Google_Bussiness_auth()
+
+class Renamer(): #Master for robot
+
     service_biz = BusinessService()
     biz_list = None
 
     def __init__(self, *args):
+        self.__nameApp = type(self).__name__ + " bot "
         pass
-
-    def do_login(self, credential):
-        logger(instance=credential)
-
-        element = self.driver.find_element_by_id('identifierId')
-        element.send_keys(credential.email + Keys.RETURN)
-        time.sleep(1)
-
-        element = self.wait.until(
-            EC.presence_of_element_located((By.NAME, 'password'))
-        )
-        element.send_keys(credential.password + Keys.RETURN)
-        time.sleep(1)
-
-        try:
-            self.wait.until(
-                EC.url_contains('https://myaccount.google.com/')
-            )
-            return
-        except Exception:
-            pass
-
-        try:
-            element = self.wait.until(
-                EC.presence_of_element_located(
-                    (By.XPATH, '//div[@data-challengetype="12"]')
-                )
-            )
-            element.click()
-            element = self.wait.until(
-                EC.presence_of_element_located(
-                    (By.NAME, 'knowledgePreregisteredEmailResponse')
-                )
-            )
-            element.send_keys(credential.recovery_email + Keys.RETURN)
-        except Exception:
-            pass
-
-        try:
-            phone = self.wait.until(
-                EC.presence_of_element_located(
-                    (By.ID, 'deviceAddress')
-                )
-            )
-        except Exception as e:
-            phone = None
-
-        if phone:
-            raise CredentialInvalid("Requires cellphone.")
-
-        self.wait.until(
-            EC.url_contains('https://myaccount.google.com/')
-        )
-
-
-    def do_preparation(self):
-        try:
-            element = self.wait.until(
-                EC.visibility_of_element_located(
-                    (By.ID, 'lm-tip-got-it-btn')
-                )
-            )
-            self.driver.execute_script("arguments[0].click();", element)
-
-        except Exception as e:
-            pass
-
-        try:
-            element = self.wait.until(
-                EC.presence_of_element_located(
-                    (By.XPATH, '//button[@aria-label="List view"]')
-                )
-            )
-            self.driver.execute_script("arguments[0].click();", element)
-        except Exception as e:
-            pass
-
-        try:
-            element = self.wait.until(
-                EC.presence_of_element_located(
-                    (By.ID, 'lm-list-view-promo-use-list-btn')
-                )
-            )
-            self.driver.execute_script("arguments[0].click();", element)
-        except Exception:
-            pass
-
-    def do_verification(self, credential):
-        self.active_list = []
-        rows = self.driver.find_elements_by_css_selector(
-            'div.lm-list-data-row'
-        )
-
-        ActionChains(self.driver) \
-            .move_to_element(rows[-1]) \
-            .perform()
-
-        for row in rows:
-            self.do_verification_row(row)
-
-        if len(self.active_list) == 0:
-            return
-
-        tab_index = len(self.active_list)
-
-        for item in self.active_list:
-            element = item['element'].find_element_by_css_selector(
-                'div.lm-listing-data.lm-pointer'
-            )
-            self.driver.execute_script("arguments[0].click();", element)
-            item['tab_index'] = tab_index
-            tab_index -= 1
-
-        has_success = False
-
-        for i in range(1, len(self.driver.window_handles)):
-            self.driver.switch_to_window(self.driver.window_handles[i])
-
-            item = self.get_item_by_tab_index(i)
-            biz = item['biz']
-            title = self.driver.title
-
-            logger(instance=biz, data='Title: "{}"'.format(title))
-
-            if (
-                'Choose a way to verify' not in title and
-                'Success' not in title and
-                'Is this your business' not in title
-            ):
-                biz.report_fail()
-                continue
-
-            text = self.driver.find_element_by_xpath('//body').text.strip()
-
-            try:
-                if TEXT_PHONE_VERIFICATION in text:
-                    logger(instance=biz, data='Success')
-                    success_line = [
-                        credential.email,
-                        credential.password,
-                        credential.recovery_email,
-                        biz.phone_friendly,
-                        biz.address,
-                        biz.city,
-                        biz.state,
-                        biz.zip_code,
-                    ]
-                    success_logger(instance=biz, data=','.join(success_line))
-
-                    biz.report_success(credential)
-                    has_success = True
-                else:
-                    biz.report_fail()
-            except Exception:
-                logger(
-                    instance=biz,
-                    data='Couldn\'t report "{}" back to server.'.format(
-                        'success' if has_success else 'fail'
-                    )
-                )
-
-
-        for i in reversed(range(1, len(self.driver.window_handles))):
-            self.driver.switch_to_window(self.driver.window_handles[i])
-            self.driver.close()
-
-        return has_success
-
-    def do_verification_row(self, row):
-        ActionChains(self.driver) \
-            .move_to_element(row) \
-            .perform()
-
-        try:
-            got_it = self.driver.find_element_by_id('lm-tip-got-it-btn')
-            self.driver.execute_script("arguments[0].click();", got_it)
-        except Exception:
-            pass
-
-        index, name, address, phone, status, action = row.text.split('\n')
-
-        if status.upper() == 'PUBLISHED':
-            return
-
-        element = row.find_element_by_css_selector(
-            'div.lm-action-col'
-        )
-        biz = self.biz_list.get_by_name(name)
-
-        if action == 'Get verified' and not self.in_active_list(biz):
-            logger(instance=biz, data={'action': action, 'status': status})
-            self.active_list.append(dict(
-                biz=biz,
-                element=element,
-                row=row,
-                phone=phone,
-            ))
-        else:
-            biz.report_fail()
-            logger(instance=biz, data='OUT')
-
-    def get_item_by_tab_index(self, tab_index):
-        for item in self.active_list:
-            if item['tab_index'] == tab_index:
-                return item
-
-    def in_active_list(self, biz):
-        for item in self.active_list:
-            if biz == item['biz']:
-                return True
-        return False
 
     def handle(self, *args, **options):
         file_index = 0
-        credential_list = self.service_cred.get_list()
+    
+        #credential_list = self.service_cred.get_list()
+        #Hard-Coding - BEGIN (Credential)
+        class cFake : 
+            def __init__ (self):
+                self.email = "laurencebeadle7@gmail.com"
+                self.password = "3AF5qCXZbA"
+            def report_fail(self):
+                print ("cFake: Reporting fail")
 
+        credential_1 = cFake()
+        #credential_list = [credential_1] # With Values
+        credential_list = [] # Empty
+        #Hard-Coding - END (Credential)
+
+        #Dummie, if credential is ZERO. Stop Robot
+        if len(credential_list) == 0 :
+            
+            #logger(data= __nameApp + Credentials_problem_0001)
+            print (self.__nameApp + Credentials_problem_0001)
+            return 
+
+        # Looping each credenditals (Here we start loop and also run driver)
+        # Method 1X1
         for credential in credential_list:
-            '''
-            chrome_options = webdriver.ChromeOptions()
-            chrome_options.add_extension(
-                os.path.join(BASE_DIR, 'expressvpn.crx')
-            )
-            '''
 
-            if platform.system() == 'Windows':
-                self.driver = webdriver.Chrome(
-                    executable_path=os.path.join(BASE_DIR, 'chromedriver'),
-                    # chrome_options=chrome_options
-                )
-            else:
-                self.driver = webdriver.Chrome(
-                    # chrome_options=chrome_options
-                )
+            # THERE VERIFICATION
+            # CONSIDERATE EMAIL IS EMAIL. WITH @ ALSO
+            # PASSWORD (NOTHING SPECIAL)
 
-            self.wait = WebDriverWait(self.driver, WAIT_TIME)
-            self.driver.get('https://accounts.google.com/ServiceLogin')
-
+            OGBAuth.RunDriver()          
             try:
-                self.do_login(credential)
+                OGBAuth.do_login(credential)
             except CredentialInvalid:
                 logger(instance=credential, data='Reported fail')
                 credential.report_fail()
-                self.driver.quit()
+                OGBAuth.RunDriver().quit()
                 continue
             except Exception as e:
-                text = self.driver.find_element_by_xpath('//body').text.strip()
+                text = OGBAuth.driver.find_element_by_xpath('//body').text.strip()
 
                 if "t find your Google Account" in text:
                     logger(instance=credential, data="Account doesn't exists.")
                     logger(instance=credential, data='Reported fail')
-                    credential.report_fail()
+                    #credential.report_fail()
                     continue
                 elif "Account disabled" in text:
                     logger(instance=credential, data="Account disabled.")
                     logger(instance=credential, data='Reported fail')
-                    credential.report_fail()
+                    #credential.report_fail()
                     continue
-                else:
+                else: 
+                    '''
                     self.driver.get(
                         'https://business.google.com/manage/?noredirect=1#/upload'
                     )
@@ -295,28 +129,4 @@ class Renamer:
                         logger(instance=credential, data='Pass')
                         self.driver.quit()
                         continue
-
-            self.biz_list = self.biz_list or self.service_biz.get_list()
-
-            for index in range(PER_CREDENTIAL):
-                if file_index > 0:
-                    self.biz_list.get_next_page()
-
-                file = self.biz_list.create_csv()
-                logger(instance=self.biz_list, data={'file': file})
-
-                try:
-                    self.do_upload(file)
-                    self.do_preparation()
-                    has_success = self.do_verification(credential)
-                    self.driver.switch_to_window(self.driver.window_handles[0])
-
-                    if has_success:
-                        break
-                except Exception as err:
-                    logger(instance=err, data=err)
-
-                file_index += 1
-
-            credential.report_success()
-            self.driver.quit()
+                    '''
