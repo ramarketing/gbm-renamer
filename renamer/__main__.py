@@ -1,7 +1,7 @@
 import sys
 
-from uploader import Uploader
+from renamer import Renamer
 
 
 if __name__ == '__main__':
-    Uploader(sys.argv[1:]).handle()
+    Renamer(sys.argv[1:]).handle()
