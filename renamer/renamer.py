@@ -17,12 +17,12 @@ from exceptions import CredentialInvalid
 from services import BusinessService
 from config import BASE_DIR, WAIT_TIME
 from constants import TEXT_PHONE_VERIFICATION
-from logger import UploaderLogger
+from logger import Logger
 from messages import *
 
 
-logger = UploaderLogger()
-success_logger = UploaderLogger('success')
+logger = Logger()
+success_logger = Logger('success')
 
 class Google_Bussiness_auth:
     def __init__ (self):
@@ -46,13 +46,13 @@ class Google_Bussiness_auth:
         target_element_in_browser = self.driver.find_element_by_id('identifierId')
         target_element_in_browser.send_keys(credential.email + Keys.RETURN)
         time.sleep(1)
-        
+
         target_element_in_browser = self.wait.until(
             EC.element_to_be_clickable((By.NAME, 'password'))
         )
         target_element_in_browser.send_keys(credential.password + Keys.RETURN)
         time.sleep(1)
-        
+
 
 OGBAuth = Google_Bussiness_auth()
 
@@ -67,10 +67,10 @@ class Renamer(): #Master for robot
 
     def handle(self, *args, **options):
         file_index = 0
-    
+
         #credential_list = self.service_cred.get_list()
         #Hard-Coding - BEGIN (Credential)
-        class cFake : 
+        class cFake :
             def __init__ (self):
                 self.email = "laurencebeadle7@gmail.com"
                 self.password = "3AF5qCXZbA"
@@ -84,10 +84,10 @@ class Renamer(): #Master for robot
 
         #Dummie, if credential is ZERO. Stop Robot
         if len(credential_list) == 0 :
-            
+
             #logger(data= __nameApp + Credentials_problem_0001)
             print (self.__nameApp + Credentials_problem_0001)
-            return 
+            return
 
         # Looping each credenditals (Here we start loop and also run driver)
         # Method 1X1
@@ -97,7 +97,7 @@ class Renamer(): #Master for robot
             # CONSIDERATE EMAIL IS EMAIL. WITH @ ALSO
             # PASSWORD (NOTHING SPECIAL)
 
-            OGBAuth.RunDriver()          
+            OGBAuth.RunDriver()
             try:
                 OGBAuth.do_login(credential)
             except CredentialInvalid:
@@ -118,7 +118,7 @@ class Renamer(): #Master for robot
                     logger(instance=credential, data='Reported fail')
                     #credential.report_fail()
                     continue
-                else: 
+                else:
                     '''
                     self.driver.get(
                         'https://business.google.com/manage/?noredirect=1#/upload'

@@ -4,8 +4,8 @@ import os
 from config import BASE_DIR, DEBUG
 
 
-class UploaderLogger:
-    def __init__(self, filename='uploader'):
+class Logger:
+    def __init__(self, filename='renamer'):
         assert isinstance(filename, str), "Filename must be a string instace."
         if not filename.endswith('.log'):
             filename = '{}.log'.format(filename)
