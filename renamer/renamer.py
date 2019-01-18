@@ -48,7 +48,6 @@ class Google_auth:
         target_element_in_browser = self.driver.find_element_by_id('identifierId')
         target_element_in_browser.send_keys(credential.email + Keys.RETURN)
         time.sleep(1)
-
         target_element_in_browser = self.wait.until(
             EC.element_to_be_clickable((By.NAME, 'password'))
         )
@@ -57,7 +56,6 @@ class Google_auth:
 
 # Intialization of object.
 OGAuth = Google_auth() #Same for all clasess
-
 
 class Renamer(): #Master for robot
 
@@ -98,23 +96,20 @@ class Renamer(): #Master for robot
 
     def verification_of_credential(self, credential=None):
         try:
-            print (credential.email)
+            credential.email
         except AttributeError:
             logger(instance_itself=self.NameClass_itSelf(), data=Object_Credential_novalid + ": email")
             print (Object_Credential_novalid + ": email")                
-
         try:
-            print (credential.recovery_email)
+            credential.recovery_email
         except AttributeError:
             logger(instance_itself=self.NameClass_itSelf(), data=Object_Credential_novalid + ": recovery_mail")
             print (Object_Credential_novalid + ": recovery_email")                
-
         try:
-            print (credential.password)
+            credential.password
         except AttributeError:
             logger(instance_itself=self.NameClass_itSelf(), data=Object_Credential_novalid + ": password")
             print (Object_Credential_novalid + ": password")                
-
 
         if (self.is_valid_email(credential.email) == False) :
             logger(instance_itself=self.NameClass_itSelf(), data=self.credential.email + " " + Email_wasnot_valid)
@@ -161,7 +156,9 @@ class Renamer(): #Master for robot
         # Method 1X1
 
         for credential in self.credential_list:
-            if (self.verification_of_credential(credential) == True) :
+            if (self.verification_of_credential(credential) == False) :
+                logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
+                print (Skiping_to_next_credential)
                 continue
 
             # THERE VERIFICATION
@@ -169,6 +166,7 @@ class Renamer(): #Master for robot
             # PASSWORD (NOTHING SPECIAL)
             if (self.is_Driver_GAuth_loaded() == True) :
                 OGAuth.RunDriver()
+
             try:
                 OGAuth.do_login(credential)          
             except CredentialInvalid:
