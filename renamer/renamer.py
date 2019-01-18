@@ -2,6 +2,8 @@
 import os
 import platform
 import time
+import sys
+import re
 
 #Selenium Manager
 from selenium import webdriver
@@ -24,9 +26,9 @@ from messages import *
 logger = Logger()
 success_logger = Logger('success')
 
-class Google_Bussiness_auth:
+class Google_auth:
     def __init__ (self):
-        pass
+        self.ItSelf = "Google_Auth"
 
     def RunDriver(self):
         if platform.system() == 'Windows':
@@ -53,8 +55,9 @@ class Google_Bussiness_auth:
         target_element_in_browser.send_keys(credential.password + Keys.RETURN)
         time.sleep(1)
 
+# Intialization of object.
+OGAuth = Google_auth() #Same for all clasess
 
-OGBAuth = Google_Bussiness_auth()
 
 class Renamer(): #Master for robot
 
@@ -63,50 +66,118 @@ class Renamer(): #Master for robot
 
     def __init__(self, *args):
         self.__nameApp = type(self).__name__ + " bot "
+        self.credential_list = [] # Initilizatiion
         pass
+
+    def NameClass_itSelf(self):
+        return self.__class__.__name__
+
+    def is_Driver_GAuth_loaded(self):
+        if OGAuth is not None: 
+            return True
+        else :    
+            logger(instance_itself=self.NameClass_itSelf(), data=OGAuth_not_loaded)
+            print (self.__nameApp + OGAuth_not_loaded)            
+            self.CloseApp()
+            return False
+            
+    def is_empty_credentials (self) :
+        if len(self.credential_list) == 0 :
+            logger(instance_itself=self.NameClass_itSelf(), data=Credentials_problem_0001)
+            print (self.__nameApp + Credentials_problem_0001)
+            return True
+        else :
+            return False
+
+    def is_valid_email (self, email):
+        valid_re = re.compile(r'^.+@.+')
+        if(valid_re.match(email)):
+            return True
+        else:
+            return False
+
+    def verification_of_credential(self, credential=None):
+        try:
+            print (credential.email)
+        except AttributeError:
+            logger(instance_itself=self.NameClass_itSelf(), data=Object_Credential_novalid + ": email")
+            print (Object_Credential_novalid + ": email")                
+
+        try:
+            print (credential.recovery_email)
+        except AttributeError:
+            logger(instance_itself=self.NameClass_itSelf(), data=Object_Credential_novalid + ": recovery_mail")
+            print (Object_Credential_novalid + ": recovery_email")                
+
+        try:
+            print (credential.password)
+        except AttributeError:
+            logger(instance_itself=self.NameClass_itSelf(), data=Object_Credential_novalid + ": password")
+            print (Object_Credential_novalid + ": password")                
+
+
+        if (self.is_valid_email(credential.email) == False) :
+            logger(instance_itself=self.NameClass_itSelf(), data=self.credential.email + " " + Email_wasnot_valid)
+            print (self.credential.email + Email_wasnot_valid)                
+            # THERE THIS LINE WE CAN ADD EXTRA VERIFICATION
+            return False     
+        if (self.is_valid_email(credential.recovery_email) == False) :
+            logger(instance_itself=self.NameClass_itSelf(), data=self.credential.email + " " + Email_wasnot_valid)
+            print (self.credential.email + Email_wasnot_valid)                
+            # THERE THIS LINE WE CAN ADD EXTRA VERIFICATION
+            return False     
+        if (len(credential.password)  < 6):
+            logger(instance_itself=self.NameClass_itSelf(), data="For mail: " + self.credential.email + " " + Passwword_no_valid)
+            print ("For mail: " + self.credential.email + " " + Passwword_no_valid  )                            
+            return False
+        return True
+
+    def CloseApp(self) : 
+        logger(instance_itself=self.NameClass_itSelf(), data= self.__nameApp + Application_was_closed)
+        print (Application_was_closed)
+        sys.exit()
 
     def handle(self, *args, **options):
         file_index = 0
-
         #credential_list = self.service_cred.get_list()
         #Hard-Coding - BEGIN (Credential)
         class cFake :
             def __init__ (self):
-                self.email = "laurencebeadle7@gmail.com"
-                self.password = "3AF5qCXZbA"
+                #self.email = "fake100"
+                self.email = "drabblefabe@gmail.com"
+                self.password = "XyN6Lm5Apf"
+                self.recovery_email = "vernenl00dk@outlook.com"
             def report_fail(self):
                 print ("cFake: Reporting fail")
 
-        credential_1 = cFake()
-        #credential_list = [credential_1] # With Values
-        credential_list = [] # Empty
+        credential_fake_1 = cFake()
+        self.credential_list = [credential_fake_1] # With Values
+        #self.credential_list = [] # Empty
         #Hard-Coding - END (Credential)
-
+        if (self.is_empty_credentials() == True) :
+            self.CloseApp()
         #Dummie, if credential is ZERO. Stop Robot
-        if len(credential_list) == 0 :
-
-            #logger(data= __nameApp + Credentials_problem_0001)
-            print (self.__nameApp + Credentials_problem_0001)
-            return
-
         # Looping each credenditals (Here we start loop and also run driver)
         # Method 1X1
-        for credential in credential_list:
+
+        for credential in self.credential_list:
+            if (self.verification_of_credential(credential) == True) :
+                continue
 
             # THERE VERIFICATION
             # CONSIDERATE EMAIL IS EMAIL. WITH @ ALSO
             # PASSWORD (NOTHING SPECIAL)
-
-            OGBAuth.RunDriver()
+            if (self.is_Driver_GAuth_loaded() == True) :
+                OGAuth.RunDriver()
             try:
-                OGBAuth.do_login(credential)
+                OGAuth.do_login(credential)          
             except CredentialInvalid:
                 logger(instance=credential, data='Reported fail')
                 credential.report_fail()
                 OGBAuth.RunDriver().quit()
                 continue
             except Exception as e:
-                text = OGBAuth.driver.find_element_by_xpath('//body').text.strip()
+                text = OGAuth.driver.find_element_by_xpath('//body').text.strip()
 
                 if "t find your Google Account" in text:
                     logger(instance=credential, data="Account doesn't exists.")
@@ -130,3 +201,12 @@ class Renamer(): #Master for robot
                         self.driver.quit()
                         continue
                     '''
+
+        self.Finished_app()
+
+
+    def Finished_app(self):
+        logger(instance_itself=self.NameClass_itSelf(), data=self.__nameApp + Finished_app_run)
+        print (self.__nameApp + Finished_app_run)
+
+

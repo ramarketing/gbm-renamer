@@ -1,16 +1,4 @@
-#Natives from Py
-import os
-import platform
-import time
 
-#Selenium Manager
-from selenium import webdriver
-from selenium.common.exceptions import ElementNotVisibleException
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 class Google_Bussiness_auth:
     def __init__ (self):
         pass

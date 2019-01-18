@@ -1,1 +1,7 @@
 Credentials_problem_0001 = "Cannot run without an credential_list"
+Application_was_closed = "Application was closed"
+OGAuth_not_loaded = "Google Auth wasn't loaded"
+Email_wasnot_valid = "Email is not valid"
+Passwword_no_valid = "May be password < 6 chars or is Empty"
+Finished_app_run = "Application already done and finished"
+Object_Credential_novalid = "Object_Credential_novalid"

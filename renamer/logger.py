@@ -11,12 +11,15 @@ class Logger:
             filename = '{}.log'.format(filename)
         self.file = os.path.join(BASE_DIR, filename)
 
-    def __call__(self, data=None, instance=None):
+    def __call__(self, data=None, instance=None, instance_itself=None):
         if instance:
             class_ = instance.__class__.__name__
         else:
             class_ = 'NO_CLASS'
 
+        if instance_itself != None:
+            class_ = instance_itself
+            
         line = "[{datetime}] [{class_}] {instance} - {message}".format(
             class_=class_,
             datetime=datetime.now().strftime('%c'),
