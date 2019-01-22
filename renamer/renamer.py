@@ -17,8 +17,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 
-
-
 #From project dirs
 from exceptions import CredentialInvalid
 from services import BusinessService
@@ -26,10 +24,6 @@ from config import BASE_DIR, WAIT_TIME
 from constants import TEXT_PHONE_VERIFICATION
 from logger import Logger
 from messages import *
-
-
-
-
 logger = Logger()
 success_logger = Logger('success')
 
@@ -39,21 +33,19 @@ class ThreadsWatch:
         self.ListThreads = list() 
         # ID:1 - Name: VarThreads
         # ----
-        
-
-    def Stop_Threads(self,id)
+    def Stop_Threads(self,id):
         pass
 
-    def GetList(self)
+    def GetList(self):
         return None
 
-    def CheckStatus_thread_by_id(self,id)
+    def CheckStatus_thread_by_id(self,id):
         pass
 
-    def Block_Thread_by_id (self, id)
+    def Block_Thread_by_id (self, id):
         pass
 
-    def ClasurePythonicApp()
+    def ClasurePythonicApp():
         #Kill app
         #Generate a logger
         # - What Thread faild and where.
@@ -66,7 +58,8 @@ class MWatcher :
         self.Object = object_name
         self.Function = function_name
         self.Data = data_to_load 
-c
+        thread=threading.Thread(target=self.__MWatcher)
+        thread.start()
         if (block == True):
             thread.join()
 
@@ -78,11 +71,9 @@ c
             if (self.Data != False and self.Object != False and self.Function != False):
                 eval(self.Object + '.' + self.Function + '(' + 'self.Data' +')')
                 #eval('OGAuth.W_do_login(self.Data)')
-
     def cancel(self) :
         self.stopEvent.set()
-
-
+        
 class Google_auth:
     def __init__ (self):
         self.ItSelf = "Google_Auth"
@@ -117,6 +108,7 @@ class Google_auth:
             self.driver.find_elements_by_xpath(xpath)
         except NoSuchElementException:
             print ("No se encontro")
+            return False
         
         return True
 
@@ -126,7 +118,7 @@ class Google_auth:
         #LoginStep == 1 :: Showing just Login field
         if (self.LoginStep == 1) : 
             if (self.CheckField_Exist_by_xpath(self.Target_User_field_by_xpath) == True):
-                pass
+                self.LoginStep = 2
 
 
 
@@ -257,8 +249,7 @@ class Renamer(): #Master for robot
             self.CloseApp()
         #Dummie, if credential is ZERO. Stop Robot
         # Looping each credenditals (Here we start loop and also run driver)
-        # Method 1X1
-
+        # Method 1X1 (First method)
         for credential in self.credential_list:
             if (self.verification_of_credential(credential) == False) :
                 logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
@@ -270,7 +261,7 @@ class Renamer(): #Master for robot
             if (self.is_Driver_GAuth_loaded() == True,) :
                 OGAuth.RunDriver()
             try:
-                Controller_Login = MWatcher(1, 'OGAuth', 'W_do_login' ,credential, True)
+                Controller_Login = MWatcher(0.5, 'OGAuth', 'W_do_login' ,credential, True)
                 # Si el block funciona, esto jamas deberia de funcionar hasta que terminemos el thread
                 print ("Controller_login (BLOCK failing)")
                           
@@ -286,5 +277,6 @@ class Renamer(): #Master for robot
     def Finished_app(self):
         logger(instance_itself=self.NameClass_itSelf(), data=self.__nameApp + Finished_app_run)
         print (self.__nameApp + Finished_app_run)
+        #self.CloseApp()
 
 
