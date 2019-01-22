@@ -34,6 +34,31 @@ logger = Logger()
 success_logger = Logger('success')
 
 
+class ThreadsWatch:
+    def __init(self):
+        self.ListThreads = list() 
+        # ID:1 - Name: VarThreads
+        # ----
+        
+
+    def Stop_Threads(self,id)
+        pass
+
+    def GetList(self)
+        return None
+
+    def CheckStatus_thread_by_id(self,id)
+        pass
+
+    def Block_Thread_by_id (self, id)
+        pass
+
+    def ClasurePythonicApp()
+        #Kill app
+        #Generate a logger
+        # - What Thread faild and where.
+        pass
+
 class MWatcher :
     def __init__(self,interval,object_name=False, function_name=False, data_to_load=False, block=False) :
         self.interval=interval
@@ -41,8 +66,7 @@ class MWatcher :
         self.Object = object_name
         self.Function = function_name
         self.Data = data_to_load 
-        thread=threading.Thread(target=self.__MWatcher)
-        thread.start()
+c
         if (block == True):
             thread.join()
 
@@ -248,7 +272,7 @@ class Renamer(): #Master for robot
             try:
                 Controller_Login = MWatcher(1, 'OGAuth', 'W_do_login' ,credential, True)
                 # Si el block funciona, esto jamas deberia de funcionar hasta que terminemos el thread
-                print ("Controller_login (BLOCK FAILILING)")
+                print ("Controller_login (BLOCK failing)")
                           
             except CredentialInvalid:
                 logger(instance=credential, data='Reported fail')
