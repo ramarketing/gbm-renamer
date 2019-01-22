@@ -59,14 +59,6 @@ class MWatcher :
         self.stopEvent.set()
 
 
-class Error(Exception):
-   """Base class for other exceptions"""
-   pass
-
-class OGAuthUserOR (Error):
-   """Raised when the input value is too small"""
-   pass
-
 class Google_auth:
     def __init__ (self):
         self.ItSelf = "Google_Auth"
