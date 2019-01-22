@@ -4,6 +4,8 @@ import platform
 import time
 import sys
 import re
+import time, threading
+
 
 #Selenium Manager
 from selenium import webdriver
@@ -13,6 +15,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+
+
 
 #From project dirs
 from exceptions import CredentialInvalid
@@ -23,8 +28,44 @@ from logger import Logger
 from messages import *
 
 
+
+
 logger = Logger()
 success_logger = Logger('success')
+
+
+class MWatcher :
+    def __init__(self,interval,object_name=False, function_name=False, data_to_load=False, block=False) :
+        self.interval=interval
+        self.stopEvent=threading.Event()
+        self.Object = object_name
+        self.Function = function_name
+        self.Data = data_to_load 
+        thread=threading.Thread(target=self.__MWatcher)
+        thread.start()
+        if (block == True):
+            thread.join()
+
+
+    def __MWatcher(self) :
+        nextTime=time.time()+self.interval
+        while not self.stopEvent.wait(nextTime-time.time()) :
+            nextTime+=self.interval
+            if (self.Data != False and self.Object != False and self.Function != False):
+                eval(self.Object + '.' + self.Function + '(' + 'self.Data' +')')
+                #eval('OGAuth.W_do_login(self.Data)')
+
+    def cancel(self) :
+        self.stopEvent.set()
+
+
+class Error(Exception):
+   """Base class for other exceptions"""
+   pass
+
+class OGAuthUserOR (Error):
+   """Raised when the input value is too small"""
+   pass
 
 class Google_auth:
     def __init__ (self):
@@ -42,26 +83,81 @@ class Google_auth:
             )
         self.wait = WebDriverWait(self.driver, WAIT_TIME)
         self.driver.get('https://accounts.google.com/ServiceLogin')
+        self.Target_User_field_by_xpath = '//*[@id="identifierId"]1'
+        self.Target_User_field_by_id = 'identifierId'
+        self.Target_Password_field_by_name = 'password'
+        self.Target_Wrong_Password_message_by_xpath = '//*[@id="password"]/div[2]/div[2]/div'
+        self.Target_Confirm_Recovery_email_button_by_xpath = '//*[@id="view_container"]/form/div[2]/div/div/div/ul/li[1]/div'
+        self.Target_Email_Confirm_field_by_id = '//*[@id="identifierId"]'
+        self.LoginStep = 1
+        self.ErrorStatus = False
+
+    def testing(self):
+        pass
+
+
+    def CheckField_Exist_by_xpath(self, xpath):
+        try:
+            self.driver.find_elements_by_xpath(xpath)
+        except NoSuchElementException:
+            print ("No se encontro")
+        
+        return True
+
+    #W -- > Denote methos in mode Watcher with (MWatcher)
+    def W_do_login(self, credential):
+
+        #LoginStep == 1 :: Showing just Login field
+        if (self.LoginStep == 1) : 
+            if (self.CheckField_Exist_by_xpath(self.Target_User_field_by_xpath) == True):
+                pass
+
+
 
     def do_login(self, credential):
+
         logger(instance=credential)
-        target_element_in_browser = self.driver.find_element_by_id('identifierId')
+
+        target_element_in_browser = self.driver.find_element_by_id(User_field_by_id)
         target_element_in_browser.send_keys(credential.email + Keys.RETURN)
+
         time.sleep(1)
         target_element_in_browser = self.wait.until(
-            EC.element_to_be_clickable((By.NAME, 'password'))
+            EC.element_to_be_clickable((By.NAME, Password_field_by_name))
         )
+
+        time.sleep(1)
         target_element_in_browser.send_keys(credential.password + Keys.RETURN)
         time.sleep(1)
+
+        #Trying to search if message wrong message are there
+        target_element_in_browser = self.driver.find_element_by_xpath(Wrong_Password_message_by_xpath)
+
+        time.sleep(1)
+        self.driver.find_element_by_xpath(Confirm_Recovery_email_button_by_xpath).click();
+        time.sleep(1)
+
+        target_element_in_browser = self.driver.find_element_by_xpath(Email_Confirm_field_by_id)
+        target_element_in_browser.send_keys(credential.recovery_email + Keys.RETURN)
+
 
 # Intialization of object.
 OGAuth = Google_auth() #Same for all clasess
 
-class Renamer(): #Master for robot
+#Class HardCode for Credential object. 
+class cFake :
+    def __init__ (self):
+        self.email = "lacychristoph@gmail.com"
+        self.password = "KAx7TqwRdd"
+        self.recovery_email = "sigbsn55j@hotmail.com"
 
+    def report_fail(self):
+        print ("cFake: Reporting fail")
+
+
+class Renamer(): #Master for robot
     service_biz = BusinessService()
     biz_list = None
-
     def __init__(self, *args):
         self.__nameApp = type(self).__name__ + " bot "
         self.credential_list = [] # Initilizatiion
@@ -136,14 +232,6 @@ class Renamer(): #Master for robot
         file_index = 0
         #credential_list = self.service_cred.get_list()
         #Hard-Coding - BEGIN (Credential)
-        class cFake :
-            def __init__ (self):
-                #self.email = "fake100"
-                self.email = "drabblefabe@gmail.com"
-                self.password = "XyN6Lm5Apf"
-                self.recovery_email = "vernenl00dk@outlook.com"
-            def report_fail(self):
-                print ("cFake: Reporting fail")
 
         credential_fake_1 = cFake()
         self.credential_list = [credential_fake_1] # With Values
@@ -160,45 +248,21 @@ class Renamer(): #Master for robot
                 logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
                 print (Skiping_to_next_credential)
                 continue
-
             # THERE VERIFICATION
             # CONSIDERATE EMAIL IS EMAIL. WITH @ ALSO
             # PASSWORD (NOTHING SPECIAL)
-            if (self.is_Driver_GAuth_loaded() == True) :
+            if (self.is_Driver_GAuth_loaded() == True,) :
                 OGAuth.RunDriver()
-
             try:
-                OGAuth.do_login(credential)          
+                Controller_Login = MWatcher(1, 'OGAuth', 'W_do_login' ,credential, True)
+                # Si el block funciona, esto jamas deberia de funcionar hasta que terminemos el thread
+                print ("Controller_login (BLOCK FAILILING)")
+                          
             except CredentialInvalid:
                 logger(instance=credential, data='Reported fail')
                 credential.report_fail()
                 OGBAuth.RunDriver().quit()
                 continue
-            except Exception as e:
-                text = OGAuth.driver.find_element_by_xpath('//body').text.strip()
-
-                if "t find your Google Account" in text:
-                    logger(instance=credential, data="Account doesn't exists.")
-                    logger(instance=credential, data='Reported fail')
-                    #credential.report_fail()
-                    continue
-                elif "Account disabled" in text:
-                    logger(instance=credential, data="Account disabled.")
-                    logger(instance=credential, data='Reported fail')
-                    #credential.report_fail()
-                    continue
-                else:
-                    '''
-                    self.driver.get(
-                        'https://business.google.com/manage/?noredirect=1#/upload'
-                    )
-                    if not self.driver.current_url.startswith(
-                        'https://business.google.com/'
-                    ):
-                        logger(instance=credential, data='Pass')
-                        self.driver.quit()
-                        continue
-                    '''
 
         self.Finished_app()
 
