@@ -90,13 +90,13 @@ class Google_auth:
             )
         self.wait = WebDriverWait(self.driver, WAIT_TIME)
         self.driver.get('https://accounts.google.com/ServiceLogin')
-        self.Target_User_field_by_xpath = '//*[@id="identifierId"]1'
-        self.Target_User_field_by_id = 'identifierId'
-        self.Target_Password_field_by_name = 'password'
+        self.Target_User_field_by_xpath = '//*[@id="identifierId"]'
+        self.Target_Password_field_by_xpath = '//*[@id="password"]/div[1]/div/div[1]/input'
         self.Target_Wrong_Password_message_by_xpath = '//*[@id="password"]/div[2]/div[2]/div'
         self.Target_Confirm_Recovery_email_button_by_xpath = '//*[@id="view_container"]/form/div[2]/div/div/div/ul/li[1]/div'
         self.Target_Email_Confirm_field_by_id = '//*[@id="identifierId"]'
         self.LoginStep = 1
+        self.LoginStep_ghost = 1
         self.ErrorStatus = False
 
     def testing(self):
@@ -109,17 +109,40 @@ class Google_auth:
         except NoSuchElementException:
             print ("No se encontro")
             return False
-        
+        return True
+
+    def FillField_by_xpath(self, string, xpath, Enter=False):
+        try:
+            Target = self.driver.find_element_by_xpath(xpath)
+        except NoSuchElementException:
+            return False
+        time.sleep(1)
+        if (Enter == True) :
+            Target.send_keys(string + Keys.RETURN)
+
         return True
 
     #W -- > Denote methos in mode Watcher with (MWatcher)
     def W_do_login(self, credential):
-
         #LoginStep == 1 :: Showing just Login field
+        #
         if (self.LoginStep == 1) : 
-            if (self.CheckField_Exist_by_xpath(self.Target_User_field_by_xpath) == True):
-                self.LoginStep = 2
+            if (self.CheckField_Exist_by_xpath(self.Target_User_field_by_xpath) == True and self.LoginStep == self.LoginStep_ghost):
+                self.LoginStep_ghost = self.LoginStep_ghost + 1
+                if (self.FillField_by_xpath(credential.email, self.Target_User_field_by_xpath, True) == True):
+                    self.LoginStep = 2
+                    self.LoginStep_ghost = 2
+                else : 
+                    self.LoginStep_ghost = self.LoginStep_ghost - 1
 
+        if (self.LoginStep == 2) : 
+            if (self.CheckField_Exist_by_xpath(self.Target_Password_field_by_xpath) == True and self.LoginStep == self.LoginStep_ghost):
+                self.LoginStep_ghost = self.LoginStep_ghost + 1
+                if (self.FillField_by_xpath(credential.password, self.Target_Password_field_by_xpath, True) == True):
+                    self.LoginStep = 3
+                    self.LoginStep_ghost = 3
+                else : 
+                    self.LoginStep_ghost = self.LoginStep_ghost - 1
 
 
     def do_login(self, credential):
