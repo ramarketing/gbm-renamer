@@ -29,15 +29,20 @@ success_logger = Logger('success')
 
 
 class ThreadsWatch:
-    def __init(self):
-        self.ListThreads = list() 
+    def __init__(self):
+        self.ListThreads = dict()
         # ID:1 - Name: VarThreads
         # ----
+
     def Stop_Threads(self,id):
         pass
 
     def GetList(self):
         return None
+
+    def addThread (self, target, name):
+        self.ListThreads[name] = target
+        return True
 
     def CheckStatus_thread_by_id(self,id):
         pass
@@ -58,11 +63,11 @@ class MWatcher :
         self.Object = object_name
         self.Function = function_name
         self.Data = data_to_load 
-        thread=threading.Thread(target=self.__MWatcher)
-        thread.start()
+        self.thread=threading.Thread(target=self.__MWatcher)
+        self.thread.start()
+        TWatch.addThread(self, 'controller_login')
         if (block == True):
-            thread.join()
-
+            self.thread.join()
 
     def __MWatcher(self) :
         nextTime=time.time()+self.interval
@@ -78,6 +83,9 @@ class Google_auth:
     def __init__ (self):
         self.ItSelf = "Google_Auth"
 
+    def NameClass_itSelf(self):
+        return self.__class__.__name__
+
     def RunDriver(self):
         if platform.system() == 'Windows':
            self.driver = webdriver.Chrome(
@@ -91,13 +99,16 @@ class Google_auth:
         self.wait = WebDriverWait(self.driver, WAIT_TIME)
         self.driver.get('https://accounts.google.com/ServiceLogin')
         self.Target_User_field_by_xpath = '//*[@id="identifierId"]'
+        self.Target_Wrong_User_field_by_xpath = '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[1]/div/div[2]/div[2]/div'
         self.Target_Password_field_by_xpath = '//*[@id="password"]/div[1]/div/div[1]/input'
         self.Target_Wrong_Password_message_by_xpath = '//*[@id="password"]/div[2]/div[2]/div'
+        self.Target_Text_Verify_are_you_by_xpath = '//*[@id="headingText"]'
+        self.Target_Email_Confirm_field_by_xpath = '//*[@id="identifierId"]'
         self.Target_Confirm_Recovery_email_button_by_xpath = '//*[@id="view_container"]/form/div[2]/div/div/div/ul/li[1]/div'
-        self.Target_Email_Confirm_field_by_id = '//*[@id="identifierId"]'
+        self.Target_Wrong_Recovery_email_by_xpath = '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[2]/div/div/div[2]/div[2]/div'
         self.LoginStep = 1
         self.LoginStep_ghost = 1
-        self.ErrorStatus = False
+        self.StepError = 0
 
     def testing(self):
         pass
@@ -105,11 +116,34 @@ class Google_auth:
 
     def CheckField_Exist_by_xpath(self, xpath):
         try:
+            time.sleep(1)
             self.driver.find_elements_by_xpath(xpath)
         except NoSuchElementException:
             print ("No se encontro")
             return False
         return True
+
+    def Get_outerHTML_and_check_partial_text_via_xpath(self, xpath, string):
+        try:
+            time.sleep(1)
+            self.driver.find_element_by_xpath(xpath).get_attribute('outerHTML')
+        except NoSuchElementException:
+            return False   
+        target = self.driver.find_element_by_xpath(xpath).get_attribute('outerHTML')
+        if (string in target) :
+            return True
+        else:
+            return False
+        return target.text
+
+
+    def GetText_IntoXpath (self, xpath):
+        try:
+            self.driver.find_elements_by_xpath(xpath)
+        except NoSuchElementException:
+            return False
+        target = self.driver.find_elements_by_xpath(xpath)
+        return target
 
     def FillField_by_xpath(self, string, xpath, Enter=False):
         try:
@@ -117,25 +151,96 @@ class Google_auth:
         except NoSuchElementException:
             return False
         time.sleep(1)
+        Target.clear()
         if (Enter == True) :
             Target.send_keys(string + Keys.RETURN)
-
         return True
+
+    def Click_by_xpath(self, xpath) : 
+        try:
+            Target = self.driver.find_element_by_xpath(xpath)
+        except NoSuchElementException:
+            return False
+        time.sleep(1)
+
+        Target.click()
+        
+        return True   
+
+    def Except_CredentialInvalid (self, credential):
+        logger(instance=credential, data='Reported fail')
+        credential.report_fail()
+        
 
     #W -- > Denote methos in mode Watcher with (MWatcher)
     def W_do_login(self, credential):
         #LoginStep == 1 :: Showing just Login field
-        #
         if (self.LoginStep == 1) : 
-            if (self.CheckField_Exist_by_xpath(self.Target_User_field_by_xpath) == True and self.LoginStep == self.LoginStep_ghost):
-                self.LoginStep_ghost = self.LoginStep_ghost + 1
+            print ("# LoginStep -> 1")
+            if (self.CheckField_Exist_by_xpath(self.Target_User_field_by_xpath) == True):
+                print ("# W_do_login->Block 1 - Still running")  #OK            
                 if (self.FillField_by_xpath(credential.email, self.Target_User_field_by_xpath, True) == True):
-                    self.LoginStep = 2
                     self.LoginStep_ghost = 2
-                else : 
-                    self.LoginStep_ghost = self.LoginStep_ghost - 1
 
+                if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_User_field_by_xpath, Step1_Target_PTXT_Error_Email) == True and self.LoginStep_ghost == self.LoginStep + 1) :
+                    logger(instance_itself=self.NameClass_itSelf(), data=Email_wasnot_valid)
+                    print (Email_wasnot_valid)
+                    self.Except_CredentialInvalid(credential)
+                    self.driver.quit()
+                    TWatch.ListThreads['controller_login'].cancel()
+                else :
+                    self.LoginStep = 2
+        
         if (self.LoginStep == 2) : 
+            print ("# LoginStep -> 2")
+            if (self.CheckField_Exist_by_xpath(self.Target_Password_field_by_xpath) == True):
+                print ("# W_do_login->Block 1 - Still running")  #OK            
+                if (self.FillField_by_xpath(credential.password, self.Target_Password_field_by_xpath, True) == True):
+                    self.LoginStep_ghost = 3
+
+                if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Password_message_by_xpath, Step2_Target_PTXT_Error_Password) == True and self.LoginStep_ghost == self.LoginStep + 1) :
+                    logger(instance_itself=self.NameClass_itSelf(), data=Passwword_no_valid)
+                    print (Passwword_no_valid)
+                    self.Except_CredentialInvalid(credential)
+                    self.driver.quit()
+                    TWatch.ListThreads['controller_login'].cancel()
+                else :
+                    self.LoginStep = 3
+
+        if (self.LoginStep == 3) :      
+            if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Text_Verify_are_you_by_xpath, Step3_Target_PTXT_Verify_are_you_GAUTH) == True):
+                if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_Recovery_email_button_by_xpath, Step3_Target_PTXT_Confirm_email) == True and self.LoginStep_ghost != 31):
+                    self.Click_by_xpath(self.Target_Confirm_Recovery_email_button_by_xpath)
+                    self.LoginStep_ghost = 31
+
+                if (self.LoginStep_ghost == 31) :
+                    if (self.FillField_by_xpath(credential.recovery_email, self.Target_Email_Confirm_field_by_xpath, True) == True):
+                        self.LoginStep_ghost = 32
+
+            if (self.LoginStep_ghost == 32) :
+                if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Recovery_email_by_xpath, Step3_Target_PTXT_Error_Email_Recovery) == True):
+                    logger(instance_itself=self.NameClass_itSelf(), data=Acc_invalid_email_recovery)
+                    print (Acc_invalid_email_recovery)
+                    self.Except_CredentialInvalid(credential)
+                    self.driver.quit()
+                    TWatch.ListThreads['controller_login'].cancel()
+                else: 
+                    self.LoginStep_ghost = 4
+
+                '''
+                if (self.CheckField_Exist_by_xpath(self.Target_Password_field_by_xpath) == True):
+                    pass
+                '''
+
+
+'''
+        if (self.LoginStep == 2) : 
+            if (self.CheckField_Exist_by_xpath(self.Target_Wrong_Password_message_by_xpath) == True and self.LoginStep == self.LoginStep_ghost) :
+                logger(instance_itself=self.NameClass_itSelf(), data=Acc_invalid_password)
+                print (Acc_invalid_password)
+                raise CredentialInvalid(Acc_invalid_password+".")
+                TWatch.ListThreads['controller_login'].cancel()
+
             if (self.CheckField_Exist_by_xpath(self.Target_Password_field_by_xpath) == True and self.LoginStep == self.LoginStep_ghost):
                 self.LoginStep_ghost = self.LoginStep_ghost + 1
                 if (self.FillField_by_xpath(credential.password, self.Target_Password_field_by_xpath, True) == True):
@@ -143,8 +248,9 @@ class Google_auth:
                     self.LoginStep_ghost = 3
                 else : 
                     self.LoginStep_ghost = self.LoginStep_ghost - 1
+'''
 
-
+'''
     def do_login(self, credential):
 
         logger(instance=credential)
@@ -170,21 +276,31 @@ class Google_auth:
 
         target_element_in_browser = self.driver.find_element_by_xpath(Email_Confirm_field_by_id)
         target_element_in_browser.send_keys(credential.recovery_email + Keys.RETURN)
-
+'''
 
 # Intialization of object.
 OGAuth = Google_auth() #Same for all clasess
+TWatch = ThreadsWatch()
 
 #Class HardCode for Credential object. 
 class cFake :
     def __init__ (self):
-        self.email = "lacychristoph@gmail.com"
-        self.password = "KAx7TqwRdd"
-        self.recovery_email = "sigbsn55j@hotmail.com"
+        self.email = "cowlandbaxie@gmail.com"
+        self.password = "8OLwiLNIHC"
+        self.recovery_email = "harv9xec3tg@hotmailX.com"
 
     def report_fail(self):
         print ("cFake: Reporting fail")
 
+
+class cFake2 :
+    def __init__ (self):
+        self.email = "cowlandbaxie@gmail.com"
+        self.password = "8OLwiLNIHC1"
+        self.recovery_email = "harv9xec3tg@hotmailX.com"
+
+    def report_fail(self):
+        print ("cFake: Reporting fail")
 
 class Renamer(): #Master for robot
     service_biz = BusinessService()
@@ -265,15 +381,25 @@ class Renamer(): #Master for robot
         #Hard-Coding - BEGIN (Credential)
 
         credential_fake_1 = cFake()
-        self.credential_list = [credential_fake_1] # With Values
+        credential_fake_2 = cFake2()
+        #credential_fake_3 = cFake3()
+
+
+        #self.credential_list = [credential_fake_1, credential_fake_2, credential_fake_3] # With Values
+        self.credential_list = [credential_fake_1]
         #self.credential_list = [] # Empty
         #Hard-Coding - END (Credential)
         if (self.is_empty_credentials() == True) :
             self.CloseApp()
+
         #Dummie, if credential is ZERO. Stop Robot
         # Looping each credenditals (Here we start loop and also run driver)
         # Method 1X1 (First method)
+        counter = 0
         for credential in self.credential_list:
+            counter = counter + 1
+            print("# Cuenta ID: " + str(counter))
+
             if (self.verification_of_credential(credential) == False) :
                 logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
                 print (Skiping_to_next_credential)
@@ -281,21 +407,16 @@ class Renamer(): #Master for robot
             # THERE VERIFICATION
             # CONSIDERATE EMAIL IS EMAIL. WITH @ ALSO
             # PASSWORD (NOTHING SPECIAL)
-            if (self.is_Driver_GAuth_loaded() == True,) :
+            if (self.is_Driver_GAuth_loaded() == True) :
                 OGAuth.RunDriver()
             try:
-                Controller_Login = MWatcher(0.5, 'OGAuth', 'W_do_login' ,credential, True)
-                # Si el block funciona, esto jamas deberia de funcionar hasta que terminemos el thread
-                print ("Controller_login (BLOCK failing)")
-                          
+                print ("# Email: " + credential.email)
+                Controller_Login = MWatcher(0.5, 'OGAuth', 'W_do_login' , credential, True)
             except CredentialInvalid:
-                logger(instance=credential, data='Reported fail')
-                credential.report_fail()
-                OGBAuth.RunDriver().quit()
-                continue
+                pass
 
+                continue     
         self.Finished_app()
-
 
     def Finished_app(self):
         logger(instance_itself=self.NameClass_itSelf(), data=self.__nameApp + Finished_app_run)
