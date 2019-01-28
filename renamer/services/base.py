@@ -2,7 +2,7 @@ from urllib.parse import urlparse, parse_qs
 
 import requests
 
-from config import API_ROOT, API_USERNAME, API_PASSWORD
+from ..config import API_ROOT, API_USERNAME, API_PASSWORD
 
 
 class BaseEntity:

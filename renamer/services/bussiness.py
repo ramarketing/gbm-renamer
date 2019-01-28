@@ -1,11 +1,11 @@
 import csv
 import os
 
-from config import BASE_DIR
-from services.base import (
+from ..config import BASE_DIR
+from .base import (
     BaseEntity, BaseEntityList, BaseService
 )
-from constants import CSV_FIELDS, CSV_HEADER
+from ..constants import CSV_FIELDS, CSV_HEADER
 
 
 class Business(BaseEntity):
