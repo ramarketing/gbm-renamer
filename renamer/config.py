@@ -13,5 +13,5 @@ DEBUG = True if os.getenv('DEBUG', False) == 'True' else False
 API_ROOT = os.getenv('API_ROOT')
 API_USERNAME = os.getenv('API_USERNAME')
 API_PASSWORD = os.getenv('API_PASSWORD')
-WAIT_TIME = int(os.getenv('WAIT_TIME'))
+WAIT_TIME = int(os.getenv('WAIT_TIME') or 60)
 
