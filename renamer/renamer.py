@@ -266,11 +266,24 @@ class GBusiness (Manage_Selenium):
     #DetectDialog{ID} - What Dialog?
     def __init__ (self, driver):
         self.driver = driver
-        self.MainPage = "https://business.google.com/"
+        self.MainPage = "https://business.google.com/"      
+        self.Url_List_of_business = 'https://business.google.com/locations'
+
+        # Control of flow Verify_an_business_step {MWatcher}
+        self.Verify_an_business_step = 0
+
+        #Handlers_XPath para (W_Verify_an_business) - BEGIN     
+        W_Verify_an_business_Target_TBody_Locations = '//*[@id="main_viewpane"]/c-wiz[1]/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody'
+        #Handlers_XPath para (W_Verify_an_business) - END 
 
     def GoMainPage (self): 
         print ("! - GBusiness-> Redirecting to: " +  self.MainPage)
         self.driver.get(self.MainPage)
+
+    def GoLocationsPage(self):
+        print ("! - GBusiness-> Redirecting to: " +  self.Url_List_of_business)
+        self.driver.get(self.Url_List_of_business)
+        return True
 
     def W_Verify_an_business(self):
 
@@ -288,6 +301,16 @@ class GBusiness (Manage_Selenium):
         # 21 - Detectamos el Enter code
         # 22 - Ingresando codigo
         # 23 - Presionando clic en Verify now.
+
+        # 1 - Lista de negocios - BEGIN
+        if (self.W_Verify_an_business == 0) :
+            time.sleep(0.25) #Sleeping 0.25 Seconds
+            if (self.GoLocationsPage() == True):
+               self.W_Verify_an_business = 1 
+        # 1 - Lista de negocios - END
+
+
+
 
 
 class Renamer(): #Master for robot
