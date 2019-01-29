@@ -29,7 +29,6 @@ class ThreadsWatch:
         self.ListThreads = dict()
         # ID:1 - Name: VarThreads
         # ----
-
     def Stop_Threads(self,id):
         pass
 
@@ -262,20 +261,34 @@ class Google_auth(Manage_Selenium):
                 TWatch.ListThreads['controller_login'].cancel()
 
 
-def GBusiness (Manage_Selenium):  
+class GBusiness (Manage_Selenium):  
     #Go{name_part_of_site} - Go to a part of Google Business
     #DetectDialog{ID} - What Dialog?
-
-
     def __init__ (self, driver):
         self.driver = driver
         self.MainPage = "https://business.google.com/"
-        self.GoMainPage()
 
-
-    def GoMainPage(): 
+    def GoMainPage (self): 
         print ("! - GBusiness-> Redirecting to: " +  self.MainPage)
         self.driver.get(self.MainPage)
+
+    def W_Verify_an_business(self):
+
+
+        # Verify_an_business_step: 
+        # Codigos:
+        # 1 - Lista de negocios
+        # 11 - Pedimos lista de negocios con https://business.google.com/locations
+        # 12 - Obteniendo la lista
+        # 13 - Targeteando al Verify now acorde a nuestro verify now
+        # 14 - Clicleando el Verify Now
+        # 20 - Detectando "Chosse a way to verify"
+        # 21 - Detectamos el boton "text"
+        # 22 - Hacemos clic, Loop con Matrix (120 timeout)
+        # 21 - Detectamos el Enter code
+        # 22 - Ingresando codigo
+        # 23 - Presionando clic en Verify now.
+
 
 class Renamer(): #Master for robot
     service_biz = BusinessService()
@@ -358,6 +371,8 @@ class Renamer(): #Master for robot
         for credential in self.credential_list:
             OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
             counter = counter + 1
+            if (counter < 3):
+                 continue
             print("# Cuenta ID: " + str(counter))
             print(credential.name, credential.email , credential.password, credential.recovery_email)
             if (self.verification_of_credential(credential) == False) :
@@ -377,7 +392,9 @@ class Renamer(): #Master for robot
 
             if (OGAuth.SucessLogin == 1) :
                 GBusiness_handle = GBusiness(OGAuth.driver)
-                time.sleep(50) 
+                GBusiness_handle.GoMainPage()
+
+                time.sleep(10) 
                 #OGAuth = MWatcher(0.5, 'OGAuth', 'W_do_login' , credential, True)
 
         self.Finished_app()
@@ -386,6 +403,7 @@ class Renamer(): #Master for robot
         logger(instance_itself=self.NameClass_itSelf(), data=self.__nameApp + Finished_app_run)
         print (self.__nameApp + Finished_app_run)
         #self.CloseApp()
+
 
 # Intialization of object.
 OGAuth = Google_auth() #Same for all clasess
