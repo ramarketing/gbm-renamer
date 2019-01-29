@@ -6,7 +6,6 @@ import sys
 import re
 import time, threading
 
-
 #Selenium Manager
 from selenium import webdriver
 from selenium.common.exceptions import ElementNotVisibleException
@@ -24,9 +23,6 @@ from config import BASE_DIR, WAIT_TIME
 from constants import TEXT_PHONE_VERIFICATION
 from logger import Logger
 from messages import *
-logger = Logger()
-success_logger = Logger('success')
-
 
 class ThreadsWatch:
     def __init__(self):
@@ -78,41 +74,10 @@ class MWatcher :
                 #eval('OGAuth.W_do_login(self.Data)')
     def cancel(self) :
         self.stopEvent.set()
-        
-class Google_auth:
-    def __init__ (self):
-        self.ItSelf = "Google_Auth"
 
-    def NameClass_itSelf(self):
-        return self.__class__.__name__
-
-    def RunDriver(self):
-        if platform.system() == 'Windows':
-           self.driver = webdriver.Chrome(
-               executable_path=os.path.join(BASE_DIR, 'chromedriver'),
-                # chrome_options=chrome_options
-            )
-        else:
-            self.driver = webdriver.Chrome(
-                # chrome_options=chrome_options
-            )
-        self.wait = WebDriverWait(self.driver, WAIT_TIME)
-        self.driver.get('https://accounts.google.com/ServiceLogin')
-        self.Target_User_field_by_xpath = '//*[@id="identifierId"]'
-        self.Target_Wrong_User_field_by_xpath = '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[1]/div/div[2]/div[2]/div'
-        self.Target_Password_field_by_xpath = '//*[@id="password"]/div[1]/div/div[1]/input'
-        self.Target_Wrong_Password_message_by_xpath = '//*[@id="password"]/div[2]/div[2]/div'
-        self.Target_Text_Verify_are_you_by_xpath = '//*[@id="headingText"]'
-        self.Target_Email_Confirm_field_by_xpath = '//*[@id="identifierId"]'
-        self.Target_Confirm_Recovery_email_button_by_xpath = '//*[@id="view_container"]/form/div[2]/div/div/div/ul/li[1]/div'
-        self.Target_Wrong_Recovery_email_by_xpath = '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[2]/div/div/div[2]/div[2]/div'
-        self.LoginStep = 1
-        self.LoginStep_ghost = 1
-        self.StepError = 0
-
-    def testing(self):
+class Manage_Selenium :
+    def __init__():
         pass
-
 
     def CheckField_Exist_by_xpath(self, xpath):
         try:
@@ -162,10 +127,43 @@ class Google_auth:
         except NoSuchElementException:
             return False
         time.sleep(1)
-
         Target.click()
-        
         return True   
+        
+class Google_auth(Manage_Selenium):
+    def __init__ (self):
+        self.ItSelf = "Google_Auth"
+
+    def NameClass_itSelf(self):
+        return self.__class__.__name__
+
+    def RunDriver(self):
+        if platform.system() == 'Windows':
+           self.driver = webdriver.Chrome(
+               executable_path=os.path.join(BASE_DIR, 'chromedriver'),
+                # chrome_options=chrome_options
+            )
+        else:
+            self.driver = webdriver.Chrome(
+                # chrome_options=chrome_options
+            )
+        self.wait = WebDriverWait(self.driver, WAIT_TIME)
+        self.driver.get('https://accounts.google.com/ServiceLogin')
+        self.Target_User_field_by_xpath = '//*[@id="identifierId"]'
+        self.Target_Wrong_User_field_by_xpath = '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[1]/div/div[2]/div[2]/div'
+        self.Target_Password_field_by_xpath = '//*[@id="password"]/div[1]/div/div[1]/input'
+        self.Target_Wrong_Password_message_by_xpath = '//*[@id="password"]/div[2]/div[2]/div'
+        self.Target_Text_Verify_are_you_by_xpath = '//*[@id="headingText"]'
+        self.Target_Email_Confirm_field_by_xpath = '//*[@id="identifierId"]'
+        self.Target_Confirm_Recovery_email_button_by_xpath = '//*[@id="view_container"]/form/div[2]/div/div/div/ul/li[1]/div'
+        self.Target_Wrong_Recovery_email_by_xpath = '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[2]/div/div/div[2]/div[2]/div'
+        self.Target_Confirm_message_email_recovery_by_xpath = '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[1]'
+        self.Target_Step3_asking_captcha = '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[2]/div/div/div[1]/div/div[1]/div'
+        self.Target_Step3_ConfirmField_changing_password = '//*[@id="confirm-passwd"]/div[1]/div/div[1]/div'
+
+        self.LoginStep = 1
+        self.LoginStep_ghost = 1
+        self.StepError = 0
 
     def Except_CredentialInvalid (self, credential):
         logger(instance=credential, data='Reported fail')
@@ -174,140 +172,116 @@ class Google_auth:
 
     #W -- > Denote methos in mode Watcher with (MWatcher)
     def W_do_login(self, credential):
-        #LoginStep == 1 :: Showing just Login field
+        print ("! Executing MWatcher GAuth:W_do_login !")
+        print ("! LoginStep: " + str(self.LoginStep))
+        print ("! LoginStep_ghost: " + str(self.LoginStep_ghost))
+        print ("! URL Actually: " + self.driver.current_url)
+
         if (self.LoginStep == 1) : 
-            print ("# LoginStep -> 1")
-            if (self.CheckField_Exist_by_xpath(self.Target_User_field_by_xpath) == True):
-                print ("# W_do_login->Block 1 - Still running")  #OK            
+            if (self.CheckField_Exist_by_xpath(self.Target_User_field_by_xpath) == True and self.LoginStep == 1):
+                print ("# User field detected ")  #OK            
                 if (self.FillField_by_xpath(credential.email, self.Target_User_field_by_xpath, True) == True):
-                    self.LoginStep_ghost = 2
+                    print ("# Success to FillField: User also with Enter")  #OK  
+                    self.LoginStep_ghost = 11
 
-                if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_User_field_by_xpath, Step1_Target_PTXT_Error_Email) == True and self.LoginStep_ghost == self.LoginStep + 1) :
-                    logger(instance_itself=self.NameClass_itSelf(), data=Email_wasnot_valid)
-                    print (Email_wasnot_valid)
-                    self.Except_CredentialInvalid(credential)
-                    self.driver.quit()
-                    TWatch.ListThreads['controller_login'].cancel()
-                else :
-                    self.LoginStep = 2
-        
+                if (self.LoginStep_ghost == 11):
+                    if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_User_field_by_xpath, Step1_Target_PTXT_Error_Email) == True) :
+                        logger(instance_itself=self.NameClass_itSelf(), data=Email_wasnot_valid)
+                        print (Email_wasnot_valid)
+                        #self.Except_CredentialInvalid(credential)
+                        self.driver.quit()
+                        TWatch.ListThreads['controller_login'].cancel()
+                    else :
+                        self.LoginStep = 2
+                        print ("#Prepared to go to Step #2")
+  
         if (self.LoginStep == 2) : 
-            print ("# LoginStep -> 2")
             if (self.CheckField_Exist_by_xpath(self.Target_Password_field_by_xpath) == True):
-                print ("# W_do_login->Block 1 - Still running")  #OK            
+                print ("# Password field detected ")  #OK            
                 if (self.FillField_by_xpath(credential.password, self.Target_Password_field_by_xpath, True) == True):
-                    self.LoginStep_ghost = 3
+                    self.LoginStep_ghost = 21
+                    print ("# Success to FillField: Password also with Enter")  #OK  
 
-                if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Password_message_by_xpath, Step2_Target_PTXT_Error_Password) == True and self.LoginStep_ghost == self.LoginStep + 1) :
-                    logger(instance_itself=self.NameClass_itSelf(), data=Passwword_no_valid)
-                    print (Passwword_no_valid)
-                    self.Except_CredentialInvalid(credential)
-                    self.driver.quit()
-                    TWatch.ListThreads['controller_login'].cancel()
-                else :
-                    self.LoginStep = 3
-
-        if (self.LoginStep == 3) :      
+                if (self.LoginStep_ghost == 21) :
+                    if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Password_message_by_xpath, Step2_Target_PTXT_Error_Password) == True) :
+                        logger(instance_itself=self.NameClass_itSelf(), data=Passwword_no_valid)
+                        print (Passwword_no_valid)
+                        #self.Except_CredentialInvalid(credential)
+                        self.driver.quit()
+                        TWatch.ListThreads['controller_login'].cancel()
+                    else :
+                        self.LoginStep = 3
+                        print ("#Prepared to go to Step #3")
+        #There we verify if we access directly without verification of Recovery Email
+        if(self.driver.current_url.find('myaccount.google.com') != -1 and self.LoginStep == 3):
+            print ("! Login successfull without verification")
+            self.SucessLogin = 1
+            TWatch.ListThreads['controller_login'].cancel()
+        if (self.LoginStep == 3) :  
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Text_Verify_are_you_by_xpath, Step3_Target_PTXT_Verify_are_you_GAUTH) == True):
-                if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_Recovery_email_button_by_xpath, Step3_Target_PTXT_Confirm_email) == True and self.LoginStep_ghost != 31):
+                print ("! Detectamos: Are you? body:Header") #OK
+
+                if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_Recovery_email_button_by_xpath, Step3_Target_PTXT_Confirm_email) == True):
+                    print ("! Button clicked - Email Recovery")
                     self.Click_by_xpath(self.Target_Confirm_Recovery_email_button_by_xpath)
                     self.LoginStep_ghost = 31
-
-                if (self.LoginStep_ghost == 31) :
-                    if (self.FillField_by_xpath(credential.recovery_email, self.Target_Email_Confirm_field_by_xpath, True) == True):
+                else :
+                    self.LoginStep_ghost = 31
+                if (self.LoginStep_ghost == 31): 
+                    if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_message_email_recovery_by_xpath, Step3_Target_PTXT_Confirm_your_email) == True and self.LoginStep_ghost == 31 ) :
                         self.LoginStep_ghost = 32
-
-            if (self.LoginStep_ghost == 32) :
+                        print ("! Stage to fillfield recovery_email")
+                if (self.LoginStep_ghost == 32) :
+                    if (self.FillField_by_xpath(credential.recovery_email, self.Target_Email_Confirm_field_by_xpath, True) == True):
+                        print ("# Success to FillField: Recovery Email also with Enter") 
+                        self.LoginStep_ghost = 33
+            if (self.LoginStep_ghost == 33) :
                 if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Recovery_email_by_xpath, Step3_Target_PTXT_Error_Email_Recovery) == True):
                     logger(instance_itself=self.NameClass_itSelf(), data=Acc_invalid_email_recovery)
                     print (Acc_invalid_email_recovery)
-                    self.Except_CredentialInvalid(credential)
+                    #self.Except_CredentialInvalid(credential)
                     self.driver.quit()
                     TWatch.ListThreads['controller_login'].cancel()
-                else: 
-                    self.LoginStep_ghost = 4
+                else:
+                    print(self.driver.current_url.find('https://myaccount.google.com'))
+                    if(self.driver.current_url.find('https://myaccount.google.com') != -1):
+                        print ("! Login successfull.. ")
+                        self.SucessLogin = 1
+                        TWatch.ListThreads['controller_login'].cancel()     
+                    else: 
+                        print ("! Myaccount page not loaded yet ! ")
 
-                '''
-                if (self.CheckField_Exist_by_xpath(self.Target_Password_field_by_xpath) == True):
-                    pass
-                '''
-
-
-'''
-        if (self.LoginStep == 2) : 
-            if (self.CheckField_Exist_by_xpath(self.Target_Wrong_Password_message_by_xpath) == True and self.LoginStep == self.LoginStep_ghost) :
-                logger(instance_itself=self.NameClass_itSelf(), data=Acc_invalid_password)
-                print (Acc_invalid_password)
-                raise CredentialInvalid(Acc_invalid_password+".")
+            if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Step3_asking_captcha, Step3_Target_PTXT_Write_that_you_hear_or_see) == True):
+                print ("! Acccount was exploited, Right now are asking for captcha. No procedd")
+                self.driver.quit()
                 TWatch.ListThreads['controller_login'].cancel()
 
-            if (self.CheckField_Exist_by_xpath(self.Target_Password_field_by_xpath) == True and self.LoginStep == self.LoginStep_ghost):
-                self.LoginStep_ghost = self.LoginStep_ghost + 1
-                if (self.FillField_by_xpath(credential.password, self.Target_Password_field_by_xpath, True) == True):
-                    self.LoginStep = 3
-                    self.LoginStep_ghost = 3
-                else : 
-                    self.LoginStep_ghost = self.LoginStep_ghost - 1
-'''
-
-'''
-    def do_login(self, credential):
-
-        logger(instance=credential)
-
-        target_element_in_browser = self.driver.find_element_by_id(User_field_by_id)
-        target_element_in_browser.send_keys(credential.email + Keys.RETURN)
-
-        time.sleep(1)
-        target_element_in_browser = self.wait.until(
-            EC.element_to_be_clickable((By.NAME, Password_field_by_name))
-        )
-
-        time.sleep(1)
-        target_element_in_browser.send_keys(credential.password + Keys.RETURN)
-        time.sleep(1)
-
-        #Trying to search if message wrong message are there
-        target_element_in_browser = self.driver.find_element_by_xpath(Wrong_Password_message_by_xpath)
-
-        time.sleep(1)
-        self.driver.find_element_by_xpath(Confirm_Recovery_email_button_by_xpath).click();
-        time.sleep(1)
-
-        target_element_in_browser = self.driver.find_element_by_xpath(Email_Confirm_field_by_id)
-        target_element_in_browser.send_keys(credential.recovery_email + Keys.RETURN)
-'''
-
-# Intialization of object.
-OGAuth = Google_auth() #Same for all clasess
-TWatch = ThreadsWatch()
-
-#Class HardCode for Credential object. 
-class cFake :
-    def __init__ (self):
-        self.email = "cowlandbaxie@gmail.com"
-        self.password = "8OLwiLNIHC"
-        self.recovery_email = "harv9xec3tg@hotmailX.com"
-
-    def report_fail(self):
-        print ("cFake: Reporting fail")
+            if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Step3_ConfirmField_changing_password, Step3_Target_PTXT_Step3_Confirmation_password_Field) == True):
+                print ("! Acccount was exploited, Right now are asking for change of password. No procedd")
+                self.driver.quit()
+                TWatch.ListThreads['controller_login'].cancel()
 
 
-class cFake2 :
-    def __init__ (self):
-        self.email = "cowlandbaxie@gmail.com"
-        self.password = "8OLwiLNIHC1"
-        self.recovery_email = "harv9xec3tg@hotmailX.com"
+def GBusiness (Manage_Selenium):  
+    #Go{name_part_of_site} - Go to a part of Google Business
+    #DetectDialog{ID} - What Dialog?
 
-    def report_fail(self):
-        print ("cFake: Reporting fail")
+
+    def __init__ (self, driver):
+        self.driver = driver
+        self.MainPage = "https://business.google.com/"
+        self.GoMainPage()
+
+
+    def GoMainPage(): 
+        print ("! - GBusiness-> Redirecting to: " +  self.MainPage)
+        self.driver.get(self.MainPage)
 
 class Renamer(): #Master for robot
     service_biz = BusinessService()
     biz_list = None
     def __init__(self, *args):
         self.__nameApp = type(self).__name__ + " bot "
-        self.credential_list = [] # Initilizatiion
         pass
 
     def NameClass_itSelf(self):
@@ -376,35 +350,21 @@ class Renamer(): #Master for robot
         sys.exit()
 
     def handle(self, *args, **options):
-        file_index = 0
-        #credential_list = self.service_cred.get_list()
-        #Hard-Coding - BEGIN (Credential)
-
-        credential_fake_1 = cFake()
-        credential_fake_2 = cFake2()
-        #credential_fake_3 = cFake3()
-
-
-        #self.credential_list = [credential_fake_1, credential_fake_2, credential_fake_3] # With Values
-        self.credential_list = [credential_fake_1]
-        #self.credential_list = [] # Empty
-        #Hard-Coding - END (Credential)
-        if (self.is_empty_credentials() == True) :
-            self.CloseApp()
-
-        #Dummie, if credential is ZERO. Stop Robot
-        # Looping each credenditals (Here we start loop and also run driver)
-        # Method 1X1 (First method)
+        from services import BusinessService
+        business_service = BusinessService()
+        business_list = business_service.get_list()
+        self.credential_list = business_list
         counter = 0
         for credential in self.credential_list:
+            OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
             counter = counter + 1
             print("# Cuenta ID: " + str(counter))
-
+            print(credential.name, credential.email , credential.password, credential.recovery_email)
             if (self.verification_of_credential(credential) == False) :
                 logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
                 print (Skiping_to_next_credential)
                 continue
-            # THERE VERIFICATION
+            # THERE VERIFICATIONfrom services import BusinessService
             # CONSIDERATE EMAIL IS EMAIL. WITH @ ALSO
             # PASSWORD (NOTHING SPECIAL)
             if (self.is_Driver_GAuth_loaded() == True) :
@@ -413,9 +373,13 @@ class Renamer(): #Master for robot
                 print ("# Email: " + credential.email)
                 Controller_Login = MWatcher(0.5, 'OGAuth', 'W_do_login' , credential, True)
             except CredentialInvalid:
-                pass
-
                 continue     
+
+            if (OGAuth.SucessLogin == 1) :
+                GBusiness_handle = GBusiness(OGAuth.driver)
+                time.sleep(50) 
+                #OGAuth = MWatcher(0.5, 'OGAuth', 'W_do_login' , credential, True)
+
         self.Finished_app()
 
     def Finished_app(self):
@@ -423,4 +387,8 @@ class Renamer(): #Master for robot
         print (self.__nameApp + Finished_app_run)
         #self.CloseApp()
 
-
+# Intialization of object.
+OGAuth = Google_auth() #Same for all clasess
+TWatch = ThreadsWatch()
+logger = Logger()
+success_logger = Logger('success')
