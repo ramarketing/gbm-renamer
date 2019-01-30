@@ -30,12 +30,13 @@ class Business(BaseEntity):
             phone_number=phone_number
         )
         return self.service.request(
-            'post', pk=self.pk, extra='get-validation-code', data=data
+            'post', pk=self.pk, extra='get-validation-code', data=data,
+             in_raw=True
         )
 
     def report_validation(self):
         return self.service.request(
-            'post', pk=self.pk, extra='set-validated', in_raw=True
+            'post', pk=self.pk, extra='set-validated'
         )
 
     def report_success(self):
