@@ -431,16 +431,22 @@ class GBusiness (Manage_Selenium):
             
             GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber).text
             GB_phoneNumber = GB_phoneNumber.replace('(', '').replace(')', '').replace('-', '').strip()
+
             GB_phoneNumber = '+1{}'.format(GB_phoneNumber)
+            GB_phoneNumber = GB_phoneNumber.replace(' ', '')
+
+            print ("Numero de telefono :" + GB_phoneNumber)
+
 
             status_code = 204
             while(status_code == 204):
+                time.sleep(10)
                 response = credential.get_validation_code(
                 phone_number=GB_phoneNumber
                 )
                 status_code = response.status_code
                 code = reponse.json()['msg']
-                if (response.status_code in (404, 403)):
+                if (response.status_code not in (200, 204)):
                 # No exite o no está conectado a Matrix
                 # NO HAY COMO RECIBIR EL SMS
                     print('! -Imposible porque', response['msg'])
@@ -451,6 +457,7 @@ class GBusiness (Manage_Selenium):
             if (self.FillField_by_xpath(str(code), self.W_Verify_an_business_Target_EnterVerifyCode_xpath, True) == True):
                     self.W_Verify_an_business_step == 23
                     print ("! - Rellenamos el codigo de verificacion con un enter.")
+
 
         if (self.W_Verify_an_business_step == 23) :
             print ('Ya hemos enviado el codigo de verificacion.')
@@ -564,8 +571,6 @@ class Renamer(): #Master for robot
                 print ("Sleeping 1s")
                 time.sleep(1)
                 VerifyBusiness = MWatcher(0.5, 'GBusiness_handle', 'W_Verify_an_business' , credential, True)
-
-
 
         self.Finished_app()
 
