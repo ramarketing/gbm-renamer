@@ -25,12 +25,22 @@ class Business(BaseEntity):
 
         return line
 
-    def report_success(self, credential):
+    def get_validation_code(self, phone_number):
         data = dict(
-            credential=credential.pk
+            phone_number=phone_number
         )
         return self.service.request(
-            'post', pk=self.pk, extra='set-success', data=data
+            'post', pk=self.pk, extra='get-validation-code', data=data
+        )
+
+    def report_validation(self):
+        return self.service.request(
+            'post', pk=self.pk, extra='set-validated'
+        )
+
+    def report_success(self):
+        return self.service.request(
+            'post', pk=self.pk, extra='set-success'
         )
 
 
