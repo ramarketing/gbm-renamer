@@ -20,3 +20,5 @@ Step3_Target_PTXT_Error_Email_Recovery = 'El correo electrónico que ingresaste 
 Step3_Target_PTXT_Confirm_your_email = 'Confirma la dirección del correo de recuperación que '
 Step3_Target_PTXT_Write_that_you_hear_or_see = 'Escribe el texto que escuches o'
 Step3_Target_PTXT_Step3_Confirmation_password_Field = 'Confirmaci'
+
+Step_Enter6Digits_Text_fromVerifynow_bussiness = 'Enter the 6-digit verification code from the text message'
