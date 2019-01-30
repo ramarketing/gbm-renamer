@@ -181,9 +181,12 @@ class BaseService:
 
         return self._request(method, endpoint, **kwargs)
 
-    def _request(self, method, endpoint, **kwargs):
+    def _request(self, method, endpoint, in_raw=False, **kwargs):
         r = getattr(requests, method)(endpoint, **kwargs)
-        assert r.status_code == requests.codes.ok, (
-            "%s: Request error: %s" % (self.__class__.__name__, r.json())
-        )
-        return r.json()
+        if in_raw:
+            return r
+        else:
+            assert r.status_code == requests.codes.ok, (
+                "%s: Request error: %s" % (self.__class__.__name__, r.json())
+            )
+            return r.json()

@@ -59,7 +59,7 @@ class MWatcher :
         self.stopEvent=threading.Event()
         self.Object = object_name
         self.Function = function_name
-        self.Data = data_to_load 
+        self.Data = data_to_load
         self.thread=threading.Thread(target=self.__MWatcher)
         self.thread.start()
         TWatch.addThread(self, 'controller_login')
@@ -94,7 +94,7 @@ class Manage_Selenium :
             time.sleep(1)
             self.driver.find_element_by_xpath(xpath).get_attribute('outerHTML')
         except NoSuchElementException:
-            return False   
+            return False
         target = self.driver.find_element_by_xpath(xpath).get_attribute('outerHTML')
         if (string in target) :
             return True
@@ -132,15 +132,15 @@ class Manage_Selenium :
             Target.send_keys(string + Keys.RETURN)
         return True
 
-    def Click_by_xpath(self, xpath) : 
+    def Click_by_xpath(self, xpath) :
         try:
             Target = self.driver.find_element_by_xpath(xpath)
         except NoSuchElementException:
             return False
         time.sleep(1)
         Target.click()
-        return True   
-        
+        return True
+
 class Google_auth(Manage_Selenium):
     def __init__ (self):
         self.ItSelf = "Google_Auth"
@@ -179,7 +179,7 @@ class Google_auth(Manage_Selenium):
     def Except_CredentialInvalid (self, credential):
         logger(instance=credential, data='Reported fail')
         credential.report_fail()
-        
+
 
     #W -- > Denote methos in mode Watcher with (MWatcher)
     def W_do_login(self, credential):
@@ -188,11 +188,11 @@ class Google_auth(Manage_Selenium):
         print ("! LoginStep_ghost: " + str(self.LoginStep_ghost))
         print ("! URL Actually: " + self.driver.current_url)
 
-        if (self.LoginStep == 1) : 
+        if (self.LoginStep == 1) :
             if (self.CheckField_Exist_by_xpath(self.Target_User_field_by_xpath) == True and self.LoginStep == 1):
-                print ("# User field detected ")  #OK            
+                print ("# User field detected ")  #OK
                 if (self.FillField_by_xpath(credential.email, self.Target_User_field_by_xpath, True) == True):
-                    print ("# Success to FillField: User also with Enter")  #OK  
+                    print ("# Success to FillField: User also with Enter")  #OK
                     self.LoginStep_ghost = 11
 
                 if (self.LoginStep_ghost == 11):
@@ -205,13 +205,13 @@ class Google_auth(Manage_Selenium):
                     else :
                         self.LoginStep = 2
                         print ("#Prepared to go to Step #2")
-  
-        if (self.LoginStep == 2) : 
+
+        if (self.LoginStep == 2) :
             if (self.CheckField_Exist_by_xpath(self.Target_Password_field_by_xpath) == True):
-                print ("# Password field detected ")  #OK            
+                print ("# Password field detected ")  #OK
                 if (self.FillField_by_xpath(credential.password, self.Target_Password_field_by_xpath, True) == True):
                     self.LoginStep_ghost = 21
-                    print ("# Success to FillField: Password also with Enter")  #OK  
+                    print ("# Success to FillField: Password also with Enter")  #OK
 
                 if (self.LoginStep_ghost == 21) :
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Password_message_by_xpath, Step2_Target_PTXT_Error_Password) == True) :
@@ -228,7 +228,7 @@ class Google_auth(Manage_Selenium):
             print ("! Login successfull without verification")
             self.SucessLogin = 1
             TWatch.ListThreads['controller_login'].cancel()
-        if (self.LoginStep == 3) :  
+        if (self.LoginStep == 3) :
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Text_Verify_are_you_by_xpath, Step3_Target_PTXT_Verify_are_you_GAUTH) == True):
                 print ("! Detectamos: Are you? body:Header") #OK
 
@@ -238,13 +238,13 @@ class Google_auth(Manage_Selenium):
                     self.LoginStep_ghost = 31
                 else :
                     self.LoginStep_ghost = 31
-                if (self.LoginStep_ghost == 31): 
+                if (self.LoginStep_ghost == 31):
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_message_email_recovery_by_xpath, Step3_Target_PTXT_Confirm_your_email) == True and self.LoginStep_ghost == 31 ) :
                         self.LoginStep_ghost = 32
                         print ("! Stage to fillfield recovery_email")
                 if (self.LoginStep_ghost == 32) :
                     if (self.FillField_by_xpath(credential.recovery_email, self.Target_Email_Confirm_field_by_xpath, True) == True):
-                        print ("# Success to FillField: Recovery Email also with Enter") 
+                        print ("# Success to FillField: Recovery Email also with Enter")
                         self.LoginStep_ghost = 33
             if (self.LoginStep_ghost == 33) :
                 if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Recovery_email_by_xpath, Step3_Target_PTXT_Error_Email_Recovery) == True):
@@ -258,8 +258,8 @@ class Google_auth(Manage_Selenium):
                     if(self.driver.current_url.find('https://myaccount.google.com') != -1):
                         print ("! Login successfull.. ")
                         self.SucessLogin = 1
-                        TWatch.ListThreads['controller_login'].cancel()     
-                    else: 
+                        TWatch.ListThreads['controller_login'].cancel()
+                    else:
                         print ("! Myaccount page not loaded yet ! ")
 
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Step3_asking_captcha, Step3_Target_PTXT_Write_that_you_hear_or_see) == True):
@@ -471,14 +471,14 @@ class Renamer(): #Master for robot
         return self.__class__.__name__
 
     def is_Driver_GAuth_loaded(self):
-        if OGAuth is not None: 
+        if OGAuth is not None:
             return True
-        else :    
+        else :
             logger(instance_itself=self.NameClass_itSelf(), data=OGAuth_not_loaded)
-            print (self.__nameApp + OGAuth_not_loaded)            
+            print (self.__nameApp + OGAuth_not_loaded)
             self.CloseApp()
             return False
-            
+
     def is_empty_credentials (self) :
         if len(self.credential_list) == 0 :
             logger(instance_itself=self.NameClass_itSelf(), data=Credentials_problem_0001)
@@ -499,35 +499,35 @@ class Renamer(): #Master for robot
             credential.email
         except AttributeError:
             logger(instance_itself=self.NameClass_itSelf(), data=Object_Credential_novalid + ": email")
-            print (Object_Credential_novalid + ": email")                
+            print (Object_Credential_novalid + ": email")
         try:
             credential.recovery_email
         except AttributeError:
             logger(instance_itself=self.NameClass_itSelf(), data=Object_Credential_novalid + ": recovery_mail")
-            print (Object_Credential_novalid + ": recovery_email")                
+            print (Object_Credential_novalid + ": recovery_email")
         try:
             credential.password
         except AttributeError:
             logger(instance_itself=self.NameClass_itSelf(), data=Object_Credential_novalid + ": password")
-            print (Object_Credential_novalid + ": password")                
+            print (Object_Credential_novalid + ": password")
 
         if (self.is_valid_email(credential.email) == False) :
             logger(instance_itself=self.NameClass_itSelf(), data=self.credential.email + " " + Email_wasnot_valid)
-            print (self.credential.email + Email_wasnot_valid)                
+            print (self.credential.email + Email_wasnot_valid)
             # THERE THIS LINE WE CAN ADD EXTRA VERIFICATION
-            return False     
+            return False
         if (self.is_valid_email(credential.recovery_email) == False) :
             logger(instance_itself=self.NameClass_itSelf(), data=self.credential.email + " " + Email_wasnot_valid)
-            print (self.credential.email + Email_wasnot_valid)                
+            print (self.credential.email + Email_wasnot_valid)
             # THERE THIS LINE WE CAN ADD EXTRA VERIFICATION
-            return False     
+            return False
         if (len(credential.password)  < 6):
             logger(instance_itself=self.NameClass_itSelf(), data="For mail: " + self.credential.email + " " + Passwword_no_valid)
-            print ("For mail: " + self.credential.email + " " + Passwword_no_valid  )                            
+            print ("For mail: " + self.credential.email + " " + Passwword_no_valid  )
             return False
         return True
 
-    def CloseApp(self) : 
+    def CloseApp(self) :
         logger(instance_itself=self.NameClass_itSelf(), data= self.__nameApp + Application_was_closed)
         print (Application_was_closed)
         sys.exit()
@@ -555,8 +555,8 @@ class Renamer(): #Master for robot
             if (self.is_Driver_GAuth_loaded() == True) :
                 OGAuth.RunDriver()
             try:
-                print ("# Email: " + credential.email)
-                Controller_Login = MWatcher(0.5, 'OGAuth', 'W_do_login' , credential, True)
+                print ("# Email: " + biz.email)
+                Controller_Login = MWatcher(0.5, 'OGAuth', 'W_do_login' , biz, True)
             except CredentialInvalid:
                 continue     
             if (OGAuth.SucessLogin == 1) :
