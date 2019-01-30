@@ -35,7 +35,7 @@ class Business(BaseEntity):
 
     def report_validation(self):
         return self.service.request(
-            'post', pk=self.pk, extra='set-validated'
+            'post', pk=self.pk, extra='set-validated', in_raw=True
         )
 
     def report_success(self):
