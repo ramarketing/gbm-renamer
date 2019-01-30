@@ -106,7 +106,7 @@ class Manage_Selenium :
             time.sleep(1)
             target.get_attribute('outerHTML')
         except NoSuchElementException:
-            return False   
+            return False
         target = target.get_attribute('outerHTML')
         if (string in target) :
             return True
@@ -285,7 +285,7 @@ class Matrix ():
         else :
             Result = json.loads(r.json())
             if (Result.code == 404) :
-                print ('! - MATRIX :: API :: El número el cual estás buscando el SMS no está en matrix') 
+                print ('! - MATRIX :: API :: El número el cual estás buscando el SMS no está en matrix')
                 return False
             elif (Result.code == 403) :
                 print ('! - MATRIX :: API :: El número no está contectado con Matrix ')
@@ -297,23 +297,23 @@ class Matrix ():
                 return result.content
 '''
 
-class GBusiness (Manage_Selenium):  
+class GBusiness (Manage_Selenium):
     #Go{name_part_of_site} - Go to a part of Google Business
     #DetectDialog{ID} - What Dialog?
     def __init__ (self):
 
-        self.MainPage = "https://business.google.com/"      
+        self.MainPage = "https://business.google.com/"
         self.Url_List_of_business = 'https://business.google.com/locations'
 
         # Control of flow Verify_an_business_step {MWatcher}
         self.W_Verify_an_business_step = 0
         self.W_Verify_an_business_Match = False
 
-        #Handlers_XPath para (W_Verify_an_business) - BEGIN     
+        #Handlers_XPath para (W_Verify_an_business) - BEGIN
         self.W_Verify_an_business_Target_TBody_Locations = '//*[@id="main_viewpane"]/c-wiz[1]/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody'
 
         self.W_Verify_an_business_Target_Text_to_sendVerify_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[2]/button[2]'
-        #Handlers_XPath para (W_Verify_an_business) - END 
+        #Handlers_XPath para (W_Verify_an_business) - END
 
         self.W_Verify_an_business_Target_Text_Box_Enter6Digit = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p'
 
@@ -327,7 +327,7 @@ class GBusiness (Manage_Selenium):
         self.driver = driver
         return True
 
-    def GoMainPage (self): 
+    def GoMainPage (self):
         print ("! - GBusiness-> Redirecting to: " +  self.MainPage)
         self.driver.get(self.MainPage)
 
@@ -337,14 +337,14 @@ class GBusiness (Manage_Selenium):
         return True
 
     def GettingElement_by_xpath(self, xpath):
-        try: 
+        try:
             Value_of_return = self.driver.find_element_by_xpath(xpath)
         except NoSuchElementException:
             return False
         return Value_of_return
 
     def GettingElements_by_tag_name_with_target (self, target, tagname):
-        try: 
+        try:
             Value_of_return = target.find_elements_by_tag_name(tagname)
         except NoSuchElementException:
             return False
@@ -356,10 +356,10 @@ class GBusiness (Manage_Selenium):
 
         print ("W_Verify_an_business_step -> MWatcher Running")
         print ("W_Verify_an_business_step: " + str(self.W_Verify_an_business_step))
-        
+
         time.sleep(1)
 
-        # Verify_an_business_step: 
+        # Verify_an_business_step:
         # Codigos:
         # 1 - Lista de negocios
         # 11 - Pedimos lista de negocios con https://business.google.com/locations
@@ -377,7 +377,7 @@ class GBusiness (Manage_Selenium):
         if (self.W_Verify_an_business_step == 0) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
             if (self.GoLocationsPage() == True):
-               self.W_Verify_an_business_step = 1 
+               self.W_Verify_an_business_step = 1
         # 1 - Lista de negocios - END
 
 
@@ -385,10 +385,10 @@ class GBusiness (Manage_Selenium):
         if (self.W_Verify_an_business_step == 1) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
 
-            if (self.W_Verify_an_business_Match == False) : 
+            if (self.W_Verify_an_business_Match == False) :
                 self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations)
 
-                if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) : 
+                if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
                     Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
 
                     for Item in Rows_Table:
@@ -403,7 +403,7 @@ class GBusiness (Manage_Selenium):
                             break
                         else:
                             print ("! - No existe la empresa")
-            else: 
+            else:
                 self.W_Verify_an_business_Match_Columns[4].click()
                 print ("! - Hicimos click en verify now.")
                 time.sleep(1)
@@ -414,7 +414,7 @@ class GBusiness (Manage_Selenium):
         if (self.W_Verify_an_business_step == 2) :
             print ("! - Estamos en chosse a way (Verify now.")
             TextButton = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_Text_to_sendVerify_xpath)
-            
+
             if (TextButton != False):
                 print ("! - Hicimos click en Text button.")
                 TextButton.click()
@@ -428,7 +428,7 @@ class GBusiness (Manage_Selenium):
 
         if (self.W_Verify_an_business_step == 21) :
             print ("! - Consultando a la Matrix sobre el codigo")
-            
+
             GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber).text
             GB_phoneNumber = GB_phoneNumber.replace('(', '').replace(')', '').replace('-', '').strip()
 
@@ -445,7 +445,7 @@ class GBusiness (Manage_Selenium):
                 phone_number=GB_phoneNumber
                 )
                 status_code = response.status_code
-                code = reponse.json()['msg']
+                code = response.json()['msg']
                 if (response.status_code not in (200, 204)):
                 # No exite o no está conectado a Matrix
                 # NO HAY COMO RECIBIR EL SMS
@@ -464,7 +464,7 @@ class GBusiness (Manage_Selenium):
 
 
 
-        # 11 - Lista de negocios - END        
+        # 11 - Lista de negocios - END
 
 class Renamer(): #Master for robot
     service_biz = BusinessService()
@@ -547,7 +547,7 @@ class Renamer(): #Master for robot
         for credential in self.credential_list:
             OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
             counter = counter + 1
-            if (counter < 4): 
+            if (counter < 4):
                 continue
             print("# Cuenta ID: " + str(counter))
             print(credential.name, credential.email , credential.password, credential.recovery_email)
@@ -564,7 +564,7 @@ class Renamer(): #Master for robot
                 print ("# Email: " + credential.email)
                 Controller_Login = MWatcher(0.5, 'OGAuth', 'W_do_login' , credential, True)
             except CredentialInvalid:
-                continue     
+                continue
             if (OGAuth.SucessLogin == 1) :
                 print ("Setting up driver for Google Bussiness")
                 GBusiness_handle.setDriver(OGAuth.driver)
