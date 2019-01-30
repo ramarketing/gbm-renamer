@@ -297,7 +297,6 @@ class Matrix ():
                 return result.content
 '''
 
-Email_wasnot_valid
 class GBusiness (Manage_Selenium):  
     #Go{name_part_of_site} - Go to a part of Google Business
     #DetectDialog{ID} - What Dialog?
@@ -555,8 +554,8 @@ class Renamer(): #Master for robot
             if (self.is_Driver_GAuth_loaded() == True) :
                 OGAuth.RunDriver()
             try:
-                print ("# Email: " + biz.email)
-                Controller_Login = MWatcher(0.5, 'OGAuth', 'W_do_login' , biz, True)
+                print ("# Email: " + credential.email)
+                Controller_Login = MWatcher(0.5, 'OGAuth', 'W_do_login' , credential, True)
             except CredentialInvalid:
                 continue     
             if (OGAuth.SucessLogin == 1) :
@@ -565,7 +564,6 @@ class Renamer(): #Master for robot
                 print ("Sleeping 1s")
                 time.sleep(1)
                 VerifyBusiness = MWatcher(0.5, 'GBusiness_handle', 'W_Verify_an_business' , credential, True)
-
 
 
 
