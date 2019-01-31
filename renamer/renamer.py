@@ -406,12 +406,13 @@ class GBusiness (Manage_Selenium):
                 phone_number=GB_phoneNumber
                 )
                 status_code = response.status_code
-                code = response.json()['msg']
+                response_json = response.json()
+                if 'msg' in response_json:
+                    code = response_json['msg']
+
                 if (response.status_code not in (200, 204)):
-                # No exite o no está conectado a Matrix
-                # NO HAY COMO RECIBIR EL SMS
-                    print('! -Imposible porque', response['msg'])
-                    credential.report_fail()
+                    print('! -Imposible porque', response_json['phone_number'])
+                    # credential.report_fail() # Do not report as fail here, YET.
                     TWatch.ListThreads['W_Verify_an_business'].cancel()
                     break
             if (self.FillField_by_xpath(str(code), self.W_Verify_an_business_Target_EnterVerifyCode_xpath, True) == True):
