@@ -74,6 +74,8 @@ class MWatcher :
                 eval(self.Object + '.' + self.Function + '(' + 'self.Data' +')')
                 #eval('OGAuth.W_do_login(self.Data)')
     def cancel(self) :
+        print ("! - Solicitando la cancelacion del Hilo")
+        self.thread.terminate()
         self.stopEvent.set()
 
 class Manage_Selenium :
@@ -184,6 +186,10 @@ class Google_auth(Manage_Selenium):
 
     #W -- > Denote methos in mode Watcher with (MWatcher)
     def W_do_login(self, credential):
+
+        #TWatch.ListThreads['controller_login'].cancel()
+
+
         print ("! Executing MWatcher GAuth:W_do_login !")
         print ("! LoginStep: " + str(self.LoginStep))
         print ("! LoginStep_ghost: " + str(self.LoginStep_ghost))
@@ -300,15 +306,23 @@ class GBusiness (Manage_Selenium):
 
         self.W_Verify_an_business_Target_PhoneNumber = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p/strong'
 
+        self.W_Verify_an_business_Target_Button_Verify_Now = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[3]/button'
+
+        #Control Validations
+        self.BusinessValidation = 0
+
+
     def setDriver (self, driver):
         self.driver = driver
         return True
 
     def GoMainPage (self):
+        time.sleep(1)
         print ("! - GBusiness-> Redirecting to: " +  self.MainPage)
         self.driver.get(self.MainPage)
 
     def GoLocationsPage(self):
+        time.sleep(1)
         print ("! - GBusiness-> Redirecting to: " +  self.Url_List_of_business)
         self.driver.get(self.Url_List_of_business)
         return True
@@ -348,6 +362,8 @@ class GBusiness (Manage_Selenium):
         # 21 - Detectamos el Enter code
         # 22 - Ingresando codigo
         # 23 - Espera y clic en Verify now.
+        # 24 - Verificado ya el business
+
 
         # 1 - Lista de negocios - BEGIN
         if (self.W_Verify_an_business_step == 0) :
@@ -373,7 +389,7 @@ class GBusiness (Manage_Selenium):
                             self.W_Verify_an_business_Match = True
                             break
                         else:
-                            print ("! - No existe la empresa")
+                            print ("! - No match con la empresa")
             else:
                 self.W_Verify_an_business_Match_Columns[4].click()
                 print ("! - Hicimos click en verify now.")
@@ -412,7 +428,7 @@ class GBusiness (Manage_Selenium):
                         code = int(response_json['msg'])
                         print ("El code es: {}".format(code))
                     except ValueError:
-                        print("Mensaje: " + reponse['msg'])
+                        print("Mensaje: " + response_json['msg'])
 
                 if response.status_code != 200:
                     print('! -Imposible porque', response_json['phone_number'])
@@ -421,10 +437,19 @@ class GBusiness (Manage_Selenium):
                     break
 
             if (self.FillField_by_xpath(str(code), self.W_Verify_an_business_Target_EnterVerifyCode_xpath, True) == True):
-                    self.W_Verify_an_business_step == 23
+                    print ('! - Ha sido rellenado el campo de verificacion')
+                    self.W_Verify_an_business_step = 23
 
         if (self.W_Verify_an_business_step == 23) :
-            ButtonText = self.GettingElement_by_xpath()
+            if (self.Click_by_xpath(self.W_Verify_an_business_Target_Button_Verify_Now) == True) :
+                self.W_Verify_an_business_step = 24
+
+
+        if (self.W_Verify_an_business_step == 24):
+            print ("Pantalla de ya se ha verificado el business")
+            credential.report_validation()
+            GBusiness_handle.BusinessValidation = 1
+            TWatch.ListThreads['W_Verify_an_business'].cancel()
 
 
 
@@ -517,6 +542,7 @@ class Renamer(): #Master for robot
                 continue
 
             OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
+            GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
 
             print(credential.name, credential.email, credential.password, credential.recovery_email)
 
@@ -540,6 +566,16 @@ class Renamer(): #Master for robot
                 print ("Sleeping 1s")
                 time.sleep(1)
                 VerifyBusiness = MWatcher(0.5, 'GBusiness_handle', 'W_Verify_an_business' , credential, True)
+            if (GBusiness_handle.BusinessValidation == 1):
+                print ("Let call: MainPage() Business")
+                GBusiness_handle.GoMainPage()
+                GBusiness_handle.driver.quit()
+                time.sleep(4) #Aqui el continua el resto de lo renamer.
+
+            else:
+                continue
+
+
 
         self.Finished_app()
 
