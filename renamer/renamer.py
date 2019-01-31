@@ -431,7 +431,7 @@ class GBusiness (Manage_Selenium):
                         print("Mensaje: " + response_json['msg'])
 
                 if response.status_code != 200:
-                    if response['phone_number'] == '000000':
+                    if response_json['phone_number'] == '000000':
                         print('! -El teléfono acaba de ser comprado. Reenviando mensaje de texto.')
                         # CLIC EN TEXT AGAIN
                     else:
