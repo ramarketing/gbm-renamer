@@ -404,24 +404,22 @@ class GBusiness (Manage_Selenium):
                 time.sleep(1)
                 print ("! - Doing response to Matrix")
                 response = credential.get_validation_code(
-                phone_number=GB_phoneNumber
+                    phone_number=GB_phoneNumber
                 )
-                try:
-                    response_json = response.json()
-                    if 'msg' in response_json and isInstance(response_json, dict):
-                        code = response_json['msg']
-                        print ("El code es: " + str(code))
-                except :
-                    print ("Existe excepcion en Matrix")
-                    print (response.content)
+                response_json = response.json()
+                if 'msg' in response_json:
+                    try:
+                        code = int(response_json['msg'])
+                        print ("El code es: " + code)
+                    except ValueError:
+                        print("Mensaje: " + reponse['msg'])
 
-
-                if (response.status_code not in (200, 206)):
+                if response.status_code != 200:
                     print('! -Imposible porque', response_json['phone_number'])
                     # credential.report_fail() # Do not report as fail here, YET.
                     TWatch.ListThreads['W_Verify_an_business'].cancel()
                     break
-            
+
             if (self.FillField_by_xpath(str(code), self.W_Verify_an_business_Target_EnterVerifyCode_xpath, True) == True):
                     self.W_Verify_an_business_step == 23
 
