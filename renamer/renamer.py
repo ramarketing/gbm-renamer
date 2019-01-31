@@ -410,7 +410,7 @@ class GBusiness (Manage_Selenium):
                 if 'msg' in response_json:
                     try:
                         code = int(response_json['msg'])
-                        print ("El code es: " + code)
+                        print ("El code es: {}".format(code))
                     except ValueError:
                         print("Mensaje: " + reponse['msg'])
 
