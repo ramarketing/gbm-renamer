@@ -431,10 +431,14 @@ class GBusiness (Manage_Selenium):
                         print("Mensaje: " + response_json['msg'])
 
                 if response.status_code != 200:
-                    print('! -Imposible porque', response_json['phone_number'])
-                    # credential.report_fail() # Do not report as fail here, YET.
-                    TWatch.ListThreads['W_Verify_an_business'].cancel()
-                    break
+                    if response['phone_number'] == '000000':
+                        print('! -El teléfono acaba de ser comprado. Reenviando mensaje de texto.')
+                        # CLIC EN TEXT AGAIN
+                    else:
+                        print('! -Imposible porque', response_json['phone_number'])
+                        # credential.report_fail() # Do not report as fail here, YET.
+                        TWatch.ListThreads['W_Verify_an_business'].cancel()
+                        break
 
             if (self.FillField_by_xpath(str(code), self.W_Verify_an_business_Target_EnterVerifyCode_xpath, True) == True):
                     print ('! - Ha sido rellenado el campo de verificacion')
