@@ -176,6 +176,7 @@ class Google_auth(Manage_Selenium):
         self.LoginStep_ghost = 1
         self.StepError = 0
 
+
     def Except_CredentialInvalid (self, credential):
         logger(instance=credential, data='Reported fail')
         credential.report_fail()
@@ -199,7 +200,7 @@ class Google_auth(Manage_Selenium):
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_User_field_by_xpath, Step1_Target_PTXT_Error_Email) == True) :
                         logger(instance_itself=self.NameClass_itSelf(), data=Email_wasnot_valid)
                         print (Email_wasnot_valid)
-                        #self.Except_CredentialInvalid(credential)
+                        self.Except_CredentialInvalid(credential)
                         self.driver.quit()
                         TWatch.ListThreads['controller_login'].cancel()
                     else :
@@ -217,7 +218,7 @@ class Google_auth(Manage_Selenium):
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Password_message_by_xpath, Step2_Target_PTXT_Error_Password) == True) :
                         logger(instance_itself=self.NameClass_itSelf(), data=Passwword_no_valid)
                         print (Passwword_no_valid)
-                        #self.Except_CredentialInvalid(credential)
+                        self.Except_CredentialInvalid(credential)
                         self.driver.quit()
                         TWatch.ListThreads['controller_login'].cancel()
                     else :
@@ -250,7 +251,7 @@ class Google_auth(Manage_Selenium):
                 if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Recovery_email_by_xpath, Step3_Target_PTXT_Error_Email_Recovery) == True):
                     logger(instance_itself=self.NameClass_itSelf(), data=Acc_invalid_email_recovery)
                     print (Acc_invalid_email_recovery)
-                    #self.Except_CredentialInvalid(credential)
+                    self.Except_CredentialInvalid(credential)
                     self.driver.quit()
                     TWatch.ListThreads['controller_login'].cancel()
                 else:
@@ -264,38 +265,16 @@ class Google_auth(Manage_Selenium):
 
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Step3_asking_captcha, Step3_Target_PTXT_Write_that_you_hear_or_see) == True):
                 print ("! Acccount was exploited, Right now are asking for captcha. No procedd")
+                self.Except_CredentialInvalid(credential)
                 self.driver.quit()
                 TWatch.ListThreads['controller_login'].cancel()
 
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Step3_ConfirmField_changing_password, Step3_Target_PTXT_Step3_Confirmation_password_Field) == True):
                 print ("! Acccount was exploited, Right now are asking for change of password. No procedd")
+                self.Except_CredentialInvalid(credential)
                 self.driver.quit()
                 TWatch.ListThreads['controller_login'].cancel()
-'''
-class Matrix ():
-    def __init__(self):
-        self.MatrixServerURL = "https://matrixcore.io/"
 
-    def GetMessageText(self, PhoneNumber):
-        FullUrlResponse = self.MatrixServerURL + 'api/renamer/businesses/verify/?number=' + str(PhoneNumber)
-        r = requests.get(FullUrlResponse)
-        if (r.status_code == 404) :
-            print ('! - MATRIX :: API :: 404')
-            return False
-        else :
-            Result = json.loads(r.json())
-            if (Result.code == 404) :
-                print ('! - MATRIX :: API :: El número el cual estás buscando el SMS no está en matrix')
-                return False
-            elif (Result.code == 403) :
-                print ('! - MATRIX :: API :: El número no está contectado con Matrix ')
-                return False
-            elif (Result.code == 204) :
-                print (' ! - MATRIX :: API :: El número está conectado con Matrix pero aun no hay SMS')
-                return False
-            elif (Result.code == 200) :
-                return result.content
-'''
 
 class GBusiness (Manage_Selenium):
     #Go{name_part_of_site} - Go to a part of Google Business
@@ -320,8 +299,6 @@ class GBusiness (Manage_Selenium):
         self.W_Verify_an_business_Target_EnterVerifyCode_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[2]/div[1]/div/div[1]/input'
 
         self.W_Verify_an_business_Target_PhoneNumber = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p/strong'
-
-
 
     def setDriver (self, driver):
         self.driver = driver
@@ -351,7 +328,6 @@ class GBusiness (Manage_Selenium):
         return Value_of_return
 
 
-
     def W_Verify_an_business(self, credential):
 
         print ("W_Verify_an_business_step -> MWatcher Running")
@@ -371,7 +347,7 @@ class GBusiness (Manage_Selenium):
         # 22 - Hacemos clic, Loop con Matrix (120 timeout)
         # 21 - Detectamos el Enter code
         # 22 - Ingresando codigo
-        # 23 - Presionando clic en Verify now.
+        # 23 - Espera y clic en Verify now.
 
         # 1 - Lista de negocios - BEGIN
         if (self.W_Verify_an_business_step == 0) :
@@ -380,20 +356,15 @@ class GBusiness (Manage_Selenium):
                self.W_Verify_an_business_step = 1
         # 1 - Lista de negocios - END
 
-
         # 11 - Lista de negocios - BEGIN
         if (self.W_Verify_an_business_step == 1) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
-
             if (self.W_Verify_an_business_Match == False) :
                 self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations)
-
                 if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
                     Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
-
                     for Item in Rows_Table:
                         Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
-
                         if(self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) :
                             print ("! - La empresa es: " + credential.name)
                             print ("! - Salida del HTML: " + Columns[2].get_attribute('outerHTML'))
@@ -408,36 +379,26 @@ class GBusiness (Manage_Selenium):
                 print ("! - Hicimos click en verify now.")
                 time.sleep(1)
                 self.W_Verify_an_business_step = 2
-
                 #self.W_Verify_an_business_step = 2
 
         if (self.W_Verify_an_business_step == 2) :
             print ("! - Estamos en chosse a way (Verify now.")
             TextButton = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_Text_to_sendVerify_xpath)
-
             if (TextButton != False):
                 print ("! - Hicimos click en Text button.")
                 TextButton.click()
                 self.W_Verify_an_business_step = 21
-
             Box_Enter6Digit = self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_Text_Box_Enter6Digit, Step_Enter6Digits_Text_fromVerifynow_bussiness)
-
             if (Box_Enter6Digit == True ):
                 self.W_Verify_an_business_step = 21
 
-
         if (self.W_Verify_an_business_step == 21) :
             print ("! - Consultando a la Matrix sobre el codigo")
-
             GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber).text
             GB_phoneNumber = GB_phoneNumber.replace('(', '').replace(')', '').replace('-', '').strip()
-
             GB_phoneNumber = '+1{}'.format(GB_phoneNumber)
             GB_phoneNumber = GB_phoneNumber.replace(' ', '')
-
             print ("Numero de telefono :" + GB_phoneNumber)
-
-
             status_code = 204
             while(status_code == 204):
                 time.sleep(10)
@@ -453,14 +414,11 @@ class GBusiness (Manage_Selenium):
                     credential.report_fail()
                     TWatch.ListThreads['W_Verify_an_business'].cancel()
                     break
-
             if (self.FillField_by_xpath(str(code), self.W_Verify_an_business_Target_EnterVerifyCode_xpath, True) == True):
                     self.W_Verify_an_business_step == 23
-                    print ("! - Rellenamos el codigo de verificacion con un enter.")
-
 
         if (self.W_Verify_an_business_step == 23) :
-            print ('Ya hemos enviado el codigo de verificacion.')
+            ButtonText = self.GettingElement_by_xpath()
 
 
 
@@ -542,14 +500,16 @@ class Renamer(): #Master for robot
         from services import BusinessService
         business_service = BusinessService()
         business_list = business_service.get_list()
-        self.credential_list = business_list
+
         counter = 0
+        self.credential_list = business_list
         for credential in self.credential_list:
+
+            #counter = counter + 1
+            #if (counter == 1) :
+            #    credential.report_fail()
+
             OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
-            counter = counter + 1
-            if (counter < 4):
-                continue
-            print("# Cuenta ID: " + str(counter))
             print(credential.name, credential.email , credential.password, credential.recovery_email)
             if (self.verification_of_credential(credential) == False) :
                 logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
