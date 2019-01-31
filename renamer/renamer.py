@@ -399,22 +399,29 @@ class GBusiness (Manage_Selenium):
             GB_phoneNumber = '+1{}'.format(GB_phoneNumber)
             GB_phoneNumber = GB_phoneNumber.replace(' ', '')
             print ("Numero de telefono :" + GB_phoneNumber)
-            status_code = 204
-            while(status_code == 204):
-                time.sleep(10)
+            code = None
+            while(code == None):
+                time.sleep(1)
+                print ("! - Doing response to Matrix")
                 response = credential.get_validation_code(
                 phone_number=GB_phoneNumber
                 )
-                status_code = response.status_code
-                response_json = response.json()
-                if 'msg' in response_json:
-                    code = response_json['msg']
+                try:
+                    response_json = response.json()
+                    if 'msg' in response_json and isInstance(response_json, dict):
+                        code = response_json['msg']
+                        print ("El code es: " + str(code))
+                except :
+                    print ("Existe excepcion en Matrix")
+                    print (response.content)
 
-                if (response.status_code not in (200, 204)):
+
+                if (response.status_code not in (200, 206)):
                     print('! -Imposible porque', response_json['phone_number'])
                     # credential.report_fail() # Do not report as fail here, YET.
                     TWatch.ListThreads['W_Verify_an_business'].cancel()
                     break
+            
             if (self.FillField_by_xpath(str(code), self.W_Verify_an_business_Target_EnterVerifyCode_xpath, True) == True):
                     self.W_Verify_an_business_step == 23
 
@@ -506,12 +513,15 @@ class Renamer(): #Master for robot
         self.credential_list = business_list
         for credential in self.credential_list:
 
-            #counter = counter + 1
-            #if (counter == 1) :
-            #    credential.report_fail()
+
+            counter = counter + 1
+            if (counter == 1) :
+                continue
 
             OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
-            print(credential.name, credential.email , credential.password, credential.recovery_email)
+
+            print(credential.name, credential.email, credential.password, credential.recovery_email)
+
             if (self.verification_of_credential(credential) == False) :
                 logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
                 print (Skiping_to_next_credential)
