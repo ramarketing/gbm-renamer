@@ -372,6 +372,7 @@ class GBusiness (Manage_Selenium):
         # 1 - Lista de negocios - BEGIN
         if (self.W_Verify_an_business_step == 0) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
+            print ("! - Redirigiendo a la lista de negocios de Google Business")
             if (self.GoLocationsPage() == True):
                self.W_Verify_an_business_step = 1
         # 1 - Lista de negocios - END
@@ -409,7 +410,7 @@ class GBusiness (Manage_Selenium):
                             if (Counter_Interactios_rows_table == Qty_Rows):
                                 print ("!- No hay match con la empresa que estamos buscando.")
                                 # AQUI CREDENTIAL.NoMatchsBussiness ...
-
+                                W_Verify_an_business_Match
                                 TWatch.ListThreads['VerifyBusiness'].cancel()
                                 break
             else:
@@ -576,6 +577,7 @@ class Renamer(): #Master for robot
 
             OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
             GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
+            GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
 
             print(credential.name, credential.email, credential.password, credential.recovery_email)
 
