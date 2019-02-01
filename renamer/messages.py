@@ -22,3 +22,12 @@ Step3_Target_PTXT_Write_that_you_hear_or_see = 'Escribe el texto que escuches o'
 Step3_Target_PTXT_Step3_Confirmation_password_Field = 'Confirmaci'
 
 Step_Enter6Digits_Text_fromVerifynow_bussiness = 'Enter the 6-digit verification code from the text message'
+
+
+Status_colum_location_business_Verification_required = "Verification required"
+
+
+#TWatch
+TWatch_Cancel = "Fue cancelado/terminado el proceso de: "
+TWatch_VerifyBusiness = "Verificacion de un business."
+TWache_GAuth_login = "Sistema de Login para Google"

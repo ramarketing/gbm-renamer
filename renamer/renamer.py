@@ -54,16 +54,17 @@ class ThreadsWatch:
         pass
 
 class MWatcher :
-    def __init__(self,interval,object_name=False, function_name=False, data_to_load=False, block=False) :
+    def __init__(self,interval, VarInit, object_name=False, function_name=False, pretty_name_process=None, data_to_load=False, block=False) :
         self.interval=interval
         self.stopEvent=threading.Event()
         self.Object = object_name
         self.Function = function_name
+        self.pretty_name_process = pretty_name_process
         self.Data = data_to_load
         self.thread=threading.Thread(target=self.__MWatcher)
         self.thread.start()
 
-        TWatch.addThread(self, 'controller_login')
+        TWatch.addThread(self, VarInit)
         if (block == True):
             self.thread.join()
 
@@ -75,7 +76,7 @@ class MWatcher :
                 eval(self.Object + '.' + self.Function + '(' + 'self.Data' +')')
                 #eval('OGAuth.W_do_login(self.Data)')
     def cancel(self) :
-        print ("! - Solicitando la cancelacion del Hilo")
+        print (TWatch_Cancel + self.pretty_name_process)
         self.stopEvent.set()
 
 class Manage_Selenium :
@@ -400,7 +401,7 @@ class GBusiness (Manage_Selenium):
                             else :
                                 credential.report_validation()
                                 GBusiness_handle.BusinessValidation = 1
-                                TWatch.ListThreads['W_Verify_an_business'].cancel()
+                                TWatch.ListThreads['VerifyBusiness'].cancel()
                                 print ("! -No es necesario la verificacion.  La empresa se encuentra verificada. ")
                         else:
                             print ("! - No match con la empresa")
@@ -408,7 +409,8 @@ class GBusiness (Manage_Selenium):
                             if (Counter_Interactios_rows_table == Qty_Rows):
                                 print ("!- No hay match con la empresa que estamos buscando.")
                                 # AQUI CREDENTIAL.NoMatchsBussiness ...
-                                TWatch.ListThreads['W_Verify_an_business'].cancel()
+
+                                TWatch.ListThreads['VerifyBusiness'].cancel()
                                 break
             else:
                 self.W_Verify_an_business_Match_Columns[4].click()
@@ -464,7 +466,7 @@ class GBusiness (Manage_Selenium):
                     else:
                         print('! -Imposible porque', response_json['phone_number'])
                         # credential.report_fail() # Do not report as fail here, YET.
-                        TWatch.ListThreads['W_Verify_an_business'].cancel()
+                        TWatch.ListThreads['VerifyBusiness'].cancel()
                         break
 
             if (self.FillField_by_xpath(str(code), self.W_Verify_an_business_Target_EnterVerifyCode_xpath, True) == True):
@@ -480,7 +482,7 @@ class GBusiness (Manage_Selenium):
             print ("Pantalla de ya se ha verificado el business")
             credential.report_validation()
             GBusiness_handle.BusinessValidation = 1
-            TWatch.ListThreads['W_Verify_an_business'].cancel()
+            TWatch.ListThreads['VerifyBusiness'].cancel()
 
 
 
@@ -588,7 +590,7 @@ class Renamer(): #Master for robot
                 OGAuth.RunDriver()
             try:
                 print ("# Email: " + credential.email)
-                Controller_Login = MWatcher(0.5, 'OGAuth', 'W_do_login' , credential, True)
+                Controller_Login = MWatcher(0.5, 'controller_login' , 'OGAuth', 'W_do_login', TWache_GAuth_login, credential, True)
             except CredentialInvalid:
                 continue
             if (OGAuth.SucessLogin == 1) :
@@ -596,7 +598,7 @@ class Renamer(): #Master for robot
                 GBusiness_handle.setDriver(OGAuth.driver)
                 print ("Sleeping 1s")
                 time.sleep(1)
-                VerifyBusiness = MWatcher(0.5, 'GBusiness_handle', 'W_Verify_an_business' , credential, True)
+                VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , TWatch_VerifyBusiness, credential, True)
             if (GBusiness_handle.W_Verify_an_business_Match == False) :
                 print ("! - Skipping Business - No match found")
                 continue
