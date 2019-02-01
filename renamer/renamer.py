@@ -62,6 +62,7 @@ class MWatcher :
         self.Data = data_to_load
         self.thread=threading.Thread(target=self.__MWatcher)
         self.thread.start()
+
         TWatch.addThread(self, 'controller_login')
         if (block == True):
             self.thread.join()
@@ -75,7 +76,6 @@ class MWatcher :
                 #eval('OGAuth.W_do_login(self.Data)')
     def cancel(self) :
         print ("! - Solicitando la cancelacion del Hilo")
-        self.thread.terminate()
         self.stopEvent.set()
 
 class Manage_Selenium :
@@ -187,7 +187,7 @@ class Google_auth(Manage_Selenium):
     #W -- > Denote methos in mode Watcher with (MWatcher)
     def W_do_login(self, credential):
 
-        #TWatch.ListThreads['controller_login'].cancel()
+        TWatch.ListThreads['controller_login'].cancel()
 
 
         print ("! Executing MWatcher GAuth:W_do_login !")
@@ -308,6 +308,10 @@ class GBusiness (Manage_Selenium):
 
         self.W_Verify_an_business_Target_Button_Verify_Now = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[3]/button'
 
+        self.W_Verify_an_business_Target_TextAgain = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/div/div[1]/button/span'
+
+        self.W_Verify_an_business_Target_Cellphone_rin_rin = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div/div[3]/div/div/div'
+
         #Control Validations
         self.BusinessValidation = 0
 
@@ -379,7 +383,15 @@ class GBusiness (Manage_Selenium):
                 self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations)
                 if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
                     Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
+                    Qty_Rows = len(Rows_Table)
+                    Counter_Interactios_rows_table = 0
                     for Item in Rows_Table:
+                        Counter_Interactios_rows_table = Counter_Interactios_rows_table + 1
+                        if (Counter_Interactios_rows_table > Qty_Rows):
+                            print ("!- No hay match con la empresa que estamos buscando.")
+                            # AQUI CREDENTIAL.NoMatchsBussiness ...
+                            TWatch.ListThreads['W_Verify_an_business'].cancel()
+                            break
                         Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
                         if(self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) :
                             print ("! - La empresa es: " + credential.name)
@@ -409,12 +421,18 @@ class GBusiness (Manage_Selenium):
                 self.W_Verify_an_business_step = 21
 
         if (self.W_Verify_an_business_step == 21) :
+            
             print ("! - Consultando a la Matrix sobre el codigo")
             GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber).text
             GB_phoneNumber = GB_phoneNumber.replace('(', '').replace(')', '').replace('-', '').strip()
             GB_phoneNumber = '+1{}'.format(GB_phoneNumber)
             GB_phoneNumber = GB_phoneNumber.replace(' ', '')
             print ("Numero de telefono :" + GB_phoneNumber)
+            
+            if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain)  == True ) :
+                print ("TEXT AGAIN EXIST")
+
+
             code = None
             while(code == None):
                 time.sleep(1)
@@ -432,8 +450,9 @@ class GBusiness (Manage_Selenium):
 
                 if response.status_code != 200:
                     if response_json['phone_number'] == '000000':
-                        print('! -El teléfono acaba de ser comprado. Reenviando mensaje de texto.')
-                        # CLIC EN TEXT AGAIN
+                        print('! - El telfono acaba de ser comprado. Reenviando mensaje de texto. ')
+                        if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain)  == True ) :
+                                print ("TEXT AGAIN EXIST")
                     else:
                         print('! -Imposible porque', response_json['phone_number'])
                         # credential.report_fail() # Do not report as fail here, YET.
@@ -570,6 +589,9 @@ class Renamer(): #Master for robot
                 print ("Sleeping 1s")
                 time.sleep(1)
                 VerifyBusiness = MWatcher(0.5, 'GBusiness_handle', 'W_Verify_an_business' , credential, True)
+            if (GBusiness_handl.W_Verify_an_business_Match == False) :
+                print ("! - Skipping Business - No match found")
+                continue
             if (GBusiness_handle.BusinessValidation == 1):
                 print ("Let call: MainPage() Business")
                 GBusiness_handle.GoMainPage()
