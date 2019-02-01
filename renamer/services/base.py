@@ -5,7 +5,7 @@ import requests
 from config import API_ROOT, API_USERNAME, API_PASSWORD
 
 
-class BaseEntity:
+class BaseEntity(object):
     def __init__(self, service, data):
         assert isinstance(data, dict), (
             "%s Data must be a dict instance." % self.__class__.__name__
@@ -19,7 +19,7 @@ class BaseEntity:
         except IndexError:
             return self.__getattribute__(name)
 
-    def __setattr__(self, name, value):
+    def update(self, name, value):
         self.raw_data[name] = value
 
     @property
