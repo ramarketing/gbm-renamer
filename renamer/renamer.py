@@ -412,7 +412,7 @@ class GBusiness (Manage_Selenium):
 
                             if (Counter_Interactios_rows_table == Qty_Rows):
                                 print ("!- No hay match con la empresa que estamos buscando.")
-                                # AQUI CREDENTIAL.NoMatchsBussiness ...
+                                credential.report_fail()
                                 TWatch.ListThreads['VerifyBusiness'].cancel()
                                 break
             else:
@@ -429,6 +429,17 @@ class GBusiness (Manage_Selenium):
                 print ("! - Hicimos click en Text button.")
                 TextButton.click()
                 self.W_Verify_an_business_step = 21
+            else:
+                RinRinCellPhone_Animate = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin)
+                if (RinRinCellPhone_Animate == True) :
+                    print ("! - Sleeping 1 : RinRin Cellphone Animation appear.")
+                    time.sleep(1)
+                    Clicking_RinRinCellPhone = Click_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin)
+                    if (Clicking_RinRinCellPhone == True):
+                        print ("! - Sleeping 1 : RinRin Cellphone Animation appear.")
+                        time.sleep(15)
+                        print ("! - Sleeping 15 seconds - While Receving sms")
+
             Box_Enter6Digit = self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_Text_Box_Enter6Digit, Step_Enter6Digits_Text_fromVerifynow_bussiness)
             if (Box_Enter6Digit == True ):
                 self.W_Verify_an_business_step = 21
@@ -460,10 +471,12 @@ class GBusiness (Manage_Selenium):
                         print("Mensaje: " + response_json['msg'])
 
                 if response.status_code != 200:
-                    if response_json['phone_number'] == '000000':
+                    if response_json['phone_number'][0] == '000000':
                         print('! - El telfono acaba de ser comprado. Reenviando mensaje de texto. ')
                         if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain)  == True ) :
-                                print ("TEXT AGAIN EXIST")
+                            print ("! - Sleeping 15 seconds - While Receving sms")
+                            time.sleep(15)
+
                     else:
                         print('! -Imposible porque', response_json['phone_number'])
                         # credential.report_fail() # Do not report as fail here, YET.
@@ -591,6 +604,7 @@ class Renamer(): #Master for robot
                 Controller_Login = MWatcher(0.5, 'controller_login' , 'OGAuth', 'W_do_login', TWache_GAuth_login, credential, True)
             except CredentialInvalid:
                 continue
+
             if (OGAuth.SucessLogin == 1) :
                 print ("Setting up driver for Google Bussiness")
                 GBusiness_handle.setDriver(OGAuth.driver)
@@ -599,16 +613,22 @@ class Renamer(): #Master for robot
                 VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , TWatch_VerifyBusiness, credential, True)
             if (GBusiness_handle.W_Verify_an_business_Match == False) :
                 print ("! - Skipping Business - No match found")
-                continue
-            if (GBusiness_handle.BusinessValidation == 1):
-                print ("Let call: MainPage() Business")
-                GBusiness_handle.GoMainPage()
                 GBusiness_handle.driver.quit()
-                time.sleep(4) #Aqui el continua el resto de lo renamer.
-
-            else:
                 continue
-        self.Finished_app()
+
+            if (credential.can_rename == True) :
+                print ("! - Procediendo a hacer rename")
+                if (GBusiness_handle.BusinessValidation == 1):
+                    print ("Let call: MainPage() Business")
+                    GBusiness_handle.GoMainPage()
+                    GAuth.driver.quit()
+                    time.sleep(4)
+            else :
+                print ("!- Hemos concluido con la credenecial de business: " + credential.name )
+                GBusiness_handle.driver.quit()
+                continue
+
+            self.Finished_app()
 
     def Finished_app(self):
         logger(instance_itself=self.NameClass_itSelf(), data=self.__nameApp + Finished_app_run)
