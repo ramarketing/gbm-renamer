@@ -386,9 +386,6 @@ class GBusiness (Manage_Selenium):
                     Counter_Interactios_rows_table = 0
                     for Item in Rows_Table:
                         Counter_Interactios_rows_table = Counter_Interactios_rows_table + 1
-                        print ("Qty_Rows : " + str(Qty_Rows))
-                        print ("Counter_Interactios_rows_table : " + str(Counter_Interactios_rows_table))
-
                         Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
                         if(self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) :
                             print ("! - La empresa es: " + credential.name)
