@@ -27,6 +27,8 @@ class BaseEntity(object):
         return self.id
 
     def report_fail(self):
+        if self.date_fail:
+            return
         return self.service.request('post', pk=self.pk, extra='set-fail')
 
 

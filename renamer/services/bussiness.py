@@ -36,20 +36,28 @@ class Business(BaseEntity):
         )
 
     def report_validation(self):
-        self.update('date_validation', datetime.now())
-        return self.service.request(
+        if self.date_validation:
+            return
+        response = self.service.request(
             'post', pk=self.pk, extra='set-validated'
         )
+        self.update('date_validation', datetime.now())
+        return response
 
     def report_success(self):
-        self.update('date_success', datetime.now())
-        return self.service.request(
+        if self.date_success:
+            return
+        response = self.service.request(
             'post', pk=self.pk, extra='set-success'
         )
+        self.update('date_success', datetime.now())
+        return response
 
     def report_fail(self):
-        self.update('date_fail', datetime.now())
-        return super().report_fail()
+        response = super().report_fail()
+        if response:
+            self.update('date_fail', datetime.now())
+        return response
 
 
 class BusinessList(BaseEntityList):
