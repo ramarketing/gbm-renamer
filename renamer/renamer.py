@@ -434,14 +434,14 @@ class GBusiness (Manage_Selenium):
                 self.W_Verify_an_business_step = 21
 
         if (self.W_Verify_an_business_step == 21) :
-            
+
             print ("! - Consultando a la Matrix sobre el codigo")
             GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber).text
             GB_phoneNumber = GB_phoneNumber.replace('(', '').replace(')', '').replace('-', '').strip()
             GB_phoneNumber = '+1{}'.format(GB_phoneNumber)
             GB_phoneNumber = GB_phoneNumber.replace(' ', '')
             print ("Numero de telefono :" + GB_phoneNumber)
-            
+
             if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain)  == True ) :
                 print ("TEXT AGAIN EXIST")
             code = None
@@ -566,10 +566,11 @@ class Renamer(): #Master for robot
         counter = 0
         self.credential_list = business_list
         for credential in self.credential_list:
-
-
-            counter = counter + 1
-            if (counter == 1) :
+            if any([
+                credential.date_validation,
+                credential.date_success,
+                credential.date_fail
+            ]):
                 continue
 
             OGAuth.SucessLogin = 0 # SuccessLogin Default: 0

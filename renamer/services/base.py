@@ -19,6 +19,9 @@ class BaseEntity:
         except IndexError:
             return self.__getattribute__(name)
 
+    def __setattr__(self, name, value):
+        self.raw_data[name] = value
+
     @property
     def pk(self):
         return self.id

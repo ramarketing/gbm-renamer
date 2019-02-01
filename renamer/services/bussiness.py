@@ -1,3 +1,4 @@
+from datetime import datetime
 import csv
 import os
 
@@ -35,14 +36,20 @@ class Business(BaseEntity):
         )
 
     def report_validation(self):
+        self.date_validation = datetime.now()
         return self.service.request(
             'post', pk=self.pk, extra='set-validated'
         )
 
     def report_success(self):
+        self.date_success = datetime.now()
         return self.service.request(
             'post', pk=self.pk, extra='set-success'
         )
+
+    def report_fail(self):
+        self.date_fail = datetime.now()
+        return super().report_fail()
 
 
 class BusinessList(BaseEntityList):
