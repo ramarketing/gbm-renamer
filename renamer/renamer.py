@@ -184,7 +184,6 @@ class Google_auth(Manage_Selenium):
         logger(instance=credential, data='Reported fail')
         credential.report_fail()
 
-
     #W -- > Denote methos in mode Watcher with (MWatcher)
     def W_do_login(self, credential):
 
@@ -346,6 +345,10 @@ class GBusiness (Manage_Selenium):
         return Value_of_return
 
 
+    def W_Modify_business(self, credential):
+        #Paradigm for Business (...)
+        pass
+
     def W_Verify_an_business(self, credential):
 
         print ("W_Verify_an_business_step -> MWatcher Running")
@@ -410,7 +413,6 @@ class GBusiness (Manage_Selenium):
                             if (Counter_Interactios_rows_table == Qty_Rows):
                                 print ("!- No hay match con la empresa que estamos buscando.")
                                 # AQUI CREDENTIAL.NoMatchsBussiness ...
-                                W_Verify_an_business_Match
                                 TWatch.ListThreads['VerifyBusiness'].cancel()
                                 break
             else:
@@ -442,8 +444,6 @@ class GBusiness (Manage_Selenium):
             
             if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain)  == True ) :
                 print ("TEXT AGAIN EXIST")
-
-
             code = None
             while(code == None):
                 time.sleep(1)
@@ -484,9 +484,6 @@ class GBusiness (Manage_Selenium):
             credential.report_validation()
             GBusiness_handle.BusinessValidation = 1
             TWatch.ListThreads['VerifyBusiness'].cancel()
-
-
-
         # 11 - Lista de negocios - END
 
 class Renamer(): #Master for robot
@@ -612,16 +609,12 @@ class Renamer(): #Master for robot
 
             else:
                 continue
-
-
-
         self.Finished_app()
 
     def Finished_app(self):
         logger(instance_itself=self.NameClass_itSelf(), data=self.__nameApp + Finished_app_run)
         print (self.__nameApp + Finished_app_run)
         #self.CloseApp()
-
 
 # Intialization of object.
 OGAuth = Google_auth() #Same for all clasess
