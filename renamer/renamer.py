@@ -187,7 +187,6 @@ class Google_auth(Manage_Selenium):
     #W -- > Denote methos in mode Watcher with (MWatcher)
     def W_do_login(self, credential):
 
-        TWatch.ListThreads['controller_login'].cancel()
 
 
         print ("! Executing MWatcher GAuth:W_do_login !")
@@ -387,11 +386,9 @@ class GBusiness (Manage_Selenium):
                     Counter_Interactios_rows_table = 0
                     for Item in Rows_Table:
                         Counter_Interactios_rows_table = Counter_Interactios_rows_table + 1
-                        if (Counter_Interactios_rows_table > Qty_Rows):
-                            print ("!- No hay match con la empresa que estamos buscando.")
-                            # AQUI CREDENTIAL.NoMatchsBussiness ...
-                            TWatch.ListThreads['W_Verify_an_business'].cancel()
-                            break
+                        print ("Qty_Rows : " + str(Qty_Rows))
+                        print ("Counter_Interactios_rows_table : " + str(Counter_Interactios_rows_table))
+
                         Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
                         if(self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) :
                             print ("! - La empresa es: " + credential.name)
@@ -399,9 +396,23 @@ class GBusiness (Manage_Selenium):
                             print ("! - Match de la empresa")
                             self.W_Verify_an_business_Match_Columns = Columns
                             self.W_Verify_an_business_Match = True
-                            break
+
+                            if(self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_required) == True) :
+                                print ("! - La empresa no se encuentra verificada, Vamos a veriricarla")
+                                break
+                            else :
+                                credential.report_validation()
+                                GBusiness_handle.BusinessValidation = 1
+                                TWatch.ListThreads['W_Verify_an_business'].cancel()
+                                print ("! -No es necesario la verificacion.  La empresa se encuentra verificada. ")
                         else:
                             print ("! - No match con la empresa")
+
+                            if (Counter_Interactios_rows_table == Qty_Rows):
+                                print ("!- No hay match con la empresa que estamos buscando.")
+                                # AQUI CREDENTIAL.NoMatchsBussiness ...
+                                TWatch.ListThreads['W_Verify_an_business'].cancel()
+                                break
             else:
                 self.W_Verify_an_business_Match_Columns[4].click()
                 print ("! - Hicimos click en verify now.")
@@ -589,7 +600,7 @@ class Renamer(): #Master for robot
                 print ("Sleeping 1s")
                 time.sleep(1)
                 VerifyBusiness = MWatcher(0.5, 'GBusiness_handle', 'W_Verify_an_business' , credential, True)
-            if (GBusiness_handl.W_Verify_an_business_Match == False) :
+            if (GBusiness_handle.W_Verify_an_business_Match == False) :
                 print ("! - Skipping Business - No match found")
                 continue
             if (GBusiness_handle.BusinessValidation == 1):
