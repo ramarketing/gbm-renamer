@@ -562,8 +562,6 @@ class Renamer(): #Master for robot
         from services import BusinessService
         business_service = BusinessService()
         business_list = business_service.get_list()
-
-        counter = 0
         self.credential_list = business_list
         for credential in self.credential_list:
             if any([
