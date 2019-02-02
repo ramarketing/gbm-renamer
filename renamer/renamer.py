@@ -144,6 +144,22 @@ class Manage_Selenium :
         Target.click()
         return True
 
+    def GettingElement_by_xpath(self, xpath):
+        try:
+            Value_of_return = self.driver.find_element_by_xpath(xpath)
+        except NoSuchElementException:
+            return False
+        return Value_of_return
+
+    def GettingElements_by_tag_name_with_target (self, target, tagname):
+        try:
+            Value_of_return = target.find_elements_by_tag_name(tagname)
+        except NoSuchElementException:
+            return False
+        return Value_of_return
+
+
+
 class Google_auth(Manage_Selenium):
     def __init__ (self):
         self.ItSelf = "Google_Auth"
@@ -186,9 +202,6 @@ class Google_auth(Manage_Selenium):
 
     #W -- > Denote methos in mode Watcher with (MWatcher)
     def W_do_login(self, credential):
-
-
-
         print ("! Executing MWatcher GAuth:W_do_login !")
         print ("! LoginStep: " + str(self.LoginStep))
         print ("! LoginStep_ghost: " + str(self.LoginStep_ghost))
@@ -286,34 +299,35 @@ class GBusiness (Manage_Selenium):
     #DetectDialog{ID} - What Dialog?
     def __init__ (self):
 
+        #URL TO REDIRECT IN SAME GOOGLE -- BEGIN 
         self.MainPage = "https://business.google.com/"
         self.Url_List_of_business = 'https://business.google.com/locations'
+        #URL TO REDIRECT IN SAME GOOGLE -- END 
 
-        # Control of flow Verify_an_business_step {MWatcher}
+
+        # Control of flow Verify_an_business_step - BEGIN
         self.W_Verify_an_business_step = 0
         self.W_Verify_an_business_Match = False
+        # Control of flow Verify_an_business_step - END
+
+        # Return from control Flow  - BEGIN
+        self.Verify_an_business_Skip = False
+        # Return from control Flow  - END
 
         #Handlers_XPath para (W_Verify_an_business) - BEGIN
-        self.W_Verify_an_business_Target_TBody_Locations = '//*[@id="main_viewpane"]/c-wiz[1]/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody'
-
+        self.W_Verify_an_business_Target_TBody_Locations_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody'
         self.W_Verify_an_business_Target_Text_to_sendVerify_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[2]/button[2]'
+        self.W_Verify_an_business_Target_Text_Box_Enter6Digit_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p'
+        self.W_Verify_an_business_Target_EnterVerifyCode_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[2]/div[1]/div/div[1]/input'
+        self.W_Verify_an_business_Target_PhoneNumber_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p/strong'
+        self.W_Verify_an_business_Target_Button_Verify_Now = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[3]/button'
+        self.W_Verify_an_business_Target_TextAgain_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/div/div[1]/button/span'
+        self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div/div[3]/div/div/div'
         #Handlers_XPath para (W_Verify_an_business) - END
 
-        self.W_Verify_an_business_Target_Text_Box_Enter6Digit = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p'
-
-        self.W_Verify_an_business_Target_EnterVerifyCode_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[2]/div[1]/div/div[1]/input'
-
-        self.W_Verify_an_business_Target_PhoneNumber = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p/strong'
-
-        self.W_Verify_an_business_Target_Button_Verify_Now = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[3]/button'
-
-        self.W_Verify_an_business_Target_TextAgain = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/div/div[1]/button/span'
-
-        self.W_Verify_an_business_Target_Cellphone_rin_rin = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div/div[3]/div/div/div'
-
-        #Control Validations
+        #Control Validations - BEGIN
         self.BusinessValidation = 0
-
+        #Control Validations - END
 
     def setDriver (self, driver):
         self.driver = driver
@@ -325,25 +339,10 @@ class GBusiness (Manage_Selenium):
         self.driver.get(self.MainPage)
 
     def GoLocationsPage(self):
-        time.sleep(1)
+        time.sleep(3)
         print ("! - GBusiness-> Redirecting to: " +  self.Url_List_of_business)
         self.driver.get(self.Url_List_of_business)
         return True
-
-    def GettingElement_by_xpath(self, xpath):
-        try:
-            Value_of_return = self.driver.find_element_by_xpath(xpath)
-        except NoSuchElementException:
-            return False
-        return Value_of_return
-
-    def GettingElements_by_tag_name_with_target (self, target, tagname):
-        try:
-            Value_of_return = target.find_elements_by_tag_name(tagname)
-        except NoSuchElementException:
-            return False
-        return Value_of_return
-
 
     def W_Modify_business(self, credential):
         #Paradigm for Business (...)
@@ -384,7 +383,7 @@ class GBusiness (Manage_Selenium):
         if (self.W_Verify_an_business_step == 1) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
             if (self.W_Verify_an_business_Match == False) :
-                self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations)
+                self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
                 if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
                     Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
                     Qty_Rows = len(Rows_Table)
@@ -412,7 +411,10 @@ class GBusiness (Manage_Selenium):
 
                             if (Counter_Interactios_rows_table == Qty_Rows):
                                 print ("!- No hay match con la empresa que estamos buscando.")
-                                credential.report_fail()
+                                try: 
+                                    credential.report_fail()
+                                except:
+                                    pass
                                 TWatch.ListThreads['VerifyBusiness'].cancel()
                                 break
             else:
@@ -430,33 +432,52 @@ class GBusiness (Manage_Selenium):
                 TextButton.click()
                 self.W_Verify_an_business_step = 21
             else:
-                RinRinCellPhone_Animate = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin)
+                RinRinCellPhone_Animate = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath)
                 if (RinRinCellPhone_Animate == True) :
                     print ("! - Sleeping 1 : RinRin Cellphone Animation appear.")
                     time.sleep(1)
-                    Clicking_RinRinCellPhone = Click_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin)
+                    Clicking_RinRinCellPhone = Click_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath)
                     if (Clicking_RinRinCellPhone == True):
                         print ("! - Sleeping 1 : RinRin Cellphone Animation appear.")
                         time.sleep(15)
                         print ("! - Sleeping 15 seconds - While Receving sms")
 
-            Box_Enter6Digit = self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_Text_Box_Enter6Digit, Step_Enter6Digits_Text_fromVerifynow_bussiness)
+            Box_Enter6Digit = self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_Text_Box_Enter6Digit_xpath, Step_Enter6Digits_Text_fromVerifynow_bussiness)
             if (Box_Enter6Digit == True ):
                 self.W_Verify_an_business_step = 21
 
         if (self.W_Verify_an_business_step == 21) :
-
-            print ("! - Consultando a la Matrix sobre el codigo")
-            GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber).text
+            print ("! - Sleeping 3s")
+            time.sleep(3)
+            GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber_xpath).text
             GB_phoneNumber = GB_phoneNumber.replace('(', '').replace(')', '').replace('-', '').strip()
             GB_phoneNumber = '+1{}'.format(GB_phoneNumber)
             GB_phoneNumber = GB_phoneNumber.replace(' ', '')
             print ("Numero de telefono :" + GB_phoneNumber)
 
-            if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain)  == True ) :
+            if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain_xpath)  == True ) :
                 print ("TEXT AGAIN EXIST")
+            
             code = None
+            Retries_loop_sms = 0
+            
             while(code == None):
+                import config # Pendiente para mover
+                Retries_loop_sms = Retries_loop_sms + 1
+                if (Retries_loop_sms == config.RETRY_AT) :
+                    print ("! - Solicitando el mensaje de texto de nuevo")
+                    time.sleep(3)
+                    if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain_xpath)  == True ) :
+                            self.Click_by_xpath(self.W_Verify_an_business_Target_TextAgain_xpath)
+                            print ("! - Sleeping 15 seconds - While Receving sms")
+                            time.sleep(15)
+                    else :
+                        print ("! - No pudimos reenviar el mensaje")
+                elif (Retries_loop_sms == config.MAX_RETRIES) :
+                    print ("!- Hemos alcazando el maximo de Numero de reintentos. ")
+                    GBusiness_handle.Verify_an_business_Skip = True
+                    TWatch.ListThreads['VerifyBusiness'].cancel()
+
                 time.sleep(1)
                 print ("! - Doing response to Matrix")
                 response = credential.get_validation_code(
@@ -473,7 +494,8 @@ class GBusiness (Manage_Selenium):
                 if response.status_code != 200:
                     if response_json['phone_number'][0] == '000000':
                         print('! - El telfono acaba de ser comprado. Reenviando mensaje de texto. ')
-                        if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain)  == True ) :
+                        if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain_xpath)  == True ) :
+                            self.Click_by_xpath(self.W_Verify_an_business_Target_TextAgain_xpath)
                             print ("! - Sleeping 15 seconds - While Receving sms")
                             time.sleep(15)
 
@@ -490,7 +512,6 @@ class GBusiness (Manage_Selenium):
         if (self.W_Verify_an_business_step == 23) :
             if (self.Click_by_xpath(self.W_Verify_an_business_Target_Button_Verify_Now) == True) :
                 self.W_Verify_an_business_step = 24
-
 
         if (self.W_Verify_an_business_step == 24):
             print ("Pantalla de ya se ha verificado el business")
@@ -587,7 +608,8 @@ class Renamer(): #Master for robot
             OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
             GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
             GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
-
+            GBusiness_handle.Verify_an_business_Skip = False # Skip Reset.
+ 
             print(credential.name, credential.email, credential.password, credential.recovery_email)
 
             if (self.verification_of_credential(credential) == False) :
@@ -599,6 +621,7 @@ class Renamer(): #Master for robot
             # PASSWORD (NOTHING SPECIAL)
             if (self.is_Driver_GAuth_loaded() == True) :
                 OGAuth.RunDriver()
+                GBusiness_handle.setDriver(OGAuth.driver)
             try:
                 print ("# Email: " + credential.email)
                 Controller_Login = MWatcher(0.5, 'controller_login' , 'OGAuth', 'W_do_login', TWache_GAuth_login, credential, True)
@@ -607,13 +630,17 @@ class Renamer(): #Master for robot
 
             if (OGAuth.SucessLogin == 1) :
                 print ("Setting up driver for Google Bussiness")
-                GBusiness_handle.setDriver(OGAuth.driver)
                 print ("Sleeping 1s")
                 time.sleep(1)
                 VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , TWatch_VerifyBusiness, credential, True)
+           
+            if (GBusiness_handle.Verify_an_business_Skip == True) :
+                GAuth.driver.quit()
+                continue
+
             if (GBusiness_handle.W_Verify_an_business_Match == False) :
                 print ("! - Skipping Business - No match found")
-                GBusiness_handle.driver.quit()
+                OGAuth.driver.quit()
                 continue
 
             if (credential.can_rename == True) :
@@ -621,7 +648,7 @@ class Renamer(): #Master for robot
                 if (GBusiness_handle.BusinessValidation == 1):
                     print ("Let call: MainPage() Business")
                     GBusiness_handle.GoMainPage()
-                    GAuth.driver.quit()
+                    OGAuth.driver.quit()
                     time.sleep(4)
             else :
                 print ("!- Hemos concluido con la credenecial de business: " + credential.name )
