@@ -21,10 +21,12 @@ from selenium.common.exceptions import NoSuchElementException
 #From project dirs
 from exceptions import CredentialInvalid
 from services import BusinessService
-from config import BASE_DIR, WAIT_TIME
+from config import BASE_DIR, WAIT_TIME, RETRY_AT, MAX_RETRIES
 from constants import TEXT_PHONE_VERIFICATION
 from logger import Logger
 from messages import *
+from services import BusinessService
+
 
 class ThreadsWatch:
     def __init__(self):
@@ -69,12 +71,13 @@ class MWatcher :
             self.thread.join()
 
     def __MWatcher(self) :
-        nextTime=time.time()+self.interval
+        nextTime = time.time() + self.interval
         while not self.stopEvent.wait(nextTime-time.time()) :
-            nextTime+=self.interval
+            nextTime += self.interval
             if (self.Data != False and self.Object != False and self.Function != False):
                 eval(self.Object + '.' + self.Function + '(' + 'self.Data' +')')
                 #eval('OGAuth.W_do_login(self.Data)')
+
     def cancel(self) :
         print (TWatch_Cancel + self.pretty_name_process)
         self.stopEvent.set()
@@ -159,7 +162,6 @@ class Manage_Selenium :
         return Value_of_return
 
 
-
 class Google_auth(Manage_Selenium):
     def __init__ (self):
         self.ItSelf = "Google_Auth"
@@ -195,12 +197,11 @@ class Google_auth(Manage_Selenium):
         self.LoginStep_ghost = 1
         self.StepError = 0
 
-
     def Except_CredentialInvalid (self, credential):
         logger(instance=credential, data='Reported fail')
         credential.report_fail()
 
-    #W -- > Denote methos in mode Watcher with (MWatcher)
+    #W -- > Denote methods in mode Watcher with (MWatcher)
     def W_do_login(self, credential):
         print ("! Executing MWatcher GAuth:W_do_login !")
         print ("! LoginStep: " + str(self.LoginStep))
@@ -299,10 +300,10 @@ class GBusiness (Manage_Selenium):
     #DetectDialog{ID} - What Dialog?
     def __init__ (self):
 
-        #URL TO REDIRECT IN SAME GOOGLE -- BEGIN 
+        #URL TO REDIRECT IN SAME GOOGLE -- BEGIN
         self.MainPage = "https://business.google.com/"
         self.Url_List_of_business = 'https://business.google.com/locations'
-        #URL TO REDIRECT IN SAME GOOGLE -- END 
+        #URL TO REDIRECT IN SAME GOOGLE -- END
 
 
         # Control of flow Verify_an_business_step - BEGIN
@@ -319,7 +320,8 @@ class GBusiness (Manage_Selenium):
         self.W_Verify_an_business_Target_Text_to_sendVerify_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[2]/button[2]'
         self.W_Verify_an_business_Target_Text_Box_Enter6Digit_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p'
         self.W_Verify_an_business_Target_EnterVerifyCode_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[2]/div[1]/div/div[1]/input'
-        self.W_Verify_an_business_Target_PhoneNumber_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p/strong'
+        self.W_Verify_an_business_Target_PhoneNumber_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[1]/h3'
+        self.W_Verify_an_business_Target_PhoneNumber_xpath_21 = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p/strong'
         self.W_Verify_an_business_Target_Button_Verify_Now = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[3]/button'
         self.W_Verify_an_business_Target_TextAgain_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/div/div[1]/button/span'
         self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div/div[3]/div/div/div'
@@ -329,7 +331,7 @@ class GBusiness (Manage_Selenium):
         self.BusinessValidation = 0
         #Control Validations - END
 
-    def setDriver (self, driver):
+    def setDriver(self, driver):
         self.driver = driver
         return True
 
@@ -389,7 +391,7 @@ class GBusiness (Manage_Selenium):
                     Qty_Rows = len(Rows_Table)
                     Counter_Interactios_rows_table = 0
                     for Item in Rows_Table:
-                        Counter_Interactios_rows_table = Counter_Interactios_rows_table + 1
+                        Counter_Interactios_rows_table += 1
                         Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
                         if(self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) :
                             print ("! - La empresa es: " + credential.name)
@@ -398,7 +400,10 @@ class GBusiness (Manage_Selenium):
                             self.W_Verify_an_business_Match_Columns = Columns
                             self.W_Verify_an_business_Match = True
 
-                            if(self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_required) == True) :
+                            if(
+                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_required) == True or
+                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_pending) == True
+                            ):
                                 print ("! - La empresa no se encuentra verificada, Vamos a veriricarla")
                                 break
                             else :
@@ -411,22 +416,57 @@ class GBusiness (Manage_Selenium):
 
                             if (Counter_Interactios_rows_table == Qty_Rows):
                                 print ("!- No hay match con la empresa que estamos buscando.")
-                                try: 
-                                    credential.report_fail()
-                                except:
-                                    pass
+                                credential.report_fail()
                                 TWatch.ListThreads['VerifyBusiness'].cancel()
-                                break
+                                return
             else:
                 self.W_Verify_an_business_Match_Columns[4].click()
                 print ("! - Hicimos click en verify now.")
                 time.sleep(1)
                 self.W_Verify_an_business_step = 2
-                #self.W_Verify_an_business_step = 2
 
         if (self.W_Verify_an_business_step == 2) :
-            print ("! - Estamos en chosse a way (Verify now.")
+            time.sleep(5)
+            print ("! - We are on choose the way to verify (Verify now.")
+            # import pdb; pdb.set_trace()
+            GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber_xpath).text
+            GB_phoneNumber = GB_phoneNumber.replace('(', '').replace(')', '').replace('-', '').replace(' ', '').strip()
+            try:
+                GB_phoneNumber = int(GB_phoneNumber)
+            except ValueError:
+                print("This isn't a phone number: ", GB_phoneNumber)
+                credential.report_fail()
+                TWatch.ListThreads['VerifyBusiness'].cancel()
+                return
+            GB_phoneNumber = '+1{}'.format(GB_phoneNumber)
+            print ("Numero de telefono :" + GB_phoneNumber)
+
             TextButton = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_Text_to_sendVerify_xpath)
+
+            '''
+            1. ¿The phone number is connected?
+            yes. Check for the last existing code
+            no. Purchase the number
+            '''
+            code = None
+            response = credential.get_validation_code(
+                phone_number=GB_phoneNumber
+            )
+            status_code = response.status_code
+            response = response.json()
+
+            if status_code == 200 and 'msg' in response:
+                code = int(response['msg'])
+                print ("El code es: {}".format(code))
+            elif response['phone_number'][0] == '000000':
+                print('! - The phone was just purchased. Please hold 5 seconds.')
+                time.sleep(5)
+            else:
+                print('! - Unable to purchase phone ', response['phone_number'][0])
+                credential.report_fail()
+                TWatch.ListThreads['VerifyBusiness'].cancel()
+                return
+
             if (TextButton != False):
                 print ("! - Hicimos click en Text button.")
                 TextButton.click()
@@ -439,8 +479,8 @@ class GBusiness (Manage_Selenium):
                     Clicking_RinRinCellPhone = Click_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath)
                     if (Clicking_RinRinCellPhone == True):
                         print ("! - Sleeping 1 : RinRin Cellphone Animation appear.")
-                        time.sleep(15)
-                        print ("! - Sleeping 15 seconds - While Receving sms")
+                        time.sleep(10)
+                        print ("! - Sleeping 10 seconds - While Receving sms")
 
             Box_Enter6Digit = self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_Text_Box_Enter6Digit_xpath, Step_Enter6Digits_Text_fromVerifynow_bussiness)
             if (Box_Enter6Digit == True ):
@@ -449,22 +489,21 @@ class GBusiness (Manage_Selenium):
         if (self.W_Verify_an_business_step == 21) :
             print ("! - Sleeping 3s")
             time.sleep(3)
-            GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber_xpath).text
+
+            if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain_xpath)  == True ) :
+                print ("TEXT AGAIN EXIST")
+
+            Retries_loop_sms = 0
+            GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber_xpath_21).text
             GB_phoneNumber = GB_phoneNumber.replace('(', '').replace(')', '').replace('-', '').strip()
             GB_phoneNumber = '+1{}'.format(GB_phoneNumber)
             GB_phoneNumber = GB_phoneNumber.replace(' ', '')
             print ("Numero de telefono :" + GB_phoneNumber)
-
-            if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain_xpath)  == True ) :
-                print ("TEXT AGAIN EXIST")
-            
             code = None
-            Retries_loop_sms = 0
-            
+
             while(code == None):
-                import config # Pendiente para mover
-                Retries_loop_sms = Retries_loop_sms + 1
-                if (Retries_loop_sms == config.RETRY_AT) :
+                Retries_loop_sms += 1
+                if (Retries_loop_sms == RETRY_AT) :
                     print ("! - Solicitando el mensaje de texto de nuevo")
                     time.sleep(3)
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain_xpath)  == True ) :
@@ -473,47 +512,34 @@ class GBusiness (Manage_Selenium):
                             time.sleep(15)
                     else :
                         print ("! - No pudimos reenviar el mensaje")
-                elif (Retries_loop_sms == config.MAX_RETRIES) :
+                elif (Retries_loop_sms == MAX_RETRIES) :
                     print ("!- Hemos alcazando el maximo de Numero de reintentos. ")
                     GBusiness_handle.Verify_an_business_Skip = True
                     TWatch.ListThreads['VerifyBusiness'].cancel()
+                    return
 
                 time.sleep(1)
                 print ("! - Doing response to Matrix")
                 response = credential.get_validation_code(
                     phone_number=GB_phoneNumber
                 )
-                response_json = response.json()
-                if 'msg' in response_json:
-                    try:
-                        code = int(response_json['msg'])
-                        print ("El code es: {}".format(code))
-                    except ValueError:
-                        print("Mensaje: " + response_json['msg'])
+                status_code = response.status_code
+                response = response.json()
 
-                if response.status_code != 200:
-                    if response_json['phone_number'][0] == '000000':
-                        print('! - El telfono acaba de ser comprado. Reenviando mensaje de texto. ')
-                        if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain_xpath)  == True ) :
-                            self.Click_by_xpath(self.W_Verify_an_business_Target_TextAgain_xpath)
-                            print ("! - Sleeping 15 seconds - While Receving sms")
-                            time.sleep(15)
-
-                    else:
-                        print('! -Imposible porque', response_json['phone_number'])
-                        # credential.report_fail() # Do not report as fail here, YET.
-                        TWatch.ListThreads['VerifyBusiness'].cancel()
-                        break
+                if status_code == 200 and 'msg' in response:
+                    code = response['msg'] if len(response['msg']) == 6 else None
+                    print ("El code es: {}".format(code))
 
             if (self.FillField_by_xpath(str(code), self.W_Verify_an_business_Target_EnterVerifyCode_xpath, True) == True):
-                    print ('! - Ha sido rellenado el campo de verificacion')
-                    self.W_Verify_an_business_step = 23
+                print ('! - Ha sido rellenado el campo de verificacion')
+                self.W_Verify_an_business_step = 23
 
         if (self.W_Verify_an_business_step == 23) :
             if (self.Click_by_xpath(self.W_Verify_an_business_Target_Button_Verify_Now) == True) :
                 self.W_Verify_an_business_step = 24
 
         if (self.W_Verify_an_business_step == 24):
+            time.sleep(3)
             print ("Pantalla de ya se ha verificado el business")
             credential.report_validation()
             GBusiness_handle.BusinessValidation = 1
@@ -593,7 +619,6 @@ class Renamer(): #Master for robot
         sys.exit()
 
     def handle(self, *args, **options):
-        from services import BusinessService
         business_service = BusinessService()
         business_list = business_service.get_list()
         self.credential_list = business_list
@@ -609,7 +634,8 @@ class Renamer(): #Master for robot
             GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
             GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
             GBusiness_handle.Verify_an_business_Skip = False # Skip Reset.
- 
+            GBusiness_handle.W_Verify_an_business_Match = False # Business wan't found yet
+
             print(credential.name, credential.email, credential.password, credential.recovery_email)
 
             if (self.verification_of_credential(credential) == False) :
@@ -633,9 +659,9 @@ class Renamer(): #Master for robot
                 print ("Sleeping 1s")
                 time.sleep(1)
                 VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , TWatch_VerifyBusiness, credential, True)
-           
+
             if (GBusiness_handle.Verify_an_business_Skip == True) :
-                GAuth.driver.quit()
+                OGAuth.driver.quit()
                 continue
 
             if (GBusiness_handle.W_Verify_an_business_Match == False) :
