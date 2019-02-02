@@ -25,6 +25,7 @@ Step_Enter6Digits_Text_fromVerifynow_bussiness = 'Enter the 6-digit verification
 
 
 Status_colum_location_business_Verification_required = "Verification required"
+Status_colum_location_business_Verification_pending = "Pending verification"
 
 
 #TWatch
