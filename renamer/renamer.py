@@ -428,8 +428,11 @@ class GBusiness (Manage_Selenium):
         if (self.W_Verify_an_business_step == 2) :
             time.sleep(5)
             print ("! - We are on choose the way to verify (Verify now.")
-            # import pdb; pdb.set_trace()
-            GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber_xpath).text
+            GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber_xpath)
+            if not GB_phoneNumber:
+                TWatch.ListThreads['VerifyBusiness'].cancel()
+                return
+            GB_phoneNumber = GB_phoneNumber.text
             GB_phoneNumber = GB_phoneNumber.replace('(', '').replace(')', '').replace('-', '').replace(' ', '').strip()
             try:
                 GB_phoneNumber = int(GB_phoneNumber)
@@ -456,8 +459,9 @@ class GBusiness (Manage_Selenium):
             response = response.json()
 
             if status_code == 200 and 'msg' in response:
-                code = int(response['msg'])
-                print ("El code es: {}".format(code))
+                code = response['msg'] if len(response['msg']) == 6 else None
+                if code:
+                    print ("El code es: {}".format(code))
             elif response['phone_number'][0] == '000000':
                 print('! - The phone was just purchased. Please hold 5 seconds.')
                 time.sleep(5)
@@ -527,6 +531,7 @@ class GBusiness (Manage_Selenium):
                 response = response.json()
 
                 if status_code == 200 and 'msg' in response:
+                    print('! - Response', response)
                     code = response['msg'] if len(response['msg']) == 6 else None
                     print ("El code es: {}".format(code))
 
