@@ -35,13 +35,19 @@ class Business(BaseEntity):
              in_raw=True
         )
 
-    def report_validation(self):
-        if self.date_validation:
+    def report_fail(self):
+        response = super().report_fail()
+        if response:
+            self.update('date_fail', datetime.now())
+        return response
+
+    def report_success(self):
+        if self.date_renamed:
             return
         response = self.service.request(
-            'post', pk=self.pk, extra='set-validated'
+            'post', pk=self.pk, extra='set-renamed'
         )
-        self.update('date_validation', datetime.now())
+        self.update('date_renamed', datetime.now())
         return response
 
     def report_success(self):
@@ -53,10 +59,13 @@ class Business(BaseEntity):
         self.update('date_success', datetime.now())
         return response
 
-    def report_fail(self):
-        response = super().report_fail()
-        if response:
-            self.update('date_fail', datetime.now())
+    def report_validation(self):
+        if self.date_validation:
+            return
+        response = self.service.request(
+            'post', pk=self.pk, extra='set-validated'
+        )
+        self.update('date_validation', datetime.now())
         return response
 
 
