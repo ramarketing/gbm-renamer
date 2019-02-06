@@ -311,6 +311,12 @@ class GBusiness (Manage_Selenium):
         self.W_Verify_an_business_Match = False
         # Control of flow Verify_an_business_step - END
 
+        # Control of flow Verify_an_business_step - BEGIN
+        self.W_Update_an_business_step = 0
+        self.W_Update_an_business_Match = False
+        # Control of flow Verify_an_business_step - END
+
+
         # Return from control Flow  - BEGIN
         self.Verify_an_business_Skip = False
         # Return from control Flow  - END
@@ -326,6 +332,21 @@ class GBusiness (Manage_Selenium):
         self.W_Verify_an_business_Target_TextAgain_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/div/div[1]/button/span'
         self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div/div[3]/div/div/div'
         #Handlers_XPath para (W_Verify_an_business) - END
+
+
+        #Handlers_XPATH para (W_update_a_business) - BEGIN
+
+        self.W_Update_an_business_popup_get_started_button_xpath = '//*[@id="js"]/div[10]/div/div[2]/div[3]/div/content/span'
+        self.W_Update_an_business_popup_left_panel_info_xpath = '//*[@id="gb"]/div[4]/div[2]/div/div[1]/div[4]/a/span[2]'
+
+        self.W_Update_an_business_button_edit_name_in_info_page_xpath = '//*[@id="ow47"]/div[2]/svg'
+        self.W_Update_an_business_button_edit_category_in_info_page_xpath = '//*[@id="ow48"]/div[2]/svg'
+
+
+
+
+
+
 
         #Control Validations - BEGIN
         self.BusinessValidation = 0
@@ -346,11 +367,104 @@ class GBusiness (Manage_Selenium):
         self.driver.get(self.Url_List_of_business)
         return True
 
-    def W_Modify_business(self, credential):
-        #Paradigm for Business (...)
-        pass
+    def W_Update_an_business(self, credential):
+        print ("Here we go with Update Business")
+        print ("self.W_Update_an_business_step: " + str(self.W_Update_an_business_step))
+
+        # 1 - Lista de negocios - BEGIN
+        if (self.W_Update_an_business_step == 0) :
+            time.sleep(0.25) #Sleeping 0.25 Seconds
+            print ("! - Redirigiendo a la lista de negocios de Google Business")
+            if (self.GoLocationsPage() == True):
+               self.W_Update_an_business_step = 1
+        # 1 - Lista de negocios - END
+
+
+        # 11 - Lista de negocios - BEGIN
+        if (self.W_Update_an_business_step == 1) :
+            time.sleep(0.25) #Sleeping 0.25 Seconds
+            if (self.W_Update_an_business_Match == False) :
+                self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
+                if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
+                    Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
+                    Qty_Rows = len(Rows_Table)
+                    Counter_Interactios_rows_table = 0
+                    for Item in Rows_Table:
+                        Counter_Interactios_rows_table += 1
+                        Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
+                        if(self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) :
+                            print ("! - La empresa es: " + credential.name)
+                            print ("! - Salida del HTML: " + Columns[2].get_attribute('outerHTML'))
+                            print ("! - Match de la empresa")
+                            self.W_Update_an_business_Match_Columns = Columns
+                            self.W_Update_an_business_Match = True
+
+                            if(
+                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_required) == True or
+                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_pending) == True
+                            ):
+                                print ("! - La empresa no se encuentra verificada, Vamos a veriricarla")
+                                break
+                            else :
+                                credential.report_validation()
+                                GBusiness_handle.BusinessValidation = 1
+                                TWatch.ListThreads['VerifyBusiness'].cancel()
+                                print ("! -No es necesario la verificacion.  La empresa se encuentra verificada. ")
+                        else:
+                            print ("! - No match con la empresa")
+
+                            if (Counter_Interactios_rows_table == Qty_Rows):
+                                print ("!- No hay match con la empresa que estamos buscando.")
+                                credential.report_fail()
+                                TWatch.ListThreads['VerifyBusiness'].cancel()
+                                return
+            else:
+                print ("Getting outerHTML column 2 for business name")
+
+                BusinessTarget = self.W_Update_an_business_Match_Columns[2]
+                BusinessTarget = self.GettingElements_by_tag_name_with_target(BusinessTarget, 'a')
+
+                print (BusinessTarget.get_attribute('outerHTML'))
+
+
+
+                print ("Sleeping 999")
+                time.sleep(999)
+                #self.Sleep(999)
+
+                '''
+                if (.click() == True): :
+                    print ("Click done")
+                print ("! - Hicimos click para ingresar a la empresa.")
+                time.sleep(90)
+                self.W_Update_an_business_step = 2
+                '''
+
+
+            if (self.W_Update_an_business_step == 2) :
+                print ("Sleeping 1s")
+                time.sleep(1)
+                if (self.Get_outerHTML_and_check_partial_text_via_xpath('Get stared', self.W_Update_an_business_popup_get_started_button_xpath) == True) :
+                    print ("Presionando Get stared..s.")
+                else :
+                    self.W_Update_an_business_step = 3
+
+            if (self.W_Update_an_business_step == 3) :
+                if (self.Click_by_xpath(self.W_Update_an_business_popup_left_panel_info_xpath) == True ):
+                    self.W_Update_an_business_step = 4
+                else:
+                    pass
+
+            if (self.W_Update_an_business_step == 4) :
+                if (self.Click_by_xpath(self.W_Update_an_business_button_edit_name_in_info_page_xpath) == True):
+                    print ("!- Waiting for filll")
+                else:
+                    pass
+
+
 
     def W_Verify_an_business(self, credential):
+
 
         print ("W_Verify_an_business_step -> MWatcher Running")
         print ("W_Verify_an_business_step: " + str(self.W_Verify_an_business_step))
@@ -424,6 +538,8 @@ class GBusiness (Manage_Selenium):
                 print ("! - Hicimos click en verify now.")
                 time.sleep(1)
                 self.W_Verify_an_business_step = 2
+
+
 
         if (self.W_Verify_an_business_step == 2) :
             time.sleep(5)
@@ -618,10 +734,13 @@ class Renamer(): #Master for robot
         print (Application_was_closed)
         sys.exit()
 
-    def handle(self, *args, **options):
+    def handle (self, *args, **options):
         business_service = BusinessService()
         business_list = business_service.get_list()
         self.credential_list = business_list
+
+        counter = 0
+
         for credential in self.credential_list:
             if any([
                 credential.date_validation,
@@ -630,11 +749,21 @@ class Renamer(): #Master for robot
             ]):
                 continue
 
+            counter = counter + 1
+
             OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
             GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
             GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
             GBusiness_handle.Verify_an_business_Skip = False # Skip Reset.
             GBusiness_handle.W_Verify_an_business_Match = False # Business wan't found yet
+            GBusiness_handle.W_Update_an_business_step = 0
+            GBusiness_handle.W_Update_an_business_Match = False
+
+            credential.can_rename = True
+
+            if (counter != 1) :
+                continue
+
 
             print(credential.name, credential.email, credential.password, credential.recovery_email)
 
@@ -658,16 +787,28 @@ class Renamer(): #Master for robot
                 print ("Setting up driver for Google Bussiness")
                 print ("Sleeping 1s")
                 time.sleep(1)
-                VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , TWatch_VerifyBusiness, credential, True)
 
-            if (GBusiness_handle.Verify_an_business_Skip == True) :
-                OGAuth.driver.quit()
-                continue
+            if (credential.can_rename == True): # Can we rename this business? YES
+                Data=dict()
+                Data['credential'] = credential
+                Data['Parameters'] = dict(
+                			        Name=True,
+                					Category= True
+                )
+                #Calling MWatcher to start process of Update
+                BusinessUpdate = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', credential, True)
 
-            if (GBusiness_handle.W_Verify_an_business_Match == False) :
-                print ("! - Skipping Business - No match found")
-                OGAuth.driver.quit()
-                continue
+            else: # No, Just we need verify.
+                pass
+            		#Calling MWatcher to start process of Verification
+
+
+            print ("!- Hemos concluido con la credenecial de business: " + credential.name )
+            GBusiness_handle.driver.quit()
+
+
+
+            '''
 
             if (credential.can_rename == True) :
                 print ("! - Procediendo a hacer rename")
@@ -677,11 +818,14 @@ class Renamer(): #Master for robot
                     OGAuth.driver.quit()
                     time.sleep(4)
             else :
-                print ("!- Hemos concluido con la credenecial de business: " + credential.name )
+
                 GBusiness_handle.driver.quit()
                 continue
+						'''
 
             self.Finished_app()
+
+
 
     def Finished_app(self):
         logger(instance_itself=self.NameClass_itSelf(), data=self.__nameApp + Finished_app_run)
