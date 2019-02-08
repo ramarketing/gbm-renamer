@@ -394,7 +394,6 @@ class GBusiness (Manage_Selenium):
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 1) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
-            import pdb; pdb.set_trace()
             if (self.W_Update_an_business_Match == False) :
                 self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
                 if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
@@ -404,7 +403,9 @@ class GBusiness (Manage_Selenium):
                     for Item in Rows_Table:
                         Counter_Interactios_rows_table += 1
                         Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
-                        if((self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) or (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name)) == True) :
+                        if(
+                            (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) or
+                            (credential.final_name and (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name)) == True)):
                             print ("! - La empresa es: " + credential.name)
                             print ("! - Salida del HTML: " + Columns[2].get_attribute('outerHTML'))
                             print ("! - Match de la empresa")
@@ -444,7 +445,7 @@ class GBusiness (Manage_Selenium):
             if (self.W_Update_an_business_step == 2) :
                 print ("Sleeping 10s for get stared")
                 time.sleep(10)
-                #import pdb; pdb.set_trace()
+
                 if (self.Click_by_xpath(self.W_Update_an_business_popup_get_started_button_xpath) == True) :
                     pass
                 self.W_Update_an_business_step = 3
@@ -452,7 +453,6 @@ class GBusiness (Manage_Selenium):
             if (self.W_Update_an_business_step == 3) :
 
                 #print ("! - Exc : Block 3")
-                #import pdb; pdb.set_trace()
                 Edit_Info_url = self.driver.current_url
                 Edit_Info_url = Edit_Info_url.replace('dashboard', 'edit')
                 try:
@@ -464,7 +464,6 @@ class GBusiness (Manage_Selenium):
 
             if (self.W_Update_an_business_step == 4) :
                 Data = dict()
-                #import pdb; pdb.set_trace()
                 Data['name'] = credential.final_name
                 Data['category'] = credential.final_category_1
                 Data['description'] = credential.final_description
@@ -513,16 +512,12 @@ class GBusiness (Manage_Selenium):
         print ("! - Internal: Starting process of changing for:  - " + str(key))
         print ("Sleeping 1")
         time.sleep(1)
-        #if (key == "description") :
-        #    import pdb; pdb.set_trace()
         if (self.Click_by_xpath(Params['change']) == True ):
             print (" [Button.Change] - Done")
         else:
             print ("[Button.Change] - Error")
             return False
         time.sleep(1)
-       # if (key == "category") :
-       #     import pdb; pdb.set_trace()
         if (self.FillField_by_xpath(value, Params['input'], True)  == True) :
             print (" [Fill.Change] - Done")
         else:
