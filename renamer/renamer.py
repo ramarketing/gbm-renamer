@@ -49,7 +49,7 @@ class ThreadsWatch:
     def Block_Thread_by_id (self, id):
         pass
 
-    def ClasurePythonicApp():
+    def ClasurePythonicApp(self):
         #Kill app
         #Generate a logger
         # - What Thread faild and where.
@@ -83,7 +83,8 @@ class MWatcher :
         self.stopEvent.set()
 
 class Manage_Selenium :
-    def __init__():
+    def __init__(self):
+        self.driver = False
         pass
 
     def CheckField_Exist_by_xpath(self, xpath):
@@ -133,7 +134,11 @@ class Manage_Selenium :
         except NoSuchElementException:
             return False
         time.sleep(1)
-        Target.clear()
+
+        try:
+            Target.clear()
+        except:
+            pass
         if (Enter == True) :
             Target.send_keys(string + Keys.RETURN)
         return True
@@ -251,7 +256,6 @@ class Google_auth(Manage_Selenium):
         if (self.LoginStep == 3) :
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Text_Verify_are_you_by_xpath, Step3_Target_PTXT_Verify_are_you_GAUTH) == True):
                 print ("! Detectamos: Are you? body:Header") #OK
-
                 if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_Recovery_email_button_by_xpath, Step3_Target_PTXT_Confirm_email) == True):
                     print ("! Button clicked - Email Recovery")
                     self.Click_by_xpath(self.Target_Confirm_Recovery_email_button_by_xpath)
@@ -281,13 +285,11 @@ class Google_auth(Manage_Selenium):
                         TWatch.ListThreads['controller_login'].cancel()
                     else:
                         print ("! Myaccount page not loaded yet ! ")
-
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Step3_asking_captcha, Step3_Target_PTXT_Write_that_you_hear_or_see) == True):
                 print ("! Acccount was exploited, Right now are asking for captcha. No procedd")
                 self.Except_CredentialInvalid(credential)
                 self.driver.quit()
                 TWatch.ListThreads['controller_login'].cancel()
-
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Step3_ConfirmField_changing_password, Step3_Target_PTXT_Step3_Confirmation_password_Field) == True):
                 print ("! Acccount was exploited, Right now are asking for change of password. No procedd")
                 self.Except_CredentialInvalid(credential)
@@ -336,20 +338,32 @@ class GBusiness (Manage_Selenium):
 
         #Handlers_XPATH para (W_update_a_business) - BEGIN
 
-        self.W_Update_an_business_popup_get_started_button_xpath = '//*[@id="js"]/div[10]/div/div[2]/div[3]/div/content/span'
+        self.W_Update_an_business_popup_get_started_button_xpath = '//*[@id="js"]/div[10]/div/div[2]/div[3]/div/content'
         self.W_Update_an_business_popup_left_panel_info_xpath = '//*[@id="gb"]/div[4]/div[2]/div/div[1]/div[4]/a/span[2]'
 
         self.W_Update_an_business_button_edit_name_in_info_page_xpath = '//*[@id="ow47"]/div[2]/svg'
         self.W_Update_an_business_button_edit_category_in_info_page_xpath = '//*[@id="ow48"]/div[2]/svg'
 
+        #self.W_Update_an_business_button_change_name_of_business = '//*[@id="ow48"]/div[1]'
+        self.W_Update_an_business_button_change_name_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[2]/div[1]'
+        self.W_Update_an_business_button_input_name_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input'
+        self.W_Update_an_business_button_apply_name_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span'
 
+        self.W_Update_an_business_button_change_category_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[3]/div[1]'
+        self.W_Update_an_business_button_input_category_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/div[1]/input[2]'
+        self.W_Update_an_business_button_apply_category_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
 
+        self.W_Update_an_business_button_change_description_of_business = '//*[@id="ow36"]/div[1]/div[2]/content/div[11]/div[2]/div'
+        self.W_Update_an_business_button_input_description_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div[1]/textarea'
+        self.W_Update_an_business_button_apply_description_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
 
-
-
+        self.W_Update_an_business_button_change_website_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[9]'
+        self.W_Update_an_business_button_input_website_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input'
+        self.W_Update_an_business_button_apply_website_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
 
         #Control Validations - BEGIN
         self.BusinessValidation = 0
+        self.UpdateBusinessValidation = False
         #Control Validations - END
 
     def setDriver(self, driver):
@@ -370,19 +384,17 @@ class GBusiness (Manage_Selenium):
     def W_Update_an_business(self, credential):
         print ("Here we go with Update Business")
         print ("self.W_Update_an_business_step: " + str(self.W_Update_an_business_step))
-
         # 1 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 0) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
             print ("! - Redirigiendo a la lista de negocios de Google Business")
             if (self.GoLocationsPage() == True):
-               self.W_Update_an_business_step = 1
+                self.W_Update_an_business_step = 1
         # 1 - Lista de negocios - END
-
-
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 1) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
+            import pdb; pdb.set_trace()
             if (self.W_Update_an_business_Match == False) :
                 self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
                 if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
@@ -392,12 +404,12 @@ class GBusiness (Manage_Selenium):
                     for Item in Rows_Table:
                         Counter_Interactios_rows_table += 1
                         Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
-                        if(self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) :
+                        if((self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) or (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name)) == True) :
                             print ("! - La empresa es: " + credential.name)
                             print ("! - Salida del HTML: " + Columns[2].get_attribute('outerHTML'))
                             print ("! - Match de la empresa")
-                            self.W_Update_an_business_Match_Columns = Columns
                             self.W_Update_an_business_Match = True
+                            self.W_Update_an_business_Match_Columns = Columns
 
                             if(
                                 self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_required) == True or
@@ -412,60 +424,165 @@ class GBusiness (Manage_Selenium):
                                 print ("! -No es necesario la verificacion.  La empresa se encuentra verificada. ")
                         else:
                             print ("! - No match con la empresa")
-
                             if (Counter_Interactios_rows_table == Qty_Rows):
                                 print ("!- No hay match con la empresa que estamos buscando.")
                                 credential.report_fail()
                                 TWatch.ListThreads['VerifyBusiness'].cancel()
                                 return
             else:
-                print ("Getting outerHTML column 2 for business name")
-
-                BusinessTarget = self.W_Update_an_business_Match_Columns[2]
-                BusinessTarget = self.GettingElements_by_tag_name_with_target(BusinessTarget, 'a')
-
-                print (BusinessTarget.get_attribute('outerHTML'))
-
-
-
-                print ("Sleeping 999")
-                time.sleep(999)
-                #self.Sleep(999)
-
-                '''
-                if (.click() == True): :
-                    print ("Click done")
-                print ("! - Hicimos click para ingresar a la empresa.")
-                time.sleep(90)
-                self.W_Update_an_business_step = 2
-                '''
-
+                try:
+                    BusinessTarget = self.W_Update_an_business_Match_Columns[2]
+                    try:
+                        BusinessTarget.find_element_by_partial_link_text(credential.name).click()
+                    except:
+                        BusinessTarget.find_element_by_partial_link_text(credential.final_name).click()
+                    print ("! - Hicimos click para ingresar a la empresa.")
+                    self.W_Update_an_business_step = 2
+                except Exception as err:
+                    print (err)
 
             if (self.W_Update_an_business_step == 2) :
-                print ("Sleeping 1s")
-                time.sleep(1)
-                if (self.Get_outerHTML_and_check_partial_text_via_xpath('Get stared', self.W_Update_an_business_popup_get_started_button_xpath) == True) :
-                    print ("Presionando Get stared..s.")
-                else :
-                    self.W_Update_an_business_step = 3
+                print ("Sleeping 10s for get stared")
+                time.sleep(10)
+                #import pdb; pdb.set_trace()
+                if (self.Click_by_xpath(self.W_Update_an_business_popup_get_started_button_xpath) == True) :
+                    pass
+                self.W_Update_an_business_step = 3
 
             if (self.W_Update_an_business_step == 3) :
-                if (self.Click_by_xpath(self.W_Update_an_business_popup_left_panel_info_xpath) == True ):
+
+                #print ("! - Exc : Block 3")
+                #import pdb; pdb.set_trace()
+                Edit_Info_url = self.driver.current_url
+                Edit_Info_url = Edit_Info_url.replace('dashboard', 'edit')
+                try:
+                    self.driver.get(Edit_Info_url)
                     self.W_Update_an_business_step = 4
-                else:
-                    pass
+                except Exception as err:
+                    print ("! - Error en step 3:")
+                    print(err)
 
             if (self.W_Update_an_business_step == 4) :
-                if (self.Click_by_xpath(self.W_Update_an_business_button_edit_name_in_info_page_xpath) == True):
-                    print ("!- Waiting for filll")
-                else:
+                Data = dict()
+                #import pdb; pdb.set_trace()
+                Data['name'] = credential.final_name
+                Data['category'] = credential.final_category_1
+                Data['description'] = credential.final_description
+                Data['website'] = credential.final_website
+
+                print ("### Values ###")
+                print (Data['name'], Data['category'], Data['description'], Data['website'])
+
+
+                print ("Sleeping 6 seconds for load info page")
+                time.sleep(6)
+                print ("! - Here we are going to update business")
+                for key, value in Data.items():
+                    if (not value) :
+                        print ("Skipping process, why value is false")
+                    print ("El valor de key: " + str(key)  + "  y el valor de value: " + str(value))
+                    Target_for_change = self.ObtainParam_ToUpdate_Business(key, value)
+                    if (Target_for_change == False) :
+                        print ("! - Key value no exist to update")
+                        break
+                    time.sleep(1)
+                    if (self.UpdateBusiness_in_info_page(Target_for_change, key, value) == True) :
+                        print ("Change of business done for : " + str(key))
+                    else :
+                        print ("We could not change this value: " + (key))
+                self.W_Update_an_business_step = 5
+
+            if (self.W_Update_an_business_step == 5) :
+                credential.report_renamed()
+                print ("! - La empresa ha sido renombrada. ")
+                self.UpdateBusinessValidation = True
+                TWatch.ListThreads['UpdateBusiness'].cancel()
+
+
+
+                '''
+                try:
+                    self.driver.find_element_by_xpath('//*[@id="ow48"]/div[1]').click()
+                    self.W_Update_an_business_step = 5
+                except:
                     pass
+                '''
 
+    def UpdateBusiness_in_info_page(self, Params, key, value) :
 
+        print ("! - Internal: Starting process of changing for:  - " + str(key))
+        print ("Sleeping 1")
+        time.sleep(1)
+        #if (key == "description") :
+        #    import pdb; pdb.set_trace()
+        if (self.Click_by_xpath(Params['change']) == True ):
+            print (" [Button.Change] - Done")
+        else:
+            print ("[Button.Change] - Error")
+            return False
+        time.sleep(1)
+       # if (key == "category") :
+       #     import pdb; pdb.set_trace()
+        if (self.FillField_by_xpath(value, Params['input'], True)  == True) :
+            print (" [Fill.Change] - Done")
+        else:
+            print ("[Fill.Change] - Error")
+            return False
+        time.sleep(1)
+        if (self.Click_by_xpath(Params['apply']) == True) :
+            print ("[Button.Click] - Done")
+        else:
+            print ("[Button.Click] - Error")
+            return False
+        print ("! - Waiting to save (10 seconds)")
+        time.sleep(10)
+        return True
+
+    def ObtainParam_ToUpdate_Business (self, key, value):
+
+        '''
+        [ self.W_Update_an_business_button_change_name_of_business ]
+        [ self.W_Update_an_business_button_input_name_of_business ]
+        [ self.W_Update_an_business_button_apply_name_of_business ]
+
+        [ self.W_Update_an_business_button_change_category_of_business ]
+        [ self.W_Update_an_business_button_input_category_of_business ]
+        [ self.W_Update_an_business_button_apply_category_of_business ]
+
+        [ self.W_Update_an_business_button_change_description_of_business ]
+        [ self.W_Update_an_business_button_input_description_of_business ]
+        [ self.W_Update_an_business_button_apply_description_of_business ]
+
+        [ self.W_Update_an_business_button_change_website_of_business ]
+        [ self.W_Update_an_business_button_input_website_of_business ]
+        [ self.W_Update_an_business_button_apply_website_of_business ]
+        '''
+
+        ReturnValue = dict()
+
+        if (key == 'name') :
+            ReturnValue['change'] = self.W_Update_an_business_button_change_name_of_business
+            ReturnValue['input'] = self.W_Update_an_business_button_input_name_of_business
+            ReturnValue['apply'] = self.W_Update_an_business_button_apply_name_of_business
+        elif (key == 'category') :
+            ReturnValue['change'] = self.W_Update_an_business_button_change_category_of_business
+            ReturnValue['input'] = self.W_Update_an_business_button_input_category_of_business
+            ReturnValue['apply'] = self.W_Update_an_business_button_apply_category_of_business
+        elif (key == 'description') :
+            ReturnValue['change'] = self.W_Update_an_business_button_change_description_of_business
+            ReturnValue['input'] = self.W_Update_an_business_button_input_description_of_business
+            ReturnValue['apply'] = self.W_Update_an_business_button_apply_description_of_business
+        elif (key == 'website') :
+            ReturnValue['change'] = self.W_Update_an_business_button_change_website_of_business
+            ReturnValue['input'] = self.W_Update_an_business_button_input_website_of_business
+            ReturnValue['apply'] = self.W_Update_an_business_button_apply_website_of_business
+        else :
+            print ("! - Printing right now value inneed. ")
+            return False
+        ReturnValue['value'] = value
+        return ReturnValue
 
     def W_Verify_an_business(self, credential):
-
-
         print ("W_Verify_an_business_step -> MWatcher Running")
         print ("W_Verify_an_business_step: " + str(self.W_Verify_an_business_step))
 
@@ -473,12 +590,12 @@ class GBusiness (Manage_Selenium):
 
         # Verify_an_business_step:
         # Codigos:
-        # 1 - Lista de negocios
+        # 1  - Lista de negocios
         # 11 - Pedimos lista de negocios con https://business.google.com/locations
         # 12 - Obteniendo la lista
         # 13 - Targeteando a la empresa
         # 14 - Clicleando el Verify Now
-        # 2 - Detectando "Chosse a way to verify"
+        # 2 -  Detectando "Chosse a way to verify"
         # 21 - Detectamos el boton "text"
         # 22 - Hacemos clic, Loop con Matrix (120 timeout)
         # 21 - Detectamos el Enter code
@@ -491,7 +608,7 @@ class GBusiness (Manage_Selenium):
         if (self.W_Verify_an_business_step == 0) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
             print ("! - Redirigiendo a la lista de negocios de Google Business")
-            if (self.GoLocationsPage() == True):
+            if (self.GoLocationsPage() == True) :
                self.W_Verify_an_business_step = 1
         # 1 - Lista de negocios - END
 
@@ -596,7 +713,7 @@ class GBusiness (Manage_Selenium):
                 if (RinRinCellPhone_Animate == True) :
                     print ("! - Sleeping 1 : RinRin Cellphone Animation appear.")
                     time.sleep(1)
-                    Clicking_RinRinCellPhone = Click_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath)
+                    Clicking_RinRinCellPhone = self.Click_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath)
                     if (Clicking_RinRinCellPhone == True):
                         print ("! - Sleeping 1 : RinRin Cellphone Animation appear.")
                         time.sleep(10)
@@ -755,20 +872,19 @@ class Renamer(): #Master for robot
                 continue
 
             counter = counter + 1
-
             OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
+
             GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
             GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
             GBusiness_handle.Verify_an_business_Skip = False # Skip Reset.
             GBusiness_handle.W_Verify_an_business_Match = False # Business wan't found yet
             GBusiness_handle.W_Update_an_business_step = 0
             GBusiness_handle.W_Update_an_business_Match = False
-
+            GBusiness_handle.UpdateBusinessValidation = False
             credential.can_rename = True
 
             if (counter != 1) :
                 continue
-
 
             print(credential.name, credential.email, credential.password, credential.recovery_email)
 
@@ -801,12 +917,16 @@ class Renamer(): #Master for robot
                 					Category= True
                 )
                 #Calling MWatcher to start process of Update
-                BusinessUpdate = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', credential, True)
+                BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', credential, True)
+                if (GBusiness_handle.UpdateBusinessValidation == True) :
+                    if (credential.date_renamed and not credential.date_validation) :
+                        VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
+
 
             else: # No, Just we need verify.
-                pass
-            		#Calling MWatcher to start process of Verification
-
+                if (credential.date_renamed and not credential.date_validation) :
+                    #Calling MWatcher to start process of Verification
+                    VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
 
             print ("!- Hemos concluido con la credenecial de business: " + credential.name )
             GBusiness_handle.driver.quit()
