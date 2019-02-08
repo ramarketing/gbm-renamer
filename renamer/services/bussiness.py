@@ -41,7 +41,7 @@ class Business(BaseEntity):
             self.update('date_fail', datetime.now())
         return response
 
-    def report_success(self):
+    def report_renamed(self):
         if self.date_renamed:
             return
         response = self.service.request(
