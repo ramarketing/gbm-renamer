@@ -619,7 +619,10 @@ class GBusiness (Manage_Selenium):
                     for Item in Rows_Table:
                         Counter_Interactios_rows_table += 1
                         Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
-                        if(self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) :
+                        if(
+                            self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True or
+                            (credential.final_name and self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name) == True)
+                        ):
                             print ("! - La empresa es: " + credential.name)
                             print ("! - Salida del HTML: " + Columns[2].get_attribute('outerHTML'))
                             print ("! - Match de la empresa")
@@ -913,37 +916,15 @@ class Renamer(): #Master for robot
                 )
                 #Calling MWatcher to start process of Update
                 BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', credential, True)
-                if (GBusiness_handle.UpdateBusinessValidation == True) :
-                    if (credential.date_renamed and not credential.date_validation) :
-                        VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
 
-
-            else: # No, Just we need verify.
-                if (credential.date_renamed and not credential.date_validation) :
-                    #Calling MWatcher to start process of Verification
-                    VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
+            if (credential.date_renamed and not credential.date_validation) :
+                #Calling MWatcher to start process of Verification
+                VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
 
             print ("!- Hemos concluido con la credenecial de business: " + credential.name )
             GBusiness_handle.driver.quit()
 
-
-
-            '''
-
-            if (credential.can_rename == True) :
-                print ("! - Procediendo a hacer rename")
-                if (GBusiness_handle.BusinessValidation == 1):
-                    print ("Let call: MainPage() Business")
-                    GBusiness_handle.GoMainPage()
-                    OGAuth.driver.quit()
-                    time.sleep(4)
-            else :
-
-                GBusiness_handle.driver.quit()
-                continue
-						'''
-
-            self.Finished_app()
+        # self.Finished_app()
 
 
 
