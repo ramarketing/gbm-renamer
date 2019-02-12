@@ -362,6 +362,16 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_input_website_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input'
         self.W_Update_an_business_button_apply_website_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
 
+        self.W_Update_an_business_button_change_address_of_business = '//*[@id="ow50"]/div[3]/span'
+        self.W_Update_an_business_button_input_address-street-address_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[2]/input'
+        self.W_Update_an_business_button_input_address-city_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[4]/input'
+        self.W_Update_an_business_button_combobox_address-state_of_business = '//*[@id=":wu"]'
+        self.W_Update_an_business_button_input_address-zipcode_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[6]/input'
+        self.W_Update_an_business_button_apply_address_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span'
+
+
+
+
         #Control Validations - BEGIN
         self.BusinessValidation = 0
         self.UpdateBusinessValidation = False
@@ -473,7 +483,6 @@ class GBusiness (Manage_Selenium):
             print ("### Values ###")
             print (Data['name'], Data['category'], Data['description'], Data['website'])
 
-
             print ("Sleeping 6 seconds for load info page")
             time.sleep(6)
             print ("! - Here we are going to update business")
@@ -498,9 +507,6 @@ class GBusiness (Manage_Selenium):
             print ("! - La empresa ha sido renombrada. ")
             self.UpdateBusinessValidation = True
             TWatch.ListThreads['UpdateBusiness'].cancel()
-
-
-
             '''
             try:
                 self.driver.find_element_by_xpath('//*[@id="ow48"]/div[1]').click()
