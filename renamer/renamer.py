@@ -305,7 +305,7 @@ class GBusiness (Manage_Selenium):
 
         #URL TO REDIRECT IN SAME GOOGLE -- BEGIN
         self.MainPage = "https://business.google.com/"
-        self.Url_List_of_business = 'https://business.google.com/'
+        self.Url_List_of_business = 'https://business.google.com/locations/'
         #URL TO REDIRECT IN SAME GOOGLE -- END
 
 
@@ -390,7 +390,7 @@ class GBusiness (Manage_Selenium):
             time.sleep(0.25) #Sleeping 0.25 Seconds
             print ("! - Redirigiendo a la lista de negocios de Google Business")
             self.GoLocationsPage()
-            self.W_Update_an_business_step = 3
+            self.W_Update_an_business_step = 1
         # 1 - Lista de negocios - END
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 1) :
@@ -863,65 +863,72 @@ class Renamer(): #Master for robot
 
         counter = 0
 
-        for credential in self.credential_list:
-            if all([
-                credential.date_renamed,
-                credential.date_validation
-            ]):
-                continue
+        while self.credential_list.next:
+            if self.credential_list.count == 0:
+                break
+            elif counter == self.credential_list.count:
+                self.credential_list.get_next()
 
-            counter = counter + 1
-            OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
+            for credential in self.credential_list:
+                counter += 1
 
-            GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
-            GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
-            GBusiness_handle.Verify_an_business_Skip = False # Skip Reset.
-            GBusiness_handle.W_Verify_an_business_Match = False # Business wan't found yet
-            GBusiness_handle.W_Update_an_business_step = 0
-            GBusiness_handle.W_Update_an_business_Match = False
-            GBusiness_handle.UpdateBusinessValidation = False
+                if all([
+                    credential.date_renamed,
+                    credential.date_validation
+                ]):
+                    continue
 
-            print(credential.name, credential.email, credential.password, credential.recovery_email)
+                OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
 
-            if (self.verification_of_credential(credential) == False) :
-                logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
-                print (Skiping_to_next_credential)
-                continue
-            # THERE VERIFICATIONfrom services import BusinessService
-            # CONSIDERATE EMAIL IS EMAIL. WITH @ ALSO
-            # PASSWORD (NOTHING SPECIAL)
-            if (self.is_Driver_GAuth_loaded() == True) :
-                OGAuth.RunDriver()
-                GBusiness_handle.setDriver(OGAuth.driver)
-            try:
-                print ("# Email: " + credential.email)
-                Controller_Login = MWatcher(0.5, 'controller_login' , 'OGAuth', 'W_do_login', TWache_GAuth_login, credential, True)
-            except CredentialInvalid:
-                continue
+                GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
+                GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
+                GBusiness_handle.Verify_an_business_Skip = False # Skip Reset.
+                GBusiness_handle.W_Verify_an_business_Match = False # Business wan't found yet
+                GBusiness_handle.W_Update_an_business_step = 0
+                GBusiness_handle.W_Update_an_business_Match = False
+                GBusiness_handle.UpdateBusinessValidation = False
 
-            if (OGAuth.SucessLogin == 1) :
-                print ("Setting up driver for Google Bussiness")
-                print ("Sleeping 1s")
-                time.sleep(1)
+                print(credential.name, credential.email, credential.password, credential.recovery_email)
 
-            if not credential.date_renamed: # Can we rename this business? YES
-                Data=dict()
-                Data['credential'] = credential
-                Data['Parameters'] = dict(
-                    Name=True,
-                    Category=False
-                )
-                #Calling MWatcher to start process of Update
-                BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', credential, True)
+                if (self.verification_of_credential(credential) == False) :
+                    logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
+                    print (Skiping_to_next_credential)
+                    continue
+                # THERE VERIFICATIONfrom services import BusinessService
+                # CONSIDERATE EMAIL IS EMAIL. WITH @ ALSO
+                # PASSWORD (NOTHING SPECIAL)
+                if (self.is_Driver_GAuth_loaded() == True) :
+                    OGAuth.RunDriver()
+                    GBusiness_handle.setDriver(OGAuth.driver)
+                try:
+                    print ("# Email: " + credential.email)
+                    Controller_Login = MWatcher(0.5, 'controller_login' , 'OGAuth', 'W_do_login', TWache_GAuth_login, credential, True)
+                except CredentialInvalid:
+                    continue
 
-            if not credential.date_validation:
-                #Calling MWatcher to start process of Verification
-                VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
+                if (OGAuth.SucessLogin == 1) :
+                    print ("Setting up driver for Google Bussiness")
+                    print ("Sleeping 1s")
+                    time.sleep(1)
 
-            print ("!- Hemos concluido con la credenecial de business: " + credential.name )
-            GBusiness_handle.driver.quit()
+                if not credential.date_renamed: # Can we rename this business? YES
+                    Data=dict()
+                    Data['credential'] = credential
+                    Data['Parameters'] = dict(
+                        Name=True,
+                        Category=False
+                    )
+                    #Calling MWatcher to start process of Update
+                    BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', credential, True)
 
-        # self.Finished_app()
+                if not credential.date_validation:
+                    #Calling MWatcher to start process of Verification
+                    VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
+
+                print ("!- Hemos concluido con la credenecial de business: " + credential.name )
+                GBusiness_handle.driver.quit()
+
+        self.Finished_app()
 
 
 
