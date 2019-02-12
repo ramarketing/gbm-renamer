@@ -256,7 +256,10 @@ class Google_auth(Manage_Selenium):
         if (self.LoginStep == 3) :
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Text_Verify_are_you_by_xpath, Step3_Target_PTXT_Verify_are_you_GAUTH) == True):
                 print ("! Detectamos: Are you? body:Header") #OK
-                if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_Recovery_email_button_by_xpath, Step3_Target_PTXT_Confirm_email) == True):
+                if (
+                    self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_Recovery_email_button_by_xpath, Step3_Target_PTXT_Confirm_email) == True or
+                    self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_Recovery_email_button_by_xpath, Step3_Target_PTXT_Confirm_email_en) == True
+                ):
                     print ("! Button clicked - Email Recovery")
                     self.Click_by_xpath(self.Target_Confirm_Recovery_email_button_by_xpath)
                     self.LoginStep_ghost = 31
