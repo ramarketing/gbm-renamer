@@ -79,7 +79,7 @@ class MWatcher :
                 #eval('OGAuth.W_do_login(self.Data)')
 
     def cancel(self) :
-        print (TWatch_Cancel + self.pretty_name_process)
+        print(TWatch_Cancel + self.pretty_name_process)
         self.stopEvent.set()
 
 class Manage_Selenium :
@@ -92,79 +92,69 @@ class Manage_Selenium :
             time.sleep(1)
             self.driver.find_elements_by_xpath(xpath)
         except NoSuchElementException:
-            print ("No se encontro")
+            print('No se encontro el elemento "{}"'.format(xpath))
             return False
         return True
 
     def Get_outerHTML_and_check_partial_text_via_xpath(self, xpath, string):
         try:
             time.sleep(1)
-            self.driver.find_element_by_xpath(xpath).get_attribute('outerHTML')
+            target = self.driver.find_element_by_xpath(xpath).get_attribute('outerHTML')
         except NoSuchElementException:
-            return False
-        target = self.driver.find_element_by_xpath(xpath).get_attribute('outerHTML')
-        if (string in target) :
-            return True
-        else:
-            return False
+            target = False
+        return string in target if target else False
 
     def Get_outerHTML_and_check_partial_text_via_target(self, target, string):
         try:
             time.sleep(1)
-            target.get_attribute('outerHTML')
+            target = target.get_attribute('outerHTML')
         except NoSuchElementException:
-            return False
-        target = target.get_attribute('outerHTML')
-        if (string in target) :
-            return True
-        else:
-            return False
+            target = None
+        return string in target if target else False
 
     def GetText_IntoXpath (self, xpath):
         try:
-            self.driver.find_elements_by_xpath(xpath)
+            target = self.driver.find_elements_by_xpath(xpath)
         except NoSuchElementException:
-            return False
-        target = self.driver.find_elements_by_xpath(xpath)
+            target = False
         return target
 
     def FillField_by_xpath(self, string, xpath, Enter=False):
         try:
-            Target = self.driver.find_element_by_xpath(xpath)
+            target = self.driver.find_element_by_xpath(xpath)
         except NoSuchElementException:
             return False
         time.sleep(1)
 
         try:
-            Target.clear()
+            target.clear()
         except:
             pass
         if (Enter == True) :
-            Target.send_keys(string + Keys.RETURN)
+            target.send_keys(string + Keys.RETURN)
         return True
 
     def Click_by_xpath(self, xpath) :
         try:
-            Target = self.driver.find_element_by_xpath(xpath)
+            target = self.driver.find_element_by_xpath(xpath)
         except NoSuchElementException:
             return False
         time.sleep(1)
-        Target.click()
+        target.click()
         return True
 
     def GettingElement_by_xpath(self, xpath):
         try:
-            Value_of_return = self.driver.find_element_by_xpath(xpath)
+            value = self.driver.find_element_by_xpath(xpath)
         except NoSuchElementException:
             return False
-        return Value_of_return
+        return value
 
     def GettingElements_by_tag_name_with_target (self, target, tagname):
         try:
-            Value_of_return = target.find_elements_by_tag_name(tagname)
+            return target.find_elements_by_tag_name(tagname)
         except NoSuchElementException:
             return False
-        return Value_of_return
 
 
 class Google_auth(Manage_Selenium):
@@ -202,7 +192,7 @@ class Google_auth(Manage_Selenium):
         self.LoginStep_ghost = 1
         self.StepError = 0
 
-    def Except_CredentialInvalid (self, credential):
+    def Except_CredentialInvalid(self, credential):
         logger(instance=credential, data='Reported fail')
         credential.report_fail()
 
@@ -248,13 +238,18 @@ class Google_auth(Manage_Selenium):
                     else :
                         self.LoginStep = 3
                         print ("#Prepared to go to Step #3")
+
         #There we verify if we access directly without verification of Recovery Email
         if(self.driver.current_url.find('myaccount.google.com') != -1 and self.LoginStep == 3):
             print ("! Login successfull without verification")
             self.SucessLogin = 1
             TWatch.ListThreads['controller_login'].cancel()
+
         if (self.LoginStep == 3) :
-            if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Text_Verify_are_you_by_xpath, Step3_Target_PTXT_Verify_are_you_GAUTH) == True):
+            if (
+                self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Text_Verify_are_you_by_xpath, Step3_Target_PTXT_Verify_are_you_GAUTH) == True or
+                self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Text_Verify_are_you_by_xpath, Step3_Target_PTXT_Verify_are_you_GAUTH_en) == True
+            ):
                 print ("! Detectamos: Are you? body:Header") #OK
                 if (
                     self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_Recovery_email_button_by_xpath, Step3_Target_PTXT_Confirm_email) == True or
