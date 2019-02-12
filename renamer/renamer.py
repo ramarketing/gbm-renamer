@@ -304,7 +304,7 @@ class GBusiness (Manage_Selenium):
 
         #URL TO REDIRECT IN SAME GOOGLE -- BEGIN
         self.MainPage = "https://business.google.com/"
-        self.Url_List_of_business = 'https://business.google.com/locations'
+        self.Url_List_of_business = 'https://business.google.com/'
         #URL TO REDIRECT IN SAME GOOGLE -- END
 
 
@@ -388,8 +388,8 @@ class GBusiness (Manage_Selenium):
         if (self.W_Update_an_business_step == 0) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
             print ("! - Redirigiendo a la lista de negocios de Google Business")
-            if (self.GoLocationsPage() == True):
-                self.W_Update_an_business_step = 1
+            self.GoLocationsPage()
+            self.W_Update_an_business_step = 3
         # 1 - Lista de negocios - END
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 1) :
@@ -442,70 +442,71 @@ class GBusiness (Manage_Selenium):
                 except Exception as err:
                     print (err)
 
-            if (self.W_Update_an_business_step == 2) :
-                print ("Sleeping 10s for get stared")
-                time.sleep(10)
+        if (self.W_Update_an_business_step == 2) :
+            print ("Sleeping 10s for get stared")
+            time.sleep(10)
 
-                if (self.Click_by_xpath(self.W_Update_an_business_popup_get_started_button_xpath) == True) :
-                    pass
-                self.W_Update_an_business_step = 3
+            if (self.Click_by_xpath(self.W_Update_an_business_popup_get_started_button_xpath) == True) :
+                pass
+            self.W_Update_an_business_step = 3
 
-            if (self.W_Update_an_business_step == 3) :
+        if (self.W_Update_an_business_step == 3) :
 
-                #print ("! - Exc : Block 3")
-                Edit_Info_url = self.driver.current_url
-                Edit_Info_url = Edit_Info_url.replace('dashboard', 'edit')
-                try:
-                    self.driver.get(Edit_Info_url)
-                    self.W_Update_an_business_step = 4
-                except Exception as err:
-                    print ("! - Error en step 3:")
-                    print(err)
+            #print ("! - Exc : Block 3")
+            Edit_Info_url = self.driver.current_url
+            Edit_Info_url = Edit_Info_url.replace('dashboard', 'edit')
+            try:
+                self.driver.get(Edit_Info_url)
+                self.W_Update_an_business_step = 4
+            except Exception as err:
+                print ("! - Error en step 3:")
+                print(err)
 
-            if (self.W_Update_an_business_step == 4) :
-                Data = dict()
-                Data['name'] = credential.final_name
-                Data['category'] = credential.final_category_1
-                Data['description'] = credential.final_description
-                Data['website'] = credential.final_website
+        if (self.W_Update_an_business_step == 4) :
+            Data = dict()
+            Data['name'] = credential.final_name
+            Data['category'] = credential.final_category_1
+            Data['description'] = credential.final_description
+            Data['website'] = credential.final_website
 
-                print ("### Values ###")
-                print (Data['name'], Data['category'], Data['description'], Data['website'])
+            print ("### Values ###")
+            print (Data['name'], Data['category'], Data['description'], Data['website'])
 
 
-                print ("Sleeping 6 seconds for load info page")
-                time.sleep(6)
-                print ("! - Here we are going to update business")
-                for key, value in Data.items():
-                    if (not value) :
-                        print ("Skipping process, why value is false")
-                    print ("El valor de key: " + str(key)  + "  y el valor de value: " + str(value))
-                    Target_for_change = self.ObtainParam_ToUpdate_Business(key, value)
-                    if (Target_for_change == False) :
-                        print ("! - Key value no exist to update")
-                        break
-                    time.sleep(1)
-                    if (self.UpdateBusiness_in_info_page(Target_for_change, key, value) == True) :
-                        print ("Change of business done for : " + str(key))
-                    else :
-                        print ("We could not change this value: " + (key))
+            print ("Sleeping 6 seconds for load info page")
+            time.sleep(6)
+            print ("! - Here we are going to update business")
+            for key, value in Data.items():
+                if (not value) :
+                    print ("Skipping process, why value is false")
+                    continue
+                print ("El valor de key: " + str(key)  + "  y el valor de value: " + str(value))
+                Target_for_change = self.ObtainParam_ToUpdate_Business(key, value)
+                if (Target_for_change == False) :
+                    print ("! - Key value no exist to update")
+                    continue
+                time.sleep(1)
+                if (self.UpdateBusiness_in_info_page(Target_for_change, key, value) == True) :
+                    print ("Change of business done for : " + str(key))
+                else :
+                    print ("We could not change this value: " + (key))
+            self.W_Update_an_business_step = 5
+
+        if (self.W_Update_an_business_step == 5) :
+            credential.report_renamed()
+            print ("! - La empresa ha sido renombrada. ")
+            self.UpdateBusinessValidation = True
+            TWatch.ListThreads['UpdateBusiness'].cancel()
+
+
+
+            '''
+            try:
+                self.driver.find_element_by_xpath('//*[@id="ow48"]/div[1]').click()
                 self.W_Update_an_business_step = 5
-
-            if (self.W_Update_an_business_step == 5) :
-                credential.report_renamed()
-                print ("! - La empresa ha sido renombrada. ")
-                self.UpdateBusinessValidation = True
-                TWatch.ListThreads['UpdateBusiness'].cancel()
-
-
-
-                '''
-                try:
-                    self.driver.find_element_by_xpath('//*[@id="ow48"]/div[1]').click()
-                    self.W_Update_an_business_step = 5
-                except:
-                    pass
-                '''
+            except:
+                pass
+            '''
 
     def UpdateBusiness_in_info_page(self, Params, key, value) :
 
@@ -862,10 +863,9 @@ class Renamer(): #Master for robot
         counter = 0
 
         for credential in self.credential_list:
-            if any([
-                credential.date_validation,
-                credential.date_success,
-                credential.date_fail
+            if all([
+                credential.date_renamed,
+                credential.date_validation
             ]):
                 continue
 
@@ -879,10 +879,6 @@ class Renamer(): #Master for robot
             GBusiness_handle.W_Update_an_business_step = 0
             GBusiness_handle.W_Update_an_business_Match = False
             GBusiness_handle.UpdateBusinessValidation = False
-            credential.can_rename = True
-
-            if (counter != 1) :
-                continue
 
             print(credential.name, credential.email, credential.password, credential.recovery_email)
 
@@ -907,17 +903,17 @@ class Renamer(): #Master for robot
                 print ("Sleeping 1s")
                 time.sleep(1)
 
-            if (credential.can_rename == True): # Can we rename this business? YES
+            if not credential.date_renamed: # Can we rename this business? YES
                 Data=dict()
                 Data['credential'] = credential
                 Data['Parameters'] = dict(
-                			        Name=True,
-                					Category= True
+                    Name=True,
+                    Category=False
                 )
                 #Calling MWatcher to start process of Update
                 BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', credential, True)
 
-            if (credential.date_renamed and not credential.date_validation) :
+            if not credential.date_validation:
                 #Calling MWatcher to start process of Verification
                 VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
 

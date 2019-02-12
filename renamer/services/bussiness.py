@@ -92,3 +92,9 @@ class BusinessService(BaseService):
     endpoint = '/renamer/business/'
     entity = Business
     entity_list = BusinessList
+
+    def get_list(self, **kwargs):
+        if 'limit' not in kwargs:
+            kwargs['limit'] = 98
+        r = self.request('get', params=kwargs)
+        return self.entity_list(self, r)
