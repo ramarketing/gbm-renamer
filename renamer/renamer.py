@@ -305,7 +305,7 @@ class GBusiness (Manage_Selenium):
 
         #URL TO REDIRECT IN SAME GOOGLE -- BEGIN
         self.MainPage = "https://business.google.com/"
-        self.Url_List_of_business = 'https://business.google.com/locations/'
+        self.Url_List_of_business = 'https://business.google.com/locations'
         #URL TO REDIRECT IN SAME GOOGLE -- END
 
 
