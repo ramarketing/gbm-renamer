@@ -261,7 +261,10 @@ class Google_auth(Manage_Selenium):
                 else :
                     self.LoginStep_ghost = 31
                 if (self.LoginStep_ghost == 31):
-                    if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_message_email_recovery_by_xpath, Step3_Target_PTXT_Confirm_your_email) == True and self.LoginStep_ghost == 31 ) :
+                    if (
+                        (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_message_email_recovery_by_xpath, Step3_Target_PTXT_Confirm_your_email) == True and self.LoginStep_ghost == 31) or
+                        (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Confirm_message_email_recovery_by_xpath, Step3_Target_PTXT_Confirm_your_email_en) == True and self.LoginStep_ghost == 31)
+                    ):
                         self.LoginStep_ghost = 32
                         print ("! Stage to fillfield recovery_email")
                 if (self.LoginStep_ghost == 32) :

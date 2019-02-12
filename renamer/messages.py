@@ -20,6 +20,7 @@ Step3_Target_PTXT_Confirm_email = 'Confirma el correo de recup'
 Step3_Target_PTXT_Confirm_email_en = 'Confirm your recovery email'
 Step3_Target_PTXT_Error_Email_Recovery = 'El correo electrónico que ingresaste es incorrecto'
 Step3_Target_PTXT_Confirm_your_email = 'Confirma la dirección del correo de recuperación que '
+Step3_Target_PTXT_Confirm_your_email_en = 'Confirm the recovery email address you added to'
 Step3_Target_PTXT_Write_that_you_hear_or_see = 'Escribe el texto que escuches o'
 Step3_Target_PTXT_Step3_Confirmation_password_Field = 'Confirmaci'
 
