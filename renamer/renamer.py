@@ -867,7 +867,7 @@ class Renamer(): #Master for robot
             if self.credential_list.count == 0:
                 break
             elif counter == self.credential_list.count:
-                self.credential_list.get_next()
+                self.credential_list.get_next_page()
 
             for credential in self.credential_list:
                 counter += 1
