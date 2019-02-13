@@ -531,6 +531,113 @@ class GBusiness (Manage_Selenium):
             except:
                 pass
             '''
+    def W_Update_an_business_address (self, credential):
+        print ("Here we go with Update Business")
+        print ("self.W_Update_an_business_address_step: " + str(self.W_Update_an_business_address_step))
+        # 1 - Lista de negocios - BEGIN
+        if (self.W_Update_an_business_address_step == 0) :
+            time.sleep(0.25) #Sleeping 0.25 Seconds
+            print ("! - Redirigiendo a la lista de negocios de Google Business")
+            self.GoLocationsPage()
+            self.W_Update_an_business_address_step = 1
+        # 1 - Lista de negocios - END
+        # 11 - Lista de negocios - BEGIN
+        if (self.W_Update_an_business_address_step == 1) :
+            time.sleep(0.25) #Sleeping 0.25 Seconds
+            if (self.W_Update_an_business_Match == False) :
+                self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
+                if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
+                    Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
+                    Qty_Rows = len(Rows_Table)
+                    Counter_Interactios_rows_table = 0
+                    for Item in Rows_Table:
+                        Counter_Interactios_rows_table += 1
+                        Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
+                        if(
+                            (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) or
+                            (credential.final_name and (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name)) == True)):
+                            print ("! - La empresa es: " + credential.name)
+                            print ("! - Salida del HTML: " + Columns[2].get_attribute('outerHTML'))
+                            print ("! - Match de la empresa")
+                            self.W_Update_an_business_Match = True
+                            self.W_Update_an_business_Match_Columns = Columns
+
+                            if(
+                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_required) == True or
+                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_pending) == True
+                            ):
+                                print ("! - La empresa no se encuentra verificada, Vamos a veriricarla")
+                                break
+                            else :
+                                credential.report_validation()
+                                GBusiness_handle.BusinessValidation = 1
+                                TWatch.ListThreads['VerifyBusiness'].cancel()
+                                print ("! -No es necesario la verificacion.  La empresa se encuentra verificada. ")
+                        else:
+                            print ("! - No match con la empresa")
+                            if (Counter_Interactios_rows_table == Qty_Rows):
+                                print ("!- No hay match con la empresa que estamos buscando.")
+                                credential.report_fail()
+                                TWatch.ListThreads['VerifyBusiness'].cancel()
+                                return
+            else:
+                try:
+                    BusinessTarget = self.W_Update_an_business_Match_Columns[2]
+                    try:
+                        BusinessTarget.find_element_by_partial_link_text(credential.name).click()
+                    except:
+                        BusinessTarget.find_element_by_partial_link_text(credential.final_name).click()
+                    print ("! - Hicimos click para ingresar a la empresa.")
+                    self.W_Update_an_business_address_step = 2
+                except Exception as err:
+                    print (err)
+
+        if (self.W_Update_an_business_address_step == 2) :
+            print ("Sleeping 10s for get stared")
+            time.sleep(10)
+
+            if (self.Click_by_xpath(self.W_Update_an_business_popup_get_started_button_xpath) == True) :
+                pass
+            self.W_Update_an_business_address_step = 3
+
+        if (self.W_Update_an_business_address_step == 3) :
+
+            #print ("! - Exc : Block 3")
+            Edit_Info_url = self.driver.current_url
+            Edit_Info_url = Edit_Info_url.replace('dashboard', 'edit')
+            try:
+                self.driver.get(Edit_Info_url)
+                self.W_Update_an_business_address_step = 4
+            except Exception as err:
+                print ("! - Error en step 3:")
+                print(err)
+
+        if (self.W_Update_an_business_address_step == 4) :
+            Data = dict()
+            Data['address'] = credential.final_address
+            Data['city'] = credential.final_city
+            Data['zipcode'] = credential.final_zipcode
+            Data['state'] = credential.final_state
+
+            print ("### Values ###")
+            print (Data['address'], Data['city'], Data['state'], Data['zipcode'])
+
+            print ("Sleeping 6 seconds for load info page")
+            time.sleep(6)
+            print ("! - Here we are going to update address for a business")
+                if (self.UpdateBusiness_in_info_page(Data) == True) :
+                    print ("Change of business done for address")
+                else :
+                    print ("We could not change this value: " + (key))
+            self.W_Update_an_business_address_step = 5
+
+        if (self.W_Update_an_business_address_step == 5) :
+            #credential.report_renamed()
+            print ("! - La empresa ha sido cambiada de direccion. ")
+            self.UpdateBusinessChangeAddress = True
+            TWatch.ListThreads['UpdateBusiness'].cancel()
+
+
 
     def UpdateBusiness_in_info_page_address(self, Params) :
 
