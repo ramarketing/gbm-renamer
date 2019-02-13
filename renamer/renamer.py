@@ -322,6 +322,9 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_Match = False
         # Control of flow Verify_an_business_step - END
 
+        self.W_Update_an_business_address_step = 0
+        self.W_Update_an_business_address_Match = False
+
 
         # Return from control Flow  - BEGIN
         self.Verify_an_business_Skip = False
@@ -377,6 +380,19 @@ class GBusiness (Manage_Selenium):
         self.BusinessValidation = 0
         self.UpdateBusinessValidation = False
         #Control Validations - END
+
+    def setDefault_initValues (self) :
+
+        GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
+        GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
+        GBusiness_handle.Verify_an_business_Skip = False # Skip Reset.
+        GBusiness_handle.W_Verify_an_business_Match = False # Business wan't found yet
+        GBusiness_handle.W_Update_an_business_step = 0
+        GBusiness_handle.W_Update_an_business_Match = False
+        GBusiness_handle.UpdateBusinessValidation = False
+        GBusiness_handle.W_Update_an_business_address_step = 0
+        GBusiness_handle.W_Update_an_business_address_Match = False
+
 
     def setDriver(self, driver):
         self.driver = driver
@@ -923,13 +939,9 @@ class Renamer(): #Master for robot
 
                 OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
 
-                GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
-                GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
-                GBusiness_handle.Verify_an_business_Skip = False # Skip Reset.
-                GBusiness_handle.W_Verify_an_business_Match = False # Business wan't found yet
-                GBusiness_handle.W_Update_an_business_step = 0
-                GBusiness_handle.W_Update_an_business_Match = False
-                GBusiness_handle.UpdateBusinessValidation = False
+                GBusiness_handle.setDefault_initValues()
+
+
 
                 print(credential.name, credential.email, credential.password, credential.recovery_email)
 
