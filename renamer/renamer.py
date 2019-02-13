@@ -865,11 +865,15 @@ class Renamer(): #Master for robot
 
         while self.credential_list.next:
             if self.credential_list.count == 0:
+                print('Ya no hay más items.')
                 break
             elif counter == self.credential_list.count:
+                print('Cambiando de página')
                 self.credential_list.get_next_page()
+                counter = 0
 
             for credential in self.credential_list:
+                print('Credential', credential)
                 counter += 1
 
                 if all([
