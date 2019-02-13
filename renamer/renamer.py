@@ -305,7 +305,7 @@ class GBusiness (Manage_Selenium):
 
         #URL TO REDIRECT IN SAME GOOGLE -- BEGIN
         self.MainPage = "https://business.google.com/"
-        self.Url_List_of_business = 'https://business.google.com/locations/'
+        self.Url_List_of_business = 'https://business.google.com/'
         #URL TO REDIRECT IN SAME GOOGLE -- END
 
 
@@ -390,7 +390,7 @@ class GBusiness (Manage_Selenium):
             time.sleep(0.25) #Sleeping 0.25 Seconds
             print ("! - Redirigiendo a la lista de negocios de Google Business")
             self.GoLocationsPage()
-            self.W_Update_an_business_step = 1
+            self.W_Update_an_business_step = 3
         # 1 - Lista de negocios - END
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 1) :
