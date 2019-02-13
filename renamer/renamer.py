@@ -119,6 +119,9 @@ class Manage_Selenium :
             target = False
         return target
 
+    def Fillcombobox_by_xpath (self, string, xpath) :
+        print "Combobox..."
+
     def FillField_by_xpath(self, string, xpath, Enter=False):
         try:
             target = self.driver.find_element_by_xpath(xpath)
@@ -370,8 +373,6 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_apply_address_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span'
 
 
-
-
         #Control Validations - BEGIN
         self.BusinessValidation = 0
         self.UpdateBusinessValidation = False
@@ -514,6 +515,42 @@ class GBusiness (Manage_Selenium):
             except:
                 pass
             '''
+
+    def UpdateBusiness_in_info_page_address(self, Params) :
+
+        print ("! - Internal: Starting process of changing for:  - " + "address")
+        print ("Sleeping 1")
+        time.sleep(1)
+        if (self.Click_by_xpath(Params['change']) == True ):
+            print (" [Button.Change] - Done")
+        else:
+            print ("[Button.Change] - Error")
+            return False
+        time.sleep(1)
+        if (self.FillField_by_xpath(value, Params['address'], True)  == True) :
+            print (" [Fill.Change] - Done")
+        else:
+            print ("[Fill.Change] - Error")
+            return False
+        time.sleep(1)
+        if (self.FillField_by_xpath(value, Params['city'], True)  == True) :
+            print (" [Fill.Change] - Done")
+        else:
+            print ("[Fill.Change] - Error")
+            return False
+        time.sleep(1)
+        if (self.FillField_by_xpath(value, Params['zipcode'], True)  == True) :
+            print (" [Fill.Change] - Done")
+        else:
+            print ("[Fill.Change] - Error")
+            return False
+        time.sleep(1)
+        if (self.Fillcombobox_by_xpath(value, Params['state'])  == True) :
+            print (" [Fill.Change] - Done")
+        else:
+            print ("[Fill.Change] - Error")
+            return False
+
 
     def UpdateBusiness_in_info_page(self, Params, key, value) :
 
