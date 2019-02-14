@@ -120,31 +120,89 @@ class Manage_Selenium :
         return target
 
     def Fillcombobox_by_xpath (self, string, xpath) :
-        print "Combobox..."
+
+        self.Click_by_xpath(self.W_Update_an_business_button_combobox_address_state_of_business_placeholder)
+
+        def execute(item):
+            target_list = self.driver.find_elements_by_xpath(item)
+            if (len(target_list) == 0) :
+                return False
+            target = [i for i in target_list if string in i.get_attribute('outerHTML')]
+            try:
+                target = target[0]
+                return target
+            except IndexError:
+                return False
+        if isinstance(xpath, list):
+            for item in xpath :
+                target = execute(item)
+                if (target != False) :
+                    break
+        else:
+            target = execute(xpath)
+
+        if (target) :
+            target.click()
+            return True
+        else :
+            return False
+
 
     def FillField_by_xpath(self, string, xpath, Enter=False):
+        if isinstance(xpath, list) :
+            for item in xpath :
+                try:
+                    target = self.driver.find_element_by_xpath(item)
+                    time.sleep(1)
+                    try:
+                        target.clear()
+                    except:
+                        pass
+                    if (Enter == True) :
+                        target.send_keys(string + Keys.RETURN)
+                    else :
+                        target.send_keys(string)
+                    return True
+
+                except NoSuchElementException:
+                    continue
+
+            return False
+
         try:
             target = self.driver.find_element_by_xpath(xpath)
+            time.sleep(1)
         except NoSuchElementException:
             return False
-        time.sleep(1)
-
         try:
             target.clear()
         except:
             pass
         if (Enter == True) :
             target.send_keys(string + Keys.RETURN)
+        else:
+            target.send_keys(string)
         return True
 
     def Click_by_xpath(self, xpath) :
-        try:
-            target = self.driver.find_element_by_xpath(xpath)
-        except NoSuchElementException:
-            return False
-        time.sleep(1)
-        target.click()
-        return True
+        def execute(item):
+            try:
+                target = self.driver.find_element_by_xpath(item)
+            except NoSuchElementException:
+                return False
+            time.sleep(1)
+            target.click()
+            return True
+        if (isinstance(xpath, list)) :
+            for item in xpath:
+                response = execute(item)
+                if (response == True):
+                    break
+        else:
+            response = execute(xpath)
+        return response
+
+
 
     def GettingElement_by_xpath(self, xpath):
         try:
@@ -308,7 +366,7 @@ class GBusiness (Manage_Selenium):
 
         #URL TO REDIRECT IN SAME GOOGLE -- BEGIN
         self.MainPage = "https://business.google.com/"
-        self.Url_List_of_business = 'https://business.google.com/locations/'
+        self.Url_List_of_business = 'https://business.google.com/locations'
         #URL TO REDIRECT IN SAME GOOGLE -- END
 
 
@@ -368,12 +426,34 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_input_website_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input'
         self.W_Update_an_business_button_apply_website_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
 
-        self.W_Update_an_business_button_change_address_of_business = '//*[@id="ow50"]/div[3]/span'
-        self.W_Update_an_business_button_input_address-street-address_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[2]/input'
-        self.W_Update_an_business_button_input_address-city_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[4]/input'
-        self.W_Update_an_business_button_combobox_address-state_of_business = '//*[@id=":wu"]'
-        self.W_Update_an_business_button_input_address-zipcode_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[6]/input'
-        self.W_Update_an_business_button_apply_address_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span'
+        self.W_Update_an_business_button_change_address_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[4]/div[3]/span'
+        self.W_Update_an_business_button_input_address_street_address_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[2]/input'
+
+        #Address
+        self.W_Update_an_business_button_expand_address_street_2_address_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[3]'
+        self.W_Update_an_business_button_input_address_street_2_address_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[3]/input'
+
+        self.W_Update_an_business_button_input_address_city_of_business = list()
+        self.W_Update_an_business_button_input_address_city_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[5]/input')
+        self.W_Update_an_business_button_input_address_city_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[4]/input')
+
+
+        self.W_Update_an_business_button_combobox_address_state_of_business = list()
+        self.W_Update_an_business_button_combobox_address_state_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[5]/div[3]/div')
+        self.W_Update_an_business_button_combobox_address_state_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[6]/div[3]/div')
+
+        self.W_Update_an_business_button_combobox_address_state_of_business_placeholder = list()
+        self.W_Update_an_business_button_combobox_address_state_of_business_placeholder.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[5]/div[2]/div[1]')
+        self.W_Update_an_business_button_combobox_address_state_of_business_placeholder.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[6]/div[2]/div[1]')
+
+
+        self.W_Update_an_business_button_input_address_zipcode_of_business = list()
+        self.W_Update_an_business_button_input_address_zipcode_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[6]/input')
+        self.W_Update_an_business_button_input_address_zipcode_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[7]/input')
+
+        self.W_Update_an_business_button_apply_address_of_business = list()
+        self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
+        self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[3]/content/span')
 
 
         #Control Validations - BEGIN
@@ -614,21 +694,33 @@ class GBusiness (Manage_Selenium):
 
         if (self.W_Update_an_business_address_step == 4) :
             Data = dict()
-            Data['address'] = credential.final_address
-            Data['city'] = credential.final_city
-            Data['zipcode'] = credential.final_zipcode
-            Data['state'] = credential.final_state
 
-            print ("### Values ###")
-            print (Data['address'], Data['city'], Data['state'], Data['zipcode'])
+
+            print (credential.raw_data)
+
+
+            Data['address'] = credential.final_address
+            Data['address2'] = credential.final_address_2
+            Data['city'] = credential.final_city
+            Data['zipcode'] = credential.final_zip_code
+            Data['state'] = credential.final_state
+            Data['change_xpath'] = self.W_Update_an_business_button_change_address_of_business
+            Data['address_xpath'] = self.W_Update_an_business_button_input_address_street_address_of_business
+            Data['address_2_expand_xpath'] = self.W_Update_an_business_button_expand_address_street_2_address_of_business
+            Data['address_2_xpath'] = self.W_Update_an_business_button_input_address_street_2_address_of_business
+            Data['city_xpath'] = self.W_Update_an_business_button_input_address_city_of_business
+            Data['state_xpath'] = self.W_Update_an_business_button_combobox_address_state_of_business
+            Data['zipcode_xpath'] = self.W_Update_an_business_button_input_address_zipcode_of_business
+            Data['apply_xpath'] = self.W_Update_an_business_button_apply_address_of_business
 
             print ("Sleeping 6 seconds for load info page")
             time.sleep(6)
             print ("! - Here we are going to update address for a business")
-                if (self.UpdateBusiness_in_info_page(Data) == True) :
-                    print ("Change of business done for address")
-                else :
-                    print ("We could not change this value: " + (key))
+
+            if (self.UpdateBusiness_in_info_page_address(Data) == True) :
+                print ("Change of business done for address")
+            else :
+                print ("We could not change address" )
             self.W_Update_an_business_address_step = 5
 
         if (self.W_Update_an_business_address_step == 5) :
@@ -644,35 +736,54 @@ class GBusiness (Manage_Selenium):
         print ("! - Internal: Starting process of changing for:  - " + "address")
         print ("Sleeping 1")
         time.sleep(1)
-        if (self.Click_by_xpath(Params['change']) == True ):
-            print (" [Button.Change] - Done")
+        if (self.Click_by_xpath(Params['change_xpath']) == True ):
+            print ("[Button.Change] - Done")
         else:
             print ("[Button.Change] - Error")
             return False
         time.sleep(1)
-        if (self.FillField_by_xpath(value, Params['address'], True)  == True) :
-            print (" [Fill.Change] - Done")
+        if (self.FillField_by_xpath(Params['address'], Params['address_xpath'], True)  == True) :
+            print (" [Fill.address.Change] - Done")
         else:
-            print ("[Fill.Change] - Error")
+            print ("[Fill.address.Change] - Error")
             return False
         time.sleep(1)
-        if (self.FillField_by_xpath(value, Params['city'], True)  == True) :
-            print (" [Fill.Change] - Done")
+        if (self.FillField_by_xpath(Params['city'], Params['city_xpath'], True)  == True) :
+            print (" [Fill.city.Change] - Done")
         else:
-            print ("[Fill.Change] - Error")
+            print ("[Fill.city.Change] - Error")
             return False
         time.sleep(1)
-        if (self.FillField_by_xpath(value, Params['zipcode'], True)  == True) :
-            print (" [Fill.Change] - Done")
+        if (self.FillField_by_xpath(Params['zipcode'], Params['zipcode_xpath'], True)  == True) :
+            print (" [Fill.zipcode.Change] - Done")
         else:
-            print ("[Fill.Change] - Error")
+            print ("[FillChange.zipcode] - Error")
             return False
         time.sleep(1)
-        if (self.Fillcombobox_by_xpath(value, Params['state'])  == True) :
-            print (" [Fill.Change] - Done")
+        if (self.Fillcombobox_by_xpath(Params['state'], Params['state_xpath'])  == True) :
+            print (" [Fill.state.Change] - Done")
         else:
-            print ("[Fill.Change] - Error")
+            print ("[Fill.state.Change] - Error")
             return False
+        time.sleep(1)
+        if (Params['address2'] != None) :
+            time.sleep(1)
+            if (self.Click_by_xpath(Params['address_2_expand_xpath']) == True) :
+                print ("[Button.Expand.Address2] - Done")
+                if (self.FillField_by_xpath(Params['address2'], Params['address_2_xpath'], True)  == True) :
+                    print ("[Fill.Expand.Address2] - Done")
+                else:
+                    print ("[Button.Expand.Address2] - Error")
+            else:
+                print ("[Button.Expand.Address2] - Error")
+                return False
+        time.sleep(3)
+        if (self.Click_by_xpath(Params['apply_xpath']) == True):
+            print ("[Button.Change] - Done")
+        else:
+            print ("[Button.Change] - Error")
+            return False
+        return True
 
 
     def UpdateBusiness_in_info_page(self, Params, key, value) :
@@ -1031,9 +1142,13 @@ class Renamer(): #Master for robot
 
         while self.credential_list.next:
             if self.credential_list.count == 0:
+                print('Ya no hay más items.')
                 break
             elif counter == self.credential_list.count:
-                self.credential_list.get_next()
+                print('Cambiando de página')
+                self.credential_list.get_next_page()
+                counter = 0
+
 
             for credential in self.credential_list:
                 counter += 1
@@ -1044,13 +1159,16 @@ class Renamer(): #Master for robot
                 ]):
                     continue
 
+                if (credential.final_address == None) :
+                    print ("Creentidial with address none.. Skipping..")
+                    continue
+
+
+
                 OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
-
                 GBusiness_handle.setDefault_initValues()
-
-
-
                 print(credential.name, credential.email, credential.password, credential.recovery_email)
+
 
                 if (self.verification_of_credential(credential) == False) :
                     logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
@@ -1082,12 +1200,15 @@ class Renamer(): #Master for robot
                     )
                     #Calling MWatcher to start process of Update
                     BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', credential, True)
+                    UpdateAdress = MWatcher(0.5, 'UpdateBusiness_address', 'GBusiness_handle', 'W_Update_an_business_address' , 'TWatch_UpdateanBusinessAddress', credential, True)
 
                 if not credential.date_validation:
                     #Calling MWatcher to start process of Verification
                     VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
 
                 print ("!- Hemos concluido con la credenecial de business: " + credential.name )
+
+
                 GBusiness_handle.driver.quit()
 
         self.Finished_app()
