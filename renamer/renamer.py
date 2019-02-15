@@ -352,7 +352,7 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_input_name_of_business.list()
         self.W_Update_an_business_button_input_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input')
         self.W_Update_an_business_button_input_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input')
-        self.W_Update_an_business_button_input_name_of_business.list()
+        self.W_Update_an_business_button_apply_name_of_business.list()
         self.W_Update_an_business_button_apply_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
