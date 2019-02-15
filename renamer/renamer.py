@@ -97,12 +97,26 @@ class Manage_Selenium :
         return True
 
     def Get_outerHTML_and_check_partial_text_via_xpath(self, xpath, string):
-        try:
-            time.sleep(1)
-            target = self.driver.find_element_by_xpath(xpath).get_attribute('outerHTML')
-        except NoSuchElementException:
-            target = False
-        return string in target if target else False
+        def execute(item):
+            try:
+                time.sleep(1)
+                target = self.driver.find_element_by_xpath(item).get_attribute('outerHTML')
+                if (string in target) :
+                    return True
+                else:
+                    return False
+            except NoSuchElementException:
+                return False
+
+        if (isinstance(xpath, list)) :
+            for item in xpath:
+                response = execute(item)
+                if (response == True):
+                    break
+        else:
+            response = execute(xpath)
+        return response
+
 
     def Get_outerHTML_and_check_partial_text_via_target(self, target, string):
         try:
@@ -201,8 +215,6 @@ class Manage_Selenium :
         else:
             response = execute(xpath)
         return response
-
-
 
     def GettingElement_by_xpath(self, xpath):
         try:
@@ -398,6 +410,14 @@ class GBusiness (Manage_Selenium):
         self.W_Verify_an_business_Target_Button_Verify_Now = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[3]/button'
         self.W_Verify_an_business_Target_TextAgain_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/div/div[1]/button/span'
         self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div/div[3]/div/div/div'
+        self.W_Verify_an_business_Target_is_this_your_business_title = list()
+        self.W_Verify_an_business_Target_is_this_your_business_title.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/h2')
+        self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match = list()
+        self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match.append('//*[@id="c12"]/div[3]/div')
+        self.W_Verify_an_business_Target_is_this_your_busines_apply = list()
+        self.W_Verify_an_business_Target_is_this_your_busines_apply.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/button')
+
+
         #Handlers_XPath para (W_Verify_an_business) - END
 
 
@@ -454,6 +474,7 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_apply_address_of_business = list()
         self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[3]/content/span')
+
 
 
         #Control Validations - BEGIN
@@ -931,9 +952,26 @@ class GBusiness (Manage_Selenium):
                 self.W_Verify_an_business_Match_Columns[4].click()
                 print ("! - Hicimos click en verify now.")
                 time.sleep(1)
-                self.W_Verify_an_business_step = 2
+                self.W_Verify_an_business_step = 22
 
 
+        '''
+        self.W_Verify_an_business_Target_is_this_your_business_title
+        self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match
+        self.W_Verify_an_business_Target_is_this_your_busines_apply
+        '''
+
+        if (self.W_Verify_an_business_step == 22) :
+            print ("! - Detecting if we are in special case: Is this your business?")
+            print ("Sleeping 3 secons for rule")
+            time.sleep(3)
+            if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_is_this_your_business_title, 'Is this your busine') == True):
+                print ("! - Aplicando click Doesn't match")
+                if (self.Click_by_xpath(self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match) == True):
+                    if (self.Click_by_xpath(self.W_Verify_an_business_Target_is_this_your_busines_apply) == True) :
+                        self.W_Verify_an_business_step = 3
+            else :
+                self.W_Verify_an_business_step = 3
 
         if (self.W_Verify_an_business_step == 2) :
             time.sleep(5)
@@ -1191,6 +1229,14 @@ class Renamer(): #Master for robot
                     print ("Sleeping 1s")
                     time.sleep(1)
 
+                credential.name = 'Purple Construction'
+                credential.final_name = credential.name
+                credential.email = 'trottercranstounmajor@gmail.com'
+                credential.password = 'AdPoXU7Aym'
+                credential.recovery_mail = 'orrenh4zvg21@hotmail.com'
+
+                VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
+                '''
                 if not credential.date_renamed: # Can we rename this business? YES
                     Data=dict()
                     Data['credential'] = credential
@@ -1207,7 +1253,7 @@ class Renamer(): #Master for robot
                     VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
 
                 print ("!- Hemos concluido con la credenecial de business: " + credential.name )
-
+                '''
 
                 GBusiness_handle.driver.quit()
 
