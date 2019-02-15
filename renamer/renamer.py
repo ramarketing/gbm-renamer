@@ -477,6 +477,7 @@ class GBusiness (Manage_Selenium):
             print ("Sleeping 6 seconds for load info page")
             time.sleep(6)
             print ("! - Here we are going to update business")
+            self.W_renaming_step_fail = False
             for key, value in Data.items():
                 if (not value) :
                     print ("Skipping process, why value is false")
@@ -490,11 +491,13 @@ class GBusiness (Manage_Selenium):
                 if (self.UpdateBusiness_in_info_page(Target_for_change, key, value) == True) :
                     print ("Change of business done for : " + str(key))
                 else :
+                    self.W_renaming_step_fail = True
                     print ("We could not change this value: " + (key))
             self.W_Update_an_business_step = 5
 
         if (self.W_Update_an_business_step == 5) :
-            credential.report_renamed()
+            if not self.W_renaming_step_fail:
+                credential.report_renamed()
             print ("! - La empresa ha sido renombrada. ")
             self.UpdateBusinessValidation = True
             TWatch.ListThreads['UpdateBusiness'].cancel()
