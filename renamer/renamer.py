@@ -358,7 +358,9 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_input_description_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div[1]/textarea'
         self.W_Update_an_business_button_apply_description_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
 
-        self.W_Update_an_business_button_change_website_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[9]'
+        self.W_Update_an_business_button_change_website_of_business = list()
+        self.W_Update_an_business_button_change_website_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[9]')
+        self.W_Update_an_business_button_change_website_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[9]')
         self.W_Update_an_business_button_input_website_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input'
         self.W_Update_an_business_button_apply_website_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
 
@@ -513,31 +515,40 @@ class GBusiness (Manage_Selenium):
             '''
 
     def UpdateBusiness_in_info_page(self, Params, key, value) :
+        def execute(item):
+            print ("! - Internal: Starting process of changing for:  - " + str(key))
+            print ("Sleeping 1")
+            time.sleep(1)
+            import pdb; pdb.set_trace()
+            if (self.Click_by_xpath(item) == True ):
+                print (" [Button.Change] - Done")
+            else:
+                print ("[Button.Change] - Error")
+                return False
+            time.sleep(1)
+            if (self.FillField_by_xpath(value, Params['input'], True)  == True) :
+                print (" [Fill.Change] - Done")
+            else:
+                print ("[Fill.Change] - Error")
+                return False
+            time.sleep(1)
+            if (self.Click_by_xpath(Params['apply']) == True) :
+                print ("[Button.Click] - Done")
+            else:
+                print ("[Button.Click] - Error")
+                return False
+            print ("! - Waiting to save (10 seconds)")
+            time.sleep(10)
+            return True
 
-        print ("! - Internal: Starting process of changing for:  - " + str(key))
-        print ("Sleeping 1")
-        time.sleep(1)
-        import pdb; pdb.set_trace()
-        if (self.Click_by_xpath(Params['change']) == True ):
-            print (" [Button.Change] - Done")
+        if isinstance(Params['change'], list):
+            for item in Params['change']:
+                response = execute(item)
+                if response:
+                    break
         else:
-            print ("[Button.Change] - Error")
-            return False
-        time.sleep(1)
-        if (self.FillField_by_xpath(value, Params['input'], True)  == True) :
-            print (" [Fill.Change] - Done")
-        else:
-            print ("[Fill.Change] - Error")
-            return False
-        time.sleep(1)
-        if (self.Click_by_xpath(Params['apply']) == True) :
-            print ("[Button.Click] - Done")
-        else:
-            print ("[Button.Click] - Error")
-            return False
-        print ("! - Waiting to save (10 seconds)")
-        time.sleep(10)
-        return True
+            response = execute(Params['change'])
+        return response
 
     def ObtainParam_ToUpdate_Business (self, key, value):
 
