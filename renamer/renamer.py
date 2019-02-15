@@ -431,9 +431,15 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_edit_category_in_info_page_xpath = '//*[@id="ow48"]/div[2]/svg'
 
         #self.W_Update_an_business_button_change_name_of_business = '//*[@id="ow48"]/div[1]'
-        self.W_Update_an_business_button_change_name_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[2]/div[1]'
-        self.W_Update_an_business_button_input_name_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input'
-        self.W_Update_an_business_button_apply_name_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span'
+        self.W_Update_an_business_button_change_name_of_business = list()
+        self.W_Update_an_business_button_change_name_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[2]/div[1]')
+        self.W_Update_an_business_button_change_name_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[2]')
+        self.W_Update_an_business_button_input_name_of_business = list()
+        self.W_Update_an_business_button_input_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input')
+        self.W_Update_an_business_button_input_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input')
+        self.W_Update_an_business_button_apply_name_of_business = list()
+        self.W_Update_an_business_button_apply_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
+        self.W_Update_an_business_button_apply_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
         self.W_Update_an_business_button_change_category_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[3]/div[1]'
         self.W_Update_an_business_button_input_category_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/div[1]/input[2]'
@@ -443,9 +449,15 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_input_description_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div[1]/textarea'
         self.W_Update_an_business_button_apply_description_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
 
-        self.W_Update_an_business_button_change_website_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[9]'
-        self.W_Update_an_business_button_input_website_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input'
-        self.W_Update_an_business_button_apply_website_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
+        self.W_Update_an_business_button_change_website_of_business = list()
+        self.W_Update_an_business_button_change_website_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[9]')
+        self.W_Update_an_business_button_change_website_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[9]')
+        self.W_Update_an_business_button_input_website_of_business = list()
+        self.W_Update_an_business_button_input_website_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input')
+        self.W_Update_an_business_button_input_website_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input')
+        self.W_Update_an_business_button_apply_website_of_business = list()
+        self.W_Update_an_business_button_apply_website_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span')
+        self.W_Update_an_business_button_apply_website_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
         self.W_Update_an_business_button_change_address_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[4]/div[3]/span'
         self.W_Update_an_business_button_input_address_street_address_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[2]/input'
@@ -606,9 +618,10 @@ class GBusiness (Manage_Selenium):
             print ("Sleeping 6 seconds for load info page")
             time.sleep(6)
             print ("! - Here we are going to update business")
+            self.W_renaming_step_fail = False
             for key, value in Data.items():
                 if (not value) :
-                    print ("Skipping process, why value is false")
+                    print ("Skipping process, why value for {} is false".format(key))
                     continue
                 print ("El valor de key: " + str(key)  + "  y el valor de value: " + str(value))
                 Target_for_change = self.ObtainParam_ToUpdate_Business(key, value)
@@ -619,11 +632,13 @@ class GBusiness (Manage_Selenium):
                 if (self.UpdateBusiness_in_info_page(Target_for_change, key, value) == True) :
                     print ("Change of business done for : " + str(key))
                 else :
+                    self.W_renaming_step_fail = True
                     print ("We could not change this value: " + (key))
             self.W_Update_an_business_step = 5
 
         if (self.W_Update_an_business_step == 5) :
-            credential.report_renamed()
+            if not self.W_renaming_step_fail:
+                credential.report_renamed()
             print ("! - La empresa ha sido renombrada. ")
             self.UpdateBusinessValidation = True
             TWatch.ListThreads['UpdateBusiness'].cancel()
@@ -810,30 +825,71 @@ class GBusiness (Manage_Selenium):
 
 
     def UpdateBusiness_in_info_page(self, Params, key, value) :
+        def _click_change(item):
+            print ("! - Internal: Starting process of changing for:  - " + str(key))
+            print ("Sleeping 1")
+            time.sleep(1)
+            if (self.Click_by_xpath(item) == True ):
+                print (" [Button.Change] - Done")
+                return True
+            else:
+                print ("[Button.Change] - Error")
+                return False
 
-        print ("! - Internal: Starting process of changing for:  - " + str(key))
-        print ("Sleeping 1")
-        time.sleep(1)
-        if (self.Click_by_xpath(Params['change']) == True ):
-            print (" [Button.Change] - Done")
-        else:
-            print ("[Button.Change] - Error")
-            return False
-        time.sleep(1)
-        if (self.FillField_by_xpath(value, Params['input'], True)  == True) :
-            print (" [Fill.Change] - Done")
-        else:
-            print ("[Fill.Change] - Error")
-            return False
-        time.sleep(1)
-        if (self.Click_by_xpath(Params['apply']) == True) :
-            print ("[Button.Click] - Done")
-        else:
-            print ("[Button.Click] - Error")
-            return False
-        print ("! - Waiting to save (10 seconds)")
-        time.sleep(10)
-        return True
+        def _fill_field(field):
+            time.sleep(1)
+            if (self.FillField_by_xpath(value, field, True)  == True) :
+                print (" [Fill.Change] - Done")
+                return True
+            else:
+                print ("[Fill.Change] - Error")
+                return False
+
+        def _click_apply(apply):
+            time.sleep(1)
+            if (self.Click_by_xpath(apply) == True) :
+                print ("[Button.Click] - Done")
+            else:
+                print ("[Button.Click] - Error")
+                return False
+            print ("! - Waiting to save (10 seconds)")
+            time.sleep(10)
+            return True
+
+        def click_change(change):
+            if isinstance(change, list):
+                for item in change:
+                    response = _click_change(item)
+                    if response:
+                        return response
+            else:
+                return _click_change(change)
+
+        def fill_field(field):
+            if isinstance(field, list):
+                for item in field:
+                    response = _fill_field(item)
+                    if response:
+                        return response
+            else:
+                return _fill_field(field)
+
+        def click_apply(apply):
+            if isinstance(apply, list):
+                for item in apply:
+                    response = _click_apply(item)
+                    if response:
+                        return response
+                return False
+            else:
+                return _click_apply(apply)
+
+        response = click_change(Params['change'])
+        if response:
+            response = fill_field(Params['input'])
+            if response:
+                response = click_apply(Params['apply'])
+        return response
 
     def ObtainParam_ToUpdate_Business (self, key, value):
 
@@ -1192,8 +1248,8 @@ class Renamer(): #Master for robot
                 self.credential_list.get_next_page()
                 counter = 0
 
-
             for credential in self.credential_list:
+                print('Credential', credential)
                 counter += 1
 
                 if all([
