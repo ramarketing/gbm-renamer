@@ -532,7 +532,7 @@ class GBusiness (Manage_Selenium):
             time.sleep(0.25) #Sleeping 0.25 Seconds
             print ("! - Redirigiendo a la lista de negocios de Google Business")
             self.GoLocationsPage()
-            self.W_Update_an_business_step = 1
+            self.W_Update_an_business_step = 3
         # 1 - Lista de negocios - END
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 1) :
@@ -657,7 +657,7 @@ class GBusiness (Manage_Selenium):
             time.sleep(0.25) #Sleeping 0.25 Seconds
             print ("! - Redirigiendo a la lista de negocios de Google Business")
             self.GoLocationsPage()
-            self.W_Update_an_business_address_step = 3
+            self.W_Update_an_business_address_step = 1
         # 1 - Lista de negocios - END
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_address_step == 1) :
