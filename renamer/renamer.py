@@ -1258,12 +1258,6 @@ class Renamer(): #Master for robot
                 ]):
                     continue
 
-                if (credential.final_address == None) :
-                    print ("Creentidial with address none.. Skipping..")
-                    continue
-
-
-
                 OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
                 GBusiness_handle.setDefault_initValues()
                 print(credential.name, credential.email, credential.password, credential.recovery_email)
@@ -1290,14 +1284,6 @@ class Renamer(): #Master for robot
                     print ("Sleeping 1s")
                     time.sleep(1)
 
-                credential.name = 'Purple Construction'
-                credential.final_name = credential.name
-                credential.email = 'trottercranstounmajor@gmail.com'
-                credential.password = 'AdPoXU7Aym'
-                credential.recovery_mail = 'orrenh4zvg21@hotmail.com'
-
-                VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
-                '''
                 if not credential.date_renamed: # Can we rename this business? YES
                     Data=dict()
                     Data['credential'] = credential
@@ -1307,7 +1293,13 @@ class Renamer(): #Master for robot
                     )
                     #Calling MWatcher to start process of Update
                     BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', credential, True)
-                    UpdateAdress = MWatcher(0.5, 'UpdateBusiness_address', 'GBusiness_handle', 'W_Update_an_business_address' , 'TWatch_UpdateanBusinessAddress', credential, True)
+                    if all([
+                        credential.final_address,
+                        credential.final_city,
+                        credential.final_state,
+                        credential.final_zip_code
+                    ]):
+                        UpdateAdress = MWatcher(0.5, 'UpdateBusiness_address', 'GBusiness_handle', 'W_Update_an_business_address' , 'TWatch_UpdateanBusinessAddress', credential, True)
 
                 if not credential.date_validation:
                     #Calling MWatcher to start process of Verification
