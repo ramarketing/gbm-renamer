@@ -346,13 +346,13 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_edit_category_in_info_page_xpath = '//*[@id="ow48"]/div[2]/svg'
 
         #self.W_Update_an_business_button_change_name_of_business = '//*[@id="ow48"]/div[1]'
-        self.W_Update_an_business_button_change_name_of_business.list()
+        self.W_Update_an_business_button_change_name_of_business = list()
         self.W_Update_an_business_button_change_name_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[2]/div[1]')
         self.W_Update_an_business_button_change_name_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[2]')
-        self.W_Update_an_business_button_input_name_of_business.list()
+        self.W_Update_an_business_button_input_name_of_business = list()
         self.W_Update_an_business_button_input_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input')
         self.W_Update_an_business_button_input_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input')
-        self.W_Update_an_business_button_apply_name_of_business.list()
+        self.W_Update_an_business_button_apply_name_of_business = list()
         self.W_Update_an_business_button_apply_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
