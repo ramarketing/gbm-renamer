@@ -525,22 +525,27 @@ class GBusiness (Manage_Selenium):
             '''
 
     def UpdateBusiness_in_info_page(self, Params, key, value) :
-        def execute(item, field, apply):
+        def _click_change(item):
             print ("! - Internal: Starting process of changing for:  - " + str(key))
             print ("Sleeping 1")
-            import pdb; pdb.set_trace()
             time.sleep(1)
             if (self.Click_by_xpath(item) == True ):
                 print (" [Button.Change] - Done")
+                return False
             else:
                 print ("[Button.Change] - Error")
                 return False
+
+        def _fill_field(field):
             time.sleep(1)
             if (self.FillField_by_xpath(value, field, True)  == True) :
                 print (" [Fill.Change] - Done")
+                return True
             else:
                 print ("[Fill.Change] - Error")
                 return False
+
+        def _click_apply(apply)
             time.sleep(1)
             if (self.Click_by_xpath(apply) == True) :
                 print ("[Button.Click] - Done")
@@ -552,12 +557,24 @@ class GBusiness (Manage_Selenium):
             return True
 
         if isinstance(Params['change'], list):
-            for i, item in enumerate(Params['change']):
-                response = execute(Params['change'][i], Params['input'][i], Params['apply'][i])
+            for change_item in Params['change']:
+                response = _click_change(change_item)
+
                 if response:
-                    break
+                    for input_item in Params['input']:
+                        response = _fill_field(input_item)
+
+                        if response:
+                            for apply_item in Params['apply']:
+                                response = _click_apply(apply_item)
+                                if response:
+                                    break
         else:
-            response = execute(Params['change'], Params['input'], Params['apply'])
+            response = all([
+                _click_change(Params['change']),
+                _fill_field(Params['input']),
+                _click_apply(Params['apply'])
+            ])
         return response
 
     def ObtainParam_ToUpdate_Business (self, key, value):
