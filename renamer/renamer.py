@@ -1306,7 +1306,6 @@ class Renamer(): #Master for robot
                     VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
 
                 print ("!- Hemos concluido con la credenecial de business: " + credential.name )
-                '''
 
                 GBusiness_handle.driver.quit()
 
