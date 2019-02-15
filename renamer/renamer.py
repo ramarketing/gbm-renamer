@@ -480,7 +480,7 @@ class GBusiness (Manage_Selenium):
             self.W_renaming_step_fail = False
             for key, value in Data.items():
                 if (not value) :
-                    print ("Skipping process, why value is false")
+                    print ("Skipping process, why value for {} is false".format(key))
                     continue
                 print ("El valor de key: " + str(key)  + "  y el valor de value: " + str(value))
                 Target_for_change = self.ObtainParam_ToUpdate_Business(key, value)
@@ -517,6 +517,7 @@ class GBusiness (Manage_Selenium):
         print ("! - Internal: Starting process of changing for:  - " + str(key))
         print ("Sleeping 1")
         time.sleep(1)
+        import pdb; pdb.set_trace()
         if (self.Click_by_xpath(Params['change']) == True ):
             print (" [Button.Change] - Done")
         else:
