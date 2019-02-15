@@ -414,6 +414,7 @@ class GBusiness (Manage_Selenium):
         self.W_Verify_an_business_Target_is_this_your_business_title.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/h2')
         self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match = list()
         self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match.append('//*[@id="c12"]/div[3]/div')
+        self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match.append('//*[@id="c2"]/div[3]/div')
         self.W_Verify_an_business_Target_is_this_your_busines_apply = list()
         self.W_Verify_an_business_Target_is_this_your_busines_apply.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/button')
 
@@ -474,6 +475,7 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_apply_address_of_business = list()
         self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[3]/content/span')
+
 
 
 
@@ -965,9 +967,12 @@ class GBusiness (Manage_Selenium):
             print ("! - Detecting if we are in special case: Is this your business?")
             print ("Sleeping 3 secons for rule")
             time.sleep(3)
+            import pdb; pdb.set_trace()
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_is_this_your_business_title, 'Is this your busine') == True):
+                import pdb; pdb.set_trace()
                 print ("! - Aplicando click Doesn't match")
                 if (self.Click_by_xpath(self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match) == True):
+                    import pdb; pdb.set_trace()
                     if (self.Click_by_xpath(self.W_Verify_an_business_Target_is_this_your_busines_apply) == True) :
                         self.W_Verify_an_business_step = 3
             else :
