@@ -545,7 +545,7 @@ class GBusiness (Manage_Selenium):
                 print ("[Fill.Change] - Error")
                 return False
 
-        def _click_apply(apply)
+        def _click_apply(apply):
             time.sleep(1)
             if (self.Click_by_xpath(apply) == True) :
                 print ("[Button.Click] - Done")
