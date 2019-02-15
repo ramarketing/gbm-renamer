@@ -531,7 +531,7 @@ class GBusiness (Manage_Selenium):
             time.sleep(1)
             if (self.Click_by_xpath(item) == True ):
                 print (" [Button.Change] - Done")
-                return False
+                return True
             else:
                 print ("[Button.Change] - Error")
                 return False
@@ -556,25 +556,39 @@ class GBusiness (Manage_Selenium):
             time.sleep(10)
             return True
 
-        if isinstance(Params['change'], list):
-            for change_item in Params['change']:
-                response = _click_change(change_item)
+        def click_change(change):
+            if isinstance(change, list):
+                for item in change:
+                    response = _click_change(item)
+                    if response:
+                        return response
+            else:
+                return _click_change(change)
 
-                if response:
-                    for input_item in Params['input']:
-                        response = _fill_field(input_item)
+        def fill_field(field):
+            if isinstance(field, list):
+                for item in field:
+                    response = _fill_field(item)
+                    if response:
+                        return response
+            else:
+                return _fill_field(field)
 
-                        if response:
-                            for apply_item in Params['apply']:
-                                response = _click_apply(apply_item)
-                                if response:
-                                    break
-        else:
-            response = all([
-                _click_change(Params['change']),
-                _fill_field(Params['input']),
-                _click_apply(Params['apply'])
-            ])
+        def click_apply(apply):
+            if isinstance(apply, list):
+                for item in apply:
+                    response = _click_apply(item)
+                    if response:
+                        return response
+                return False
+            else:
+                return _click_apply(apply)
+
+        response = click_change(Params['change'])
+        if response:
+            response = fill_field(Params['input'])
+            if response:
+                response = click_apply(Params['apply'])
         return response
 
     def ObtainParam_ToUpdate_Business (self, key, value):
