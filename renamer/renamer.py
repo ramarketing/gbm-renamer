@@ -522,6 +522,7 @@ class GBusiness (Manage_Selenium):
         def execute(item, field, apply):
             print ("! - Internal: Starting process of changing for:  - " + str(key))
             print ("Sleeping 1")
+            import pdb; pdb.set_trace()
             time.sleep(1)
             if (self.Click_by_xpath(item) == True ):
                 print (" [Button.Change] - Done")
@@ -550,7 +551,7 @@ class GBusiness (Manage_Selenium):
                 if response:
                     break
         else:
-            response = execute(Params['change'])
+            response = execute(Params['change'], Params['input'], Params['apply'])
         return response
 
     def ObtainParam_ToUpdate_Business (self, key, value):
