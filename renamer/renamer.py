@@ -287,6 +287,7 @@ class Google_auth(Manage_Selenium):
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_User_field_by_xpath, Step1_Target_PTXT_Error_Email) == True) :
                         logger(instance_itself=self.NameClass_itSelf(), data=Email_wasnot_valid)
                         print (Email_wasnot_valid)
+                        self.W_Login_fail = True
                         self.Except_CredentialInvalid(credential)
                         self.driver.quit()
                         TWatch.ListThreads['controller_login'].cancel()
@@ -304,7 +305,6 @@ class Google_auth(Manage_Selenium):
                 if (self.LoginStep_ghost == 21) :
                     print ("! - Sleeping 2 seconds")
                     time.sleep(2)
-                    import pdb; pdb.set_trace()
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Password_message_by_xpath, Step2_Target_PTXT_Error_Password) == True) :
                         logger(instance_itself=self.NameClass_itSelf(), data=Passwword_no_valid)
                         print (Passwword_no_valid)
@@ -316,10 +316,11 @@ class Google_auth(Manage_Selenium):
                         print ("#Prepared to go to Step #3")
 
         #There we verify if we access directly without verification of Recovery Email
-        if(self.driver.current_url.find('myaccount.google.com') != -1 and self.LoginStep == 3):
-            print ("! Login successfull without verification")
-            self.SucessLogin = 1
-            TWatch.ListThreads['controller_login'].cancel()
+        if (self.LoginStep == 3) :
+            if(self.driver.current_url.find('myaccount.google.com') != -1):
+                print ("! Login successfull without verification")
+                self.SucessLogin = 1
+                TWatch.ListThreads['controller_login'].cancel()
 
         if (self.LoginStep == 3) :
             if (
@@ -1265,7 +1266,7 @@ class Renamer(): #Master for robot
                     print ("Creentidial with address none.. Skipping..")
                     continue
 
-                credential.password = "wrong123456"
+                #credential.password = "wrong123456"
 
 
                 OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
@@ -1290,9 +1291,13 @@ class Renamer(): #Master for robot
                     continue
 
                 if (OGAuth.SucessLogin == 1) :
-                    print ("Setting up driver for Google Bussiness")
+                    print ("! - Login is ::OK::")
                     print ("Sleeping 1s")
                     time.sleep(1)
+                else:
+                    print ("We cannot continue because we cannot login with this account: " + credential.email)
+                    print ("Skipping credential")
+                    continue
 
 
                 VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)

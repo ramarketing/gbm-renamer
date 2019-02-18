@@ -13,7 +13,8 @@ Acc_invalid_email_recovery = "Recovery email no valid"
 
 #PARTIAL TEXTS
 Step1_Target_PTXT_Error_Email = 'No pudimos encontrar tu cuenta de Google'
-Step2_Target_PTXT_Error_Password = 'La contraseña es incorrecta'
+#Step2_Target_PTXT_Error_Password = 'La contraseña es incorrecta'
+Step2_Target_PTXT_Error_Password = 'Wrong password'
 Step3_Target_PTXT_Verify_are_you_GAUTH = 'Verifica que eres '
 Step3_Target_PTXT_Verify_are_you_GAUTH_en = 'Verify it'
 Step3_Target_PTXT_Confirm_email = 'Confirma el correo de recup'
