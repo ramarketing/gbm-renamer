@@ -237,6 +237,10 @@ class Google_auth(Manage_Selenium):
     def NameClass_itSelf(self):
         return self.__class__.__name__
 
+    #Set there values to init/reinit GAuth
+    def setDefault_initValues (self):
+        self.SucessLogin = 0
+
     def RunDriver(self):
         if platform.system() == 'Windows':
            self.driver = webdriver.Chrome(
@@ -1016,13 +1020,6 @@ class GBusiness (Manage_Selenium):
                 time.sleep(1)
                 self.W_Verify_an_business_step = 22
 
-
-        '''
-        self.W_Verify_an_business_Target_is_this_your_business_title
-        self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match
-        self.W_Verify_an_business_Target_is_this_your_busines_apply
-        '''
-
         if (self.W_Verify_an_business_step == 22) :
             print ("! - Detecting if we are in special case: Is this your business?")
             print ("Sleeping 3 secons for rule")
@@ -1242,7 +1239,6 @@ class Renamer(): #Master for robot
         self.credential_list = business_list
 
         counter = 0
-
         while self.credential_list.next:
             if self.credential_list.count == 0:
                 print('Ya no hay más items.')
@@ -1252,22 +1248,22 @@ class Renamer(): #Master for robot
                 self.credential_list.get_next_page()
                 counter = 0
 
-            for credential in self.credential_list:
-                print('Credential', credential)
-                counter += 1
 
+            for credential in self.credential_list:
                 if all([
-                    credential.street,
-                    credential.city,
-                    credential.state,
-                    credential.zip_code,
-                    credential.country,
+                    credential.final_name,
+                    credential.final_website,
+                    credential.final_address,
+                    credential.final_city,
+                    credential.final_state,
+                    credential.final_zip_code,
+                    credential.final_country,
                     credential.date_renamed,
                     credential.date_validation
                 ]):
                     continue
 
-                OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
+                OGAuth.setDefault_initValues()
                 GBusiness_handle.setDefault_initValues()
                 print(credential.name, credential.email, credential.password, credential.recovery_email)
 
@@ -1275,9 +1271,7 @@ class Renamer(): #Master for robot
                     logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
                     print (Skiping_to_next_credential)
                     continue
-                # THERE VERIFICATIONfrom services import BusinessService
-                # CONSIDERATE EMAIL IS EMAIL. WITH @ ALSO
-                # PASSWORD (NOTHING SPECIAL)
+
                 if (self.is_Driver_GAuth_loaded() == True) :
                     OGAuth.RunDriver()
                     GBusiness_handle.setDriver(OGAuth.driver)
