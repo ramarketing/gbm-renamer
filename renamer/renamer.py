@@ -302,6 +302,9 @@ class Google_auth(Manage_Selenium):
                     print ("# Success to FillField: Password also with Enter")  #OK
 
                 if (self.LoginStep_ghost == 21) :
+                    print ("! - Sleeping 2 seconds")
+                    time.sleep(2)
+                    import pdb; pdb.set_trace()
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Password_message_by_xpath, Step2_Target_PTXT_Error_Password) == True) :
                         logger(instance_itself=self.NameClass_itSelf(), data=Passwword_no_valid)
                         print (Passwword_no_valid)
@@ -1262,6 +1265,7 @@ class Renamer(): #Master for robot
                     print ("Creentidial with address none.. Skipping..")
                     continue
 
+                credential.password = "wrong123456"
 
 
                 OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
@@ -1290,14 +1294,9 @@ class Renamer(): #Master for robot
                     print ("Sleeping 1s")
                     time.sleep(1)
 
-                credential.name = 'Purple Construction'
-                credential.final_name = credential.name
-                credential.email = 'trottercranstounmajor@gmail.com'
-                credential.password = 'AdPoXU7Aym'
-                credential.recovery_mail = 'orrenh4zvg21@hotmail.com'
 
                 VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
-                '''
+
                 if not credential.date_renamed: # Can we rename this business? YES
                     Data=dict()
                     Data['credential'] = credential
@@ -1314,7 +1313,7 @@ class Renamer(): #Master for robot
                     VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
 
                 print ("!- Hemos concluido con la credenecial de business: " + credential.name )
-                '''
+
 
                 GBusiness_handle.driver.quit()
 
