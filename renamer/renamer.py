@@ -1257,22 +1257,19 @@ class Renamer(): #Master for robot
                 counter += 1
 
                 if all([
+                    credential.street,
+                    credential.city,
+                    credential.state,
+                    credential.zip_code,
+                    credential.country,
                     credential.date_renamed,
                     credential.date_validation
                 ]):
                     continue
 
-                if (credential.final_address == None) :
-                    print ("Creentidial with address none.. Skipping..")
-                    continue
-
-                #credential.password = "wrong123456"
-
-
                 OGAuth.SucessLogin = 0 # SuccessLogin Default: 0
                 GBusiness_handle.setDefault_initValues()
                 print(credential.name, credential.email, credential.password, credential.recovery_email)
-
 
                 if (self.verification_of_credential(credential) == False) :
                     logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
