@@ -230,6 +230,13 @@ class Manage_Selenium :
             return False
 
 
+    def TimeSleeping (self, time)
+        if (isinstance(time, int)) :
+            print ("! Sleeping for " + str(time))
+        else:
+            print ("! - TimeSleeping failing")
+            return False
+
 class Google_auth(Manage_Selenium):
     def __init__ (self):
         self.ItSelf = "Google_Auth"
@@ -264,7 +271,6 @@ class Google_auth(Manage_Selenium):
         self.Target_Confirm_message_email_recovery_by_xpath = '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[1]'
         self.Target_Step3_asking_captcha = '//*[@id="view_container"]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[2]/div/div/div[1]/div/div[1]/div'
         self.Target_Step3_ConfirmField_changing_password = '//*[@id="confirm-passwd"]/div[1]/div/div[1]/div'
-
         self.LoginStep = 1
         self.LoginStep_ghost = 1
         self.StepError = 0
@@ -496,16 +502,12 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[3]/content/span')
 
-
-
-
         #Control Validations - BEGIN
         self.BusinessValidation = 0
         self.UpdateBusinessValidation = False
         #Control Validations - END
 
     def setDefault_initValues (self) :
-
         GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
         GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
         GBusiness_handle.Verify_an_business_Skip = False # Skip Reset.
@@ -515,7 +517,6 @@ class GBusiness (Manage_Selenium):
         GBusiness_handle.UpdateBusinessValidation = False
         GBusiness_handle.W_Update_an_business_address_step = 0
         GBusiness_handle.W_Update_an_business_address_Match = False
-
 
     def setDriver(self, driver):
         self.driver = driver
@@ -532,6 +533,44 @@ class GBusiness (Manage_Selenium):
         self.driver.get(self.Url_List_of_business)
         return True
 
+
+    def Actions_for_Business_List (self, credential, action):
+
+        # action:
+        # edit - Edit a business
+        # verify - Verify a business
+        # get_status - Get actual status
+
+        self.HaveWe_Match_in_locations_page = False
+
+        # Have we match? TRUE :: FALSE
+        if (self.HaveWe_Match_in_locations_page == False) :
+            self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
+            #Getting target for table
+            #If we have table then
+            if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
+                #Set rows
+                Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
+                #Set Qty_rows
+                Qty_Rows = len(Rows_Table)
+                #Setting a counter for interaction in table
+                Counter_Interactios_rows_table = 0
+                #For each for each item (rows)
+                for Item in Rows_Table:
+                    Counter_Interactios_rows_table += 1
+                    #Getting columns for this row.
+                    Columns = self.GettingElements_by_tag_name_with_target(Item, 'td')
+                    if(
+                        (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) or
+                        (credential.final_name and (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name)) == True)):
+                        print ("! - La empresa es: " + credential.name)
+                        self.HaveWe_Match_in_locations_page = True
+                        self.HaveWe_Match_in_locations_page_Columns = Columns
+
+
+
+
+
     def W_Update_an_business(self, credential):
         print ("Here we go with Update Business")
         print ("self.W_Update_an_business_step: " + str(self.W_Update_an_business_step))
@@ -545,53 +584,7 @@ class GBusiness (Manage_Selenium):
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 1) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
-            if (self.W_Update_an_business_Match == False) :
-                self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
-                if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
-                    Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
-                    Qty_Rows = len(Rows_Table)
-                    Counter_Interactios_rows_table = 0
-                    for Item in Rows_Table:
-                        Counter_Interactios_rows_table += 1
-                        Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
-                        if(
-                            (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) or
-                            (credential.final_name and (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name)) == True)):
-                            print ("! - La empresa es: " + credential.name)
-                            print ("! - Salida del HTML: " + Columns[2].get_attribute('outerHTML'))
-                            print ("! - Match de la empresa")
-                            self.W_Update_an_business_Match = True
-                            self.W_Update_an_business_Match_Columns = Columns
 
-                            if(
-                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_required) == True or
-                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_pending) == True
-                            ):
-                                print ("! - La empresa no se encuentra verificada, Vamos a veriricarla")
-                                break
-                            else :
-                                credential.report_validation()
-                                GBusiness_handle.BusinessValidation = 1
-                                TWatch.ListThreads['VerifyBusiness'].cancel()
-                                print ("! -No es necesario la verificacion.  La empresa se encuentra verificada. ")
-                        else:
-                            print ("! - No match con la empresa")
-                            if (Counter_Interactios_rows_table == Qty_Rows):
-                                print ("!- No hay match con la empresa que estamos buscando.")
-                                credential.report_fail()
-                                TWatch.ListThreads['VerifyBusiness'].cancel()
-                                return
-            else:
-                try:
-                    BusinessTarget = self.W_Update_an_business_Match_Columns[2]
-                    try:
-                        BusinessTarget.find_element_by_partial_link_text(credential.name).click()
-                    except:
-                        BusinessTarget.find_element_by_partial_link_text(credential.final_name).click()
-                    print ("! - Hicimos click para ingresar a la empresa.")
-                    self.W_Update_an_business_step = 2
-                except Exception as err:
-                    print (err)
 
         if (self.W_Update_an_business_step == 2) :
             print ("Sleeping 10s for get stared")
@@ -606,7 +599,7 @@ class GBusiness (Manage_Selenium):
             #print ("! - Exc : Block 3")
             Edit_Info_url = self.driver.current_url
             Edit_Info_url = Edit_Info_url.replace('dashboard', 'edit')
-            try:
+            try:files
                 self.driver.get(Edit_Info_url)
                 self.W_Update_an_business_step = 4
             except Exception as err:
@@ -1292,7 +1285,7 @@ class Renamer(): #Master for robot
 
 
                 VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
-
+                '''
                 if not credential.date_renamed: # Can we rename this business? YES
                     Data=dict()
                     Data['credential'] = credential
@@ -1312,7 +1305,7 @@ class Renamer(): #Master for robot
 
 
                 GBusiness_handle.driver.quit()
-
+                '''
         self.Finished_app()
 
 
