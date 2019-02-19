@@ -230,7 +230,7 @@ class Manage_Selenium :
             return False
 
 
-    def TimeSleeping (self, time)
+    def TimeSleeping (self, time):
         if (isinstance(time, int)) :
             print ("! Sleeping for " + str(time))
         else:
@@ -599,7 +599,7 @@ class GBusiness (Manage_Selenium):
             #print ("! - Exc : Block 3")
             Edit_Info_url = self.driver.current_url
             Edit_Info_url = Edit_Info_url.replace('dashboard', 'edit')
-            try:files
+            try:
                 self.driver.get(Edit_Info_url)
                 self.W_Update_an_business_step = 4
             except Exception as err:
