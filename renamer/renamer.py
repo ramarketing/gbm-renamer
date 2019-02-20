@@ -82,14 +82,19 @@ class MWatcher :
         print(TWatch_Cancel + self.pretty_name_process)
         self.stopEvent.set()
 
-class Manage_Selenium :
+class Tools :
+    def TimeSleeping (self, seconds):
+            print ("! Sleeping for " + str(seconds) + (" second" if seconds <= 1 else " seconds"))
+            time.sleep(seconds)
+
+class Manage_Selenium (Tools) :
     def __init__(self):
         self.driver = False
         pass
 
     def CheckField_Exist_by_xpath(self, xpath):
         try:
-            time.sleep(1)
+            self.TimeSleeping(1)
             self.driver.find_elements_by_xpath(xpath)
         except NoSuchElementException:
             print('No se encontro el elemento "{}"'.format(xpath))
@@ -99,7 +104,7 @@ class Manage_Selenium :
     def Get_outerHTML_and_check_partial_text_via_xpath(self, xpath, string):
         def execute(item):
             try:
-                time.sleep(1)
+                self.TimeSleeping(1)
                 target = self.driver.find_element_by_xpath(item).get_attribute('outerHTML')
                 if (string in target) :
                     return True
@@ -120,7 +125,7 @@ class Manage_Selenium :
 
     def Get_outerHTML_and_check_partial_text_via_target(self, target, string):
         try:
-            time.sleep(1)
+            self.TimeSleeping(1)
             target = target.get_attribute('outerHTML')
         except NoSuchElementException:
             target = None
@@ -167,7 +172,7 @@ class Manage_Selenium :
             for item in xpath :
                 try:
                     target = self.driver.find_element_by_xpath(item)
-                    time.sleep(1)
+                    self.TimeSleeping(1)
                     try:
                         target.clear()
                     except:
@@ -185,7 +190,7 @@ class Manage_Selenium :
 
         try:
             target = self.driver.find_element_by_xpath(xpath)
-            time.sleep(1)
+            self.TimeSleeping(1)
         except NoSuchElementException:
             return False
         try:
@@ -204,7 +209,7 @@ class Manage_Selenium :
                 target = self.driver.find_element_by_xpath(item)
             except NoSuchElementException:
                 return False
-            time.sleep(1)
+            self.TimeSleeping(1)
             target.click()
             return True
         if (isinstance(xpath, list)) :
@@ -239,12 +244,6 @@ class Manage_Selenium :
             return False
 
 
-    def TimeSleeping (self, time):
-        if (isinstance(time, int)) :
-            print ("! Sleeping for " + str(time))
-        else:
-            print ("! - TimeSleeping failing")
-            return False
 
 class Google_auth(Manage_Selenium):
     def __init__ (self):
@@ -322,8 +321,7 @@ class Google_auth(Manage_Selenium):
                     print ("# Success to FillField: Password also with Enter")  #OK
 
                 if (self.LoginStep_ghost == 21) :
-                    print ("! - Sleeping 2 seconds")
-                    time.sleep(2)
+                    self.TimeSleeping(2)
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Password_message_by_xpath, Step2_Target_PTXT_Error_Password) == True) :
                         logger(instance_itself=self.NameClass_itSelf(), data=Passwword_no_valid)
                         print (Passwword_no_valid)
@@ -534,12 +532,12 @@ class GBusiness (Manage_Selenium):
         return True
 
     def GoMainPage (self):
-        time.sleep(1)
+        self.TimeSleeping(1)
         print ("! - GBusiness-> Redirecting to: " +  self.MainPage)
         self.driver.get(self.MainPage)
 
     def GoLocationsPage(self):
-        time.sleep(3)
+        self.TimeSleeping(3)
         print ("! - GBusiness-> Redirecting to: " +  self.Url_List_of_business)
         self.driver.get(self.Url_List_of_business)
         return True
@@ -603,19 +601,18 @@ class GBusiness (Manage_Selenium):
         print ("self.W_Update_an_business_step: " + str(self.W_Update_an_business_step))
         # 1 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 0) :
-            time.sleep(0.25) #Sleeping 0.25 Seconds
+            self.TimeSleeping(0.25) #Sleeping 0.25 Seconds
             print ("! - Redirigiendo a la lista de negocios de Google Business")
             self.GoLocationsPage()
             self.W_Update_an_business_step = 1
         # 1 - Lista de negocios - END
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 1) :
-            time.sleep(0.25) #Sleeping 0.25 Seconds
+            self.TimeSleeping(0.25) #Sleeping 0.25 Seconds
 
 
         if (self.W_Update_an_business_step == 2) :
-            print ("Sleeping 10s for get stared")
-            time.sleep(10)
+            self.TimeSleeping(10)
 
             if (self.Click_by_xpath(self.W_Update_an_business_popup_get_started_button_xpath) == True) :
                 pass
@@ -643,8 +640,7 @@ class GBusiness (Manage_Selenium):
             print ("### Values ###")
             print (Data['name'], Data['category'], Data['description'], Data['website'])
 
-            print ("Sleeping 6 seconds for load info page")
-            time.sleep(6)
+            self.TimeSleeping(6)
             print ("! - Here we are going to update business")
             self.W_renaming_step_fail = False
             for key, value in Data.items():
@@ -656,7 +652,7 @@ class GBusiness (Manage_Selenium):
                 if (Target_for_change == False) :
                     print ("! - Key value no exist to update")
                     continue
-                time.sleep(1)
+                self.TimeSleeping(1)
                 if (self.UpdateBusiness_in_info_page(Target_for_change, key, value) == True) :
                     print ("Change of business done for : " + str(key))
                 else :
@@ -682,14 +678,14 @@ class GBusiness (Manage_Selenium):
         print ("self.W_Update_an_business_address_step: " + str(self.W_Update_an_business_address_step))
         # 1 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_address_step == 0) :
-            time.sleep(0.25) #Sleeping 0.25 Seconds
+            self.TimeSleeping(0.25)
             print ("! - Redirigiendo a la lista de negocios de Google Business")
             self.GoLocationsPage()
             self.W_Update_an_business_address_step = 1
         # 1 - Lista de negocios - END
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_address_step == 1) :
-            time.sleep(0.25) #Sleeping 0.25 Seconds
+            self.TimeSleeping(0.25)
             if (self.W_Update_an_business_Match == False) :
                 self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
                 if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
@@ -739,8 +735,7 @@ class GBusiness (Manage_Selenium):
                     print (err)
 
         if (self.W_Update_an_business_address_step == 2) :
-            print ("Sleeping 10s for get stared")
-            time.sleep(10)
+            self.TimeSleeping(10)
 
             if (self.Click_by_xpath(self.W_Update_an_business_popup_get_started_button_xpath) == True) :
                 pass
@@ -779,8 +774,7 @@ class GBusiness (Manage_Selenium):
             Data['zipcode_xpath'] = self.W_Update_an_business_button_input_address_zipcode_of_business
             Data['apply_xpath'] = self.W_Update_an_business_button_apply_address_of_business
 
-            print ("Sleeping 6 seconds for load info page")
-            time.sleep(6)
+            self.TimeSleeping(6)
             print ("! - Here we are going to update address for a business")
 
             if (self.UpdateBusiness_in_info_page_address(Data) == True) :
@@ -800,40 +794,39 @@ class GBusiness (Manage_Selenium):
     def UpdateBusiness_in_info_page_address(self, Params) :
 
         print ("! - Internal: Starting process of changing for:  - " + "address")
-        print ("Sleeping 1")
-        time.sleep(1)
+        self.TimeSleeping(1)
         if (self.Click_by_xpath(Params['change_xpath']) == True ):
             print ("[Button.Change] - Done")
         else:
             print ("[Button.Change] - Error")
             return False
-        time.sleep(1)
+        self.TimeSleeping(1)
         if (self.FillField_by_xpath(Params['address'], Params['address_xpath'], True)  == True) :
             print (" [Fill.address.Change] - Done")
         else:
             print ("[Fill.address.Change] - Error")
             return False
-        time.sleep(1)
+        self.TimeSleeping(1)
         if (self.FillField_by_xpath(Params['city'], Params['city_xpath'], True)  == True) :
             print (" [Fill.city.Change] - Done")
         else:
             print ("[Fill.city.Change] - Error")
             return False
-        time.sleep(1)
+        self.TimeSleeping(1)
         if (self.FillField_by_xpath(Params['zipcode'], Params['zipcode_xpath'], True)  == True) :
             print (" [Fill.zipcode.Change] - Done")
         else:
             print ("[FillChange.zipcode] - Error")
             return False
-        time.sleep(1)
+        self.TimeSleeping(1)
         if (self.Fillcombobox_by_xpath(Params['state'], Params['state_xpath'])  == True) :
             print (" [Fill.state.Change] - Done")
         else:
             print ("[Fill.state.Change] - Error")
             return False
-        time.sleep(1)
+        self.TimeSleeping(1)
         if (Params['address2'] != None) :
-            time.sleep(1)
+            self.TimeSleeping(1)
             if (self.Click_by_xpath(Params['address_2_expand_xpath']) == True) :
                 print ("[Button.Expand.Address2] - Done")
                 if (self.FillField_by_xpath(Params['address2'], Params['address_2_xpath'], True)  == True) :
@@ -843,7 +836,7 @@ class GBusiness (Manage_Selenium):
             else:
                 print ("[Button.Expand.Address2] - Error")
                 return False
-        time.sleep(3)
+        self.TimeSleeping(3)
         if (self.Click_by_xpath(Params['apply_xpath']) == True):
             print ("[Button.Change] - Done")
         else:
@@ -855,8 +848,7 @@ class GBusiness (Manage_Selenium):
     def UpdateBusiness_in_info_page(self, Params, key, value) :
         def _click_change(item):
             print ("! - Internal: Starting process of changing for:  - " + str(key))
-            print ("Sleeping 1")
-            time.sleep(1)
+            self.TimeSleeping(1)
             if (self.Click_by_xpath(item) == True ):
                 print (" [Button.Change] - Done")
                 return True
@@ -865,7 +857,7 @@ class GBusiness (Manage_Selenium):
                 return False
 
         def _fill_field(field):
-            time.sleep(1)
+            self.TimeSleeping(1)
             if (self.FillField_by_xpath(value, field, True)  == True) :
                 print (" [Fill.Change] - Done")
                 return True
@@ -874,14 +866,14 @@ class GBusiness (Manage_Selenium):
                 return False
 
         def _click_apply(apply):
-            time.sleep(1)
+            self.TimeSleeping(1)
             if (self.Click_by_xpath(apply) == True) :
                 print ("[Button.Click] - Done")
             else:
                 print ("[Button.Click] - Error")
                 return False
             print ("! - Waiting to save (10 seconds)")
-            time.sleep(10)
+            self.TimeSleeping(10)
             return True
 
         def click_change(change):
@@ -967,7 +959,7 @@ class GBusiness (Manage_Selenium):
         print ("W_Verify_an_business_step -> MWatcher Running")
         print ("W_Verify_an_business_step: " + str(self.W_Verify_an_business_step))
 
-        time.sleep(1)
+        self.TimeSleeping(1)
 
         # Verify_an_business_step:
         # Codigos:
@@ -987,7 +979,7 @@ class GBusiness (Manage_Selenium):
 
         # 1 - Lista de negocios - BEGIN
         if (self.W_Verify_an_business_step == 0) :
-            time.sleep(0.25) #Sleeping 0.25 Seconds
+            self.TimeSleeping(0.25)
             print ("! - Redirigiendo a la lista de negocios de Google Business")
             if (self.GoLocationsPage() == True) :
                self.W_Verify_an_business_step = 1
@@ -1002,7 +994,7 @@ class GBusiness (Manage_Selenium):
         '''
         # 11 - Lista de negocios - BEGIN
         if (self.W_Verify_an_business_step == 1) :
-            time.sleep(0.25) #Sleeping 0.25 Seconds
+            self.TimeSleeping(0.25) #Sleeping 0.25 Seconds
             if (self.W_Verify_an_business_Match == False) :
                 self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
                 if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
@@ -1044,13 +1036,12 @@ class GBusiness (Manage_Selenium):
             else:
                 self.W_Verify_an_business_Match_Columns[4].click()
                 print ("! - Hicimos click en verify now.")
-                time.sleep(1)
+                self.TimeSleeping(1)
                 self.W_Verify_an_business_step = 22
         '''
         if (self.W_Verify_an_business_step == 22) :
             print ("! - Detecting if we are in special case: Is this your business?")
-            print ("Sleeping 3 secons for rule")
-            time.sleep(3)
+            self.TimeSleeping(3)
 
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_is_this_your_business_title, 'Is this your busine') == True):
                 ()
@@ -1063,7 +1054,7 @@ class GBusiness (Manage_Selenium):
                 self.W_Verify_an_business_step = 3
 
         if (self.W_Verify_an_business_step == 2) :
-            time.sleep(5)
+            self.TimeSleeping(5)
             print ("! - We are on choose the way to verify (Verify now.")
             GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber_xpath)
             if not GB_phoneNumber:
@@ -1101,7 +1092,7 @@ class GBusiness (Manage_Selenium):
                     print ("El code es: {}".format(code))
             elif response['phone_number'][0] == '000000':
                 print('! - The phone was just purchased. Please hold 5 seconds.')
-                time.sleep(5)
+                self.TimeSleeping(5)
             else:
                 print('! - Unable to purchase phone ', response['phone_number'][0])
                 credential.report_fail()
@@ -1115,21 +1106,19 @@ class GBusiness (Manage_Selenium):
             else:
                 RinRinCellPhone_Animate = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath)
                 if (RinRinCellPhone_Animate == True) :
-                    print ("! - Sleeping 1 : RinRin Cellphone Animation appear.")
-                    time.sleep(1)
+                    self.TimeSleeping(1)
                     Clicking_RinRinCellPhone = self.Click_by_xpath(self.W_Verify_an_business_Target_Cellphone_rin_rin_xpath)
                     if (Clicking_RinRinCellPhone == True):
-                        print ("! - Sleeping 1 : RinRin Cellphone Animation appear.")
-                        time.sleep(10)
-                        print ("! - Sleeping 10 seconds - While Receving sms")
+                        print ("While Receving sms")
+                        self.TimeSleeping(10)
+
 
             Box_Enter6Digit = self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_Text_Box_Enter6Digit_xpath, Step_Enter6Digits_Text_fromVerifynow_bussiness)
             if (Box_Enter6Digit == True ):
                 self.W_Verify_an_business_step = 21
 
         if (self.W_Verify_an_business_step == 21) :
-            print ("! - Sleeping 3s")
-            time.sleep(3)
+            self.TimeSleeping(3)
 
             if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain_xpath)  == True ) :
                 print ("TEXT AGAIN EXIST")
@@ -1146,11 +1135,10 @@ class GBusiness (Manage_Selenium):
                 Retries_loop_sms += 1
                 if (Retries_loop_sms == RETRY_AT) :
                     print ("! - Solicitando el mensaje de texto de nuevo")
-                    time.sleep(3)
+                    self.TimeSleeping(3)
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath('Text',self.W_Verify_an_business_Target_TextAgain_xpath)  == True ) :
                             self.Click_by_xpath(self.W_Verify_an_business_Target_TextAgain_xpath)
-                            print ("! - Sleeping 15 seconds - While Receving sms")
-                            time.sleep(15)
+                            self.TimeSleeping(15)
                     else :
                         print ("! - No pudimos reenviar el mensaje")
                 elif (Retries_loop_sms == MAX_RETRIES) :
@@ -1159,7 +1147,7 @@ class GBusiness (Manage_Selenium):
                     TWatch.ListThreads['VerifyBusiness'].cancel()
                     return
 
-                time.sleep(1)
+                self.TimeSleeping(1)
                 print ("! - Doing response to Matrix")
                 response = credential.get_validation_code(
                     phone_number=GB_phoneNumber
@@ -1181,7 +1169,7 @@ class GBusiness (Manage_Selenium):
                 self.W_Verify_an_business_step = 24
 
         if (self.W_Verify_an_business_step == 24):
-            time.sleep(3)
+            self.TimeSleeping(3)
             print ("Pantalla de ya se ha verificado el business")
             credential.report_validation()
             GBusiness_handle.BusinessValidation = 1
@@ -1310,8 +1298,7 @@ class Renamer(): #Master for robot
 
                 if (OGAuth.SucessLogin == 1) :
                     print ("! - Login is ::OK::")
-                    print ("Sleeping 1s")
-                    time.sleep(1)
+                    self.TimeSleeping(1)
                 else:
                     print ("We cannot continue because we cannot login with this account: " + credential.email)
                     print ("Skipping credential")
