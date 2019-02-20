@@ -217,11 +217,20 @@ class Manage_Selenium :
         return response
 
     def GettingElement_by_xpath(self, xpath):
-        try:
-            value = self.driver.find_element_by_xpath(xpath)
-        except NoSuchElementException:
-            return False
-        return value
+        def execute(item):
+            try:
+                value = self.driver.find_element_by_xpath(item)
+            except NoSuchElementException:
+                return False
+            return value
+        if (isinstance(xpath, list)) :
+            for item in xpath:
+                response = execute(item)
+                if (response == True) :
+                    break
+        else:
+            response = execute(xpath)
+        return response
 
     def GettingElements_by_tag_name_with_target (self, target, tagname):
         try:
@@ -415,7 +424,9 @@ class GBusiness (Manage_Selenium):
         # Return from control Flow  - END
 
         #Handlers_XPath para (W_Verify_an_business) - BEGIN
-        self.W_Verify_an_business_Target_TBody_Locations_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody'
+        self.W_Verify_an_business_Target_TBody_Locations_xpath = list()
+        self.W_Verify_an_business_Target_TBody_Locations_xpath.append('//*[@id="main_viewpane"]/c-wiz[1]/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody')
+        self.W_Verify_an_business_Target_TBody_Locations_xpath.append('//*[@id="main_viewpane"]/c-wiz[1]/c-wiz/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody')
         self.W_Verify_an_business_Target_Text_to_sendVerify_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[2]/button[2]'
         self.W_Verify_an_business_Target_Text_Box_Enter6Digit_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p'
         self.W_Verify_an_business_Target_EnterVerifyCode_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[2]/div[1]/div/div[1]/input'
@@ -508,16 +519,16 @@ class GBusiness (Manage_Selenium):
         #Control Validations - END
 
     def setDefault_initValues (self) :
-        GBusiness_handle.BusinessValidation = 0 # BusinessValidation Default : 0
-        GBusiness_handle.W_Verify_an_business_step = 0 # W_Verify_an_business_step
-        GBusiness_handle.Verify_an_business_Skip = False # Skip Reset.
-        GBusiness_handle.W_Verify_an_business_Match = False # Business wan't found yet
-        GBusiness_handle.W_Update_an_business_step = 0
-        GBusiness_handle.W_Update_an_business_Match = False
-        GBusiness_handle.UpdateBusinessValidation = False
-        GBusiness_handle.W_Update_an_business_address_step = 0
-        GBusiness_handle.W_Update_an_business_address_Match = False
-
+        self.BusinessValidation = 0 # BusinessValidation Default : 0
+        self.W_Verify_an_business_step = 0 # W_Verify_an_business_step
+        self.Verify_an_business_Skip = False # Skip Reset.
+        self.W_Verify_an_business_Match = False # Business wan't found yet
+        self.W_Update_an_business_step = 0
+        self.W_Update_an_business_Match = False
+        self.UpdateBusinessValidation = False
+        self.W_Update_an_business_address_step = 0
+        self.W_Update_an_business_address_Match = False
+        self.HaveWe_Match_in_locations_page = False
     def setDriver(self, driver):
         self.driver = driver
         return True
@@ -534,21 +545,23 @@ class GBusiness (Manage_Selenium):
         return True
 
 
-    def Actions_for_Business_List (self, credential, action):
+    def Business_Listing (self, credential, action):
 
         # action:
-        # edit - Edit a business
+        # open - open business
         # verify - Verify a business
         # get_status - Get actual status
-
+        print ("! - Business_Listing -- Running ")
         self.HaveWe_Match_in_locations_page = False
-
         # Have we match? TRUE :: FALSE
         if (self.HaveWe_Match_in_locations_page == False) :
             self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
             #Getting target for table
             #If we have table then
+            print ("! - Obtaining table...")
+
             if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
+                print ("! - Getting rows...")
                 #Set rows
                 Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
                 #Set Qty_rows
@@ -556,17 +569,31 @@ class GBusiness (Manage_Selenium):
                 #Setting a counter for interaction in table
                 Counter_Interactios_rows_table = 0
                 #For each for each item (rows)
+                print ("! - Interacting with each row to find a match")
                 for Item in Rows_Table:
+
                     Counter_Interactios_rows_table += 1
                     #Getting columns for this row.
+                    print ("! - Trying find a Match...")
                     Columns = self.GettingElements_by_tag_name_with_target(Item, 'td')
                     if(
                         (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) or
                         (credential.final_name and (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name)) == True)):
-                        print ("! - La empresa es: " + credential.name)
+                        print ("! - Match found by Name.")
+                        print ("According credentials his match is:")
+                        print ("Name: " + credential.name)
+                        print ("Final Name: " + credential.final_name)
                         self.HaveWe_Match_in_locations_page = True
                         self.HaveWe_Match_in_locations_page_Columns = Columns
+                        break
+                    else:
+                        print (" ## No Match ## ")
+        if (self.HaveWe_Match_in_locations_page == True) :
+            print ("Verify, get_status, Open Business.. ")
+            print ("There instructions to new Business_Listing actions.. ")
+            print ("There conditions.....")
 
+        return True
 
 
 
@@ -965,7 +992,14 @@ class GBusiness (Manage_Selenium):
             if (self.GoLocationsPage() == True) :
                self.W_Verify_an_business_step = 1
         # 1 - Lista de negocios - END
+        if (self.W_Verify_an_business_step == 1) :
 
+            if (self.Business_Listing(credential, 'verify') == True) :
+                print ("self.Business_Listing: True")
+            else:
+                print ("self.Business_Listing: False")
+
+        '''
         # 11 - Lista de negocios - BEGIN
         if (self.W_Verify_an_business_step == 1) :
             time.sleep(0.25) #Sleeping 0.25 Seconds
@@ -1012,17 +1046,17 @@ class GBusiness (Manage_Selenium):
                 print ("! - Hicimos click en verify now.")
                 time.sleep(1)
                 self.W_Verify_an_business_step = 22
-
+        '''
         if (self.W_Verify_an_business_step == 22) :
             print ("! - Detecting if we are in special case: Is this your business?")
             print ("Sleeping 3 secons for rule")
             time.sleep(3)
-            import pdb; pdb.set_trace()
+
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_is_this_your_business_title, 'Is this your busine') == True):
-                import pdb; pdb.set_trace()
+                ()
                 print ("! - Aplicando click Doesn't match")
                 if (self.Click_by_xpath(self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match) == True):
-                    import pdb; pdb.set_trace()
+
                     if (self.Click_by_xpath(self.W_Verify_an_business_Target_is_this_your_busines_apply) == True) :
                         self.W_Verify_an_business_step = 3
             else :
