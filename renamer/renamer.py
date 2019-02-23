@@ -31,7 +31,7 @@ from services import BusinessService
 class ThreadsWatch:
     def __init__(self):
         self.ListThreads = dict()
-        # ID:1 - Name: VarThreads
+        #                                                                                                                                                                                                                    ID:1 - Name: VarThreads
         # ----
     def Stop_Threads(self,id):
         pass
@@ -54,6 +54,7 @@ class ThreadsWatch:
         #Generate a logger
         # - What Thread faild and where.
         pass
+
 
 class MWatcher :
     def __init__(self,interval, VarInit, object_name=False, function_name=False, pretty_name_process=None, data_to_load=False, block=False) :
@@ -257,6 +258,17 @@ class Google_auth(Manage_Selenium):
         self.SucessLogin = 0
 
     def RunDriver(self):
+        '''
+        if platform.system() == 'Windows':
+           self.driver = webdriver.Firefox(
+               executable_path=os.path.join(BASE_DIR, 'chromedriver'),
+                # chrome_options=chrome_options
+            )
+        else:
+            self.driver = webdriver.Firefox(
+                # chrome_options=chrome_options
+            )
+        '''
         if platform.system() == 'Windows':
            self.driver = webdriver.Chrome(
                executable_path=os.path.join(BASE_DIR, 'chromedriver'),
@@ -442,6 +454,10 @@ class GBusiness (Manage_Selenium):
         self.W_Verify_an_business_Target_is_this_your_busines_apply.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/button')
 
 
+        self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button = list()
+        self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[2]/button[2]/span')
+
+
         #Handlers_XPath para (W_Verify_an_business) - END
 
 
@@ -512,12 +528,12 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[3]/content/span')
 
         #Control Validations - BEGIN
-        self.BusinessValidation = 0
+        self.BusinessValidation = False
         self.UpdateBusinessValidation = False
         #Control Validations - END
 
     def setDefault_initValues (self) :
-        self.BusinessValidation = 0 # BusinessValidation Default : 0
+        self.BusinessValidation = False # BusinessValidation Default : 0
         self.W_Verify_an_business_step = 0 # W_Verify_an_business_step
         self.Verify_an_business_Skip = False # Skip Reset.
         self.W_Verify_an_business_Match = False # Business wan't found yet
@@ -569,11 +585,11 @@ class GBusiness (Manage_Selenium):
                 #For each for each item (rows)
                 print ("! - Interacting with each row to find a match")
                 for Item in Rows_Table:
-
                     Counter_Interactios_rows_table += 1
                     #Getting columns for this row.
                     print ("! - Trying find a Match...")
                     Columns = self.GettingElements_by_tag_name_with_target(Item, 'td')
+
                     if(
                         (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) or
                         (credential.final_name and (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name)) == True)):
@@ -586,13 +602,33 @@ class GBusiness (Manage_Selenium):
                         break
                     else:
                         print (" ## No Match ## ")
+
         if (self.HaveWe_Match_in_locations_page == True) :
-            print ("Verify, get_status, Open Business.. ")
-            print ("There instructions to new Business_Listing actions.. ")
-            print ("There conditions.....")
-
-        return True
-
+            if (action == "verify") :
+                print ("! - Clicked in verify now! ")
+                status = self.HaveWe_Match_in_locations_page_Columns[3].text
+                if (status == 'Verification required' or  status == 'Pending verification') :
+                    self.HaveWe_Match_in_locations_page_Columns[4].click()
+                    self.TimeSleeping(1)
+                    return status
+                else :
+                    #Return status because we are asking for action and click isnot possible right now.
+                    return status
+            elif (action == "get_status"):
+                status = self.HaveWe_Match_in_locations_page_Columns[3].text
+                print ("! - Status is: " + status)
+                return status
+            elif (action == "open") :
+                BusinessTarget = self.HaveWe_Match_in_locations_page_Columns[2]
+                try:
+                    BusinessTarget.find_element_by_partial_link_text(credential.name).click()
+                except:
+                    BusinessTarget.find_element_by_partial_link_text(credential.final_name).click()
+                return True
+            else:
+                return False
+        else :
+            return "NoMatch"
 
 
 
@@ -608,12 +644,17 @@ class GBusiness (Manage_Selenium):
         # 1 - Lista de negocios - END
         # 11 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 1) :
-            self.TimeSleeping(0.25) #Sleeping 0.25 Seconds
+            Request_Match = self.Business_Listing(credential, 'open')
+            if (Request_Match == 'NoMatch'):
+                credential.report_fail()
+                TWatch.ListThreads['VerifyBusiness'].cancel()
+            elif (Request_Match == True):
+                self.W_Update_an_business_step = 2
 
+            self.TimeSleeping(0.25) #Sleeping 0.25 Seconds
 
         if (self.W_Update_an_business_step == 2) :
             self.TimeSleeping(10)
-
             if (self.Click_by_xpath(self.W_Update_an_business_popup_get_started_button_xpath) == True) :
                 pass
             self.W_Update_an_business_step = 3
@@ -982,80 +1023,53 @@ class GBusiness (Manage_Selenium):
             self.TimeSleeping(0.25)
             print ("! - Redirigiendo a la lista de negocios de Google Business")
             if (self.GoLocationsPage() == True) :
-               self.W_Verify_an_business_step = 1
+                self.W_Verify_an_business_step = 1
         # 1 - Lista de negocios - END
         if (self.W_Verify_an_business_step == 1) :
-
-            if (self.Business_Listing(credential, 'verify') == True) :
-                print ("self.Business_Listing: True")
-            else:
-                print ("self.Business_Listing: False")
-
-        '''
-        # 11 - Lista de negocios - BEGIN
-        if (self.W_Verify_an_business_step == 1) :
-            self.TimeSleeping(0.25) #Sleeping 0.25 Seconds
-            if (self.W_Verify_an_business_Match == False) :
-                self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
-                if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
-                    Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
-                    Qty_Rows = len(Rows_Table)
-                    Counter_Interactios_rows_table = 0
-                    for Item in Rows_Table:
-                        Counter_Interactios_rows_table += 1
-                        Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
-                        if(
-                            self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True or
-                            (credential.final_name and self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name) == True)
-                        ):
-                            print ("! - La empresa es: " + credential.name)
-                            print ("! - Salida del HTML: " + Columns[2].get_attribute('outerHTML'))
-                            print ("! - Match de la empresa")
-                            self.W_Verify_an_business_Match_Columns = Columns
-                            self.W_Verify_an_business_Match = True
-
-                            if(
-                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_required) == True or
-                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_pending) == True
-                            ):
-                                print ("! - La empresa no se encuentra verificada, Vamos a veriricarla")
-                                break
-                            else :
-                                credential.report_validation()
-                                GBusiness_handle.BusinessValidation = 1
-                                TWatch.ListThreads['VerifyBusiness'].cancel()
-                                print ("! -No es necesario la verificacion.  La empresa se encuentra verificada. ")
-                        else:
-                            print ("! - No match con la empresa")
-
-                            if (Counter_Interactios_rows_table == Qty_Rows):
-                                print ("!- No hay match con la empresa que estamos buscando.")
-                                credential.report_fail()
-                                TWatch.ListThreads['VerifyBusiness'].cancel()
-                                return
-            else:
-                self.W_Verify_an_business_Match_Columns[4].click()
-                print ("! - Hicimos click en verify now.")
-                self.TimeSleeping(1)
+            Request_Match = self.Business_Listing(credential, 'verify')
+            if (Request_Match == 'NoMatch'):
+                credential.report_fail()
+                TWatch.ListThreads['VerifyBusiness'].cancel()
+            elif (Request_Match == 'Published'):
+                credential.report_validation()
+                self.BusinessValidation = True
+                TWatch.ListThreads['VerifyBusiness'].cancel()
+                print ("! -No es necesario la verificacion.  La empresa se encuentra verificada. ")
+            elif (Request_Match == 'Suspended') :
+                credential.report_fail()
+                TWatch.ListThreads['VerifyBusiness'].cancel()
+            elif (Request_Match == 'Verification required' or  Request_Match == 'Pending verification') :
                 self.W_Verify_an_business_step = 22
-        '''
+                self.TimeSleeping(1)
+
         if (self.W_Verify_an_business_step == 22) :
+
             print ("! - Detecting if we are in special case: Is this your business?")
             self.TimeSleeping(3)
 
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_is_this_your_business_title, 'Is this your busine') == True):
-                ()
                 print ("! - Aplicando click Doesn't match")
                 if (self.Click_by_xpath(self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match) == True):
 
                     if (self.Click_by_xpath(self.W_Verify_an_business_Target_is_this_your_busines_apply) == True) :
-                        self.W_Verify_an_business_step = 3
+                        self.W_Verify_an_business_step = 222
             else :
-                self.W_Verify_an_business_step = 3
+                self.W_Verify_an_business_step = 222
+
+        if (self.W_Verify_an_business_step == 222) :
+            # XPATH for button text: self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button
+            self.TimeSleeping(5)
+
+            if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button, 'Tex') == True) :
+                if (self.Click_by_xpath(self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button) == True) :
+                    self.W_Verify_an_business_step == 2
+            else :
+                print ("! - We are skipping this credential, because it has not verification via text messsage.")
+                credential.report_fail()
+                TWatch.ListThreads['VerifyBusiness'].cancel()
 
         if (self.W_Verify_an_business_step == 2) :
             self.TimeSleeping(5)
-            print ("! - We are on choose the way to verify (Verify now.")
             GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber_xpath)
             if not GB_phoneNumber:
                 TWatch.ListThreads['VerifyBusiness'].cancel()
@@ -1172,7 +1186,7 @@ class GBusiness (Manage_Selenium):
             self.TimeSleeping(3)
             print ("Pantalla de ya se ha verificado el business")
             credential.report_validation()
-            GBusiness_handle.BusinessValidation = 1
+            GBusiness_handle.BusinessValidation = True
             TWatch.ListThreads['VerifyBusiness'].cancel()
         # 11 - Lista de negocios - END
 
@@ -1254,7 +1268,9 @@ class Renamer(): #Master for robot
         self.credential_list = business_list
 
         counter = 0
-        while self.credential_list.next:
+
+        page = 1
+        while page == 1 or self.credential_list.next:
             if self.credential_list.count == 0:
                 print('Ya no hay más items.')
                 break
@@ -1264,7 +1280,11 @@ class Renamer(): #Master for robot
                 counter = 0
 
 
+
             for credential in self.credential_list:
+
+                counter += 1
+                '''
                 if all([
                     credential.final_name,
                     credential.final_website,
@@ -1277,7 +1297,7 @@ class Renamer(): #Master for robot
                     credential.date_validation
                 ]):
                     continue
-
+                '''
                 OGAuth.setDefault_initValues()
                 GBusiness_handle.setDefault_initValues()
                 print(credential.name, credential.email, credential.password, credential.recovery_email)
@@ -1298,7 +1318,7 @@ class Renamer(): #Master for robot
 
                 if (OGAuth.SucessLogin == 1) :
                     print ("! - Login is ::OK::")
-                    self.TimeSleeping(1)
+                    Tools_Selenium.TimeSleeping(1)
                 else:
                     print ("We cannot continue because we cannot login with this account: " + credential.email)
                     print ("Skipping credential")
@@ -1306,6 +1326,7 @@ class Renamer(): #Master for robot
 
 
                 VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
+
                 '''
                 if not credential.date_renamed: # Can we rename this business? YES
                     Data=dict()
@@ -1327,6 +1348,7 @@ class Renamer(): #Master for robot
 
                 GBusiness_handle.driver.quit()
                 '''
+                GBusiness_handle.driver.quit()
         self.Finished_app()
 
 
@@ -1339,6 +1361,7 @@ class Renamer(): #Master for robot
 # Intialization of object.
 OGAuth = Google_auth() #Same for all clasess
 GBusiness_handle = GBusiness()
+Tools_Selenium = Tools()
 #Matrix_Handle = Matrix()
 TWatch = ThreadsWatch()
 logger = Logger()
