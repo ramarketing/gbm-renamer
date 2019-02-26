@@ -456,20 +456,12 @@ class GBusiness (Manage_Selenium):
 
         self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button = list()
         self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[2]/button[2]/span')
-
-
-        #Handlers_XPath para (W_Verify_an_business) - END
-
-
-        #Handlers_XPATH para (W_update_a_business) - BEGIN
-
         self.W_Update_an_business_popup_get_started_button_xpath = '//*[@id="js"]/div[10]/div/div[2]/div[3]/div/content'
         self.W_Update_an_business_popup_left_panel_info_xpath = '//*[@id="gb"]/div[4]/div[2]/div/div[1]/div[4]/a/span[2]'
 
         self.W_Update_an_business_button_edit_name_in_info_page_xpath = '//*[@id="ow47"]/div[2]/svg'
         self.W_Update_an_business_button_edit_category_in_info_page_xpath = '//*[@id="ow48"]/div[2]/svg'
 
-        #self.W_Update_an_business_button_change_name_of_business = '//*[@id="ow48"]/div[1]'
         self.W_Update_an_business_button_change_name_of_business = list()
         self.W_Update_an_business_button_change_name_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[2]/div[1]')
         self.W_Update_an_business_button_change_name_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[2]')
@@ -498,7 +490,9 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_apply_website_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_website_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
-        self.W_Update_an_business_button_change_address_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[4]/div[3]/span'
+        self.W_Update_an_business_button_change_address_of_business = list()
+        self.W_Update_an_business_button_change_address_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[4]/div[3]/span')
+        self.W_Update_an_business_button_change_address_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[4]/div[3]/span')
         self.W_Update_an_business_button_input_address_street_address_of_business = '//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[2]/input'
 
         #Address
@@ -632,7 +626,11 @@ class GBusiness (Manage_Selenium):
 
 
 
-    def W_Update_an_business(self, credential):
+    def W_Update_an_business(self, data):
+
+        credential = data['credential']
+        actions = data['actions']
+
         print ("Here we go with Update Business")
         print ("self.W_Update_an_business_step: " + str(self.W_Update_an_business_step))
         # 1 - Lista de negocios - BEGIN
@@ -647,10 +645,9 @@ class GBusiness (Manage_Selenium):
             Request_Match = self.Business_Listing(credential, 'open')
             if (Request_Match == 'NoMatch'):
                 credential.report_fail()
-                TWatch.ListThreads['VerifyBusiness'].cancel()
+                TWatch.ListThreads['UpdateBusiness'].cancel()
             elif (Request_Match == True):
                 self.W_Update_an_business_step = 2
-
             self.TimeSleeping(0.25) #Sleeping 0.25 Seconds
 
         if (self.W_Update_an_business_step == 2) :
@@ -672,33 +669,33 @@ class GBusiness (Manage_Selenium):
                 print(err)
 
         if (self.W_Update_an_business_step == 4) :
-            Data = dict()
-            Data['name'] = credential.final_name
-            Data['category'] = credential.final_category_1
-            Data['description'] = credential.final_description
-            Data['website'] = credential.final_website
-
-            print ("### Values ###")
-            print (Data['name'], Data['category'], Data['description'], Data['website'])
-
             self.TimeSleeping(6)
             print ("! - Here we are going to update business")
             self.W_renaming_step_fail = False
-            for key, value in Data.items():
+            for key, value in actions.items():
                 if (not value) :
                     print ("Skipping process, why value for {} is false".format(key))
                     continue
                 print ("El valor de key: " + str(key)  + "  y el valor de value: " + str(value))
-                Target_for_change = self.ObtainParam_ToUpdate_Business(key, value)
+                Target_for_change = self.ObtainParam_ToUpdate_Business(key, credential)
                 if (Target_for_change == False) :
                     print ("! - Key value no exist to update")
                     continue
                 self.TimeSleeping(1)
-                if (self.UpdateBusiness_in_info_page(Target_for_change, key, value) == True) :
-                    print ("Change of business done for : " + str(key))
-                else :
-                    self.W_renaming_step_fail = True
-                    print ("We could not change this value: " + (key))
+                if (key == 'address'):
+                    import pdb; pdb.set_trace()
+                    if (self.UpdateBusiness_in_info_page_address(Target_for_change) == True) :
+                        import pdb; pdb.set_trace()
+                        print ("Updating Address")
+                    else:
+                        import pdb; pdb.set_trace()
+                        print ("Updating Address fail")
+                else:
+                    if (self.UpdateBusiness_in_info_page(Target_for_change, key, value) == True) :
+                        print ("Change of business done for : " + str(key))
+                    else :
+                        self.W_renaming_step_fail = True
+                        print ("We could not change this value: " + (key))
             self.W_Update_an_business_step = 5
 
         if (self.W_Update_an_business_step == 5) :
@@ -707,135 +704,12 @@ class GBusiness (Manage_Selenium):
             print ("! - La empresa ha sido renombrada. ")
             self.UpdateBusinessValidation = True
             TWatch.ListThreads['UpdateBusiness'].cancel()
-            '''
-            try:
-                self.driver.find_element_by_xpath('//*[@id="ow48"]/div[1]').click()
-                self.W_Update_an_business_step = 5
-            except:
-                pass
-            '''
-    def W_Update_an_business_address (self, credential):
-        print ("Here we go with Update Business")
-        print ("self.W_Update_an_business_address_step: " + str(self.W_Update_an_business_address_step))
-        # 1 - Lista de negocios - BEGIN
-        if (self.W_Update_an_business_address_step == 0) :
-            self.TimeSleeping(0.25)
-            print ("! - Redirigiendo a la lista de negocios de Google Business")
-            self.GoLocationsPage()
-            self.W_Update_an_business_address_step = 1
-        # 1 - Lista de negocios - END
-        # 11 - Lista de negocios - BEGIN
-        if (self.W_Update_an_business_address_step == 1) :
-            self.TimeSleeping(0.25)
-            if (self.W_Update_an_business_Match == False) :
-                self.Google_Business_Locations_Data_Table_Target_Selenium = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_TBody_Locations_xpath)
-                if (self.Google_Business_Locations_Data_Table_Target_Selenium != False) :
-                    Rows_Table = self.GettingElements_by_tag_name_with_target(self.Google_Business_Locations_Data_Table_Target_Selenium, 'tr')
-                    Qty_Rows = len(Rows_Table)
-                    Counter_Interactios_rows_table = 0
-                    for Item in Rows_Table:
-                        Counter_Interactios_rows_table += 1
-                        Columns = Rows_Table = self.GettingElements_by_tag_name_with_target(Item, 'td')
-                        if(
-                            (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.name) == True) or
-                            (credential.final_name and (self.Get_outerHTML_and_check_partial_text_via_target(Columns[2], credential.final_name)) == True)):
-                            print ("! - La empresa es: " + credential.name)
-                            print ("! - Salida del HTML: " + Columns[2].get_attribute('outerHTML'))
-                            print ("! - Match de la empresa")
-                            self.W_Update_an_business_Match = True
-                            self.W_Update_an_business_Match_Columns = Columns
-
-                            if(
-                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_required) == True or
-                                self.Get_outerHTML_and_check_partial_text_via_target(Columns[3], Status_colum_location_business_Verification_pending) == True
-                            ):
-                                print ("! - La empresa no se encuentra verificada, Vamos a veriricarla")
-                                break
-                            else :
-                                credential.report_validation()
-                                GBusiness_handle.BusinessValidation = 1
-                                TWatch.ListThreads['VerifyBusiness'].cancel()
-                                print ("! -No es necesario la verificacion.  La empresa se encuentra verificada. ")
-                        else:
-                            print ("! - No match con la empresa")
-                            if (Counter_Interactios_rows_table == Qty_Rows):
-                                print ("!- No hay match con la empresa que estamos buscando.")
-                                credential.report_fail()
-                                TWatch.ListThreads['VerifyBusiness'].cancel()
-                                return
-            else:
-                try:
-                    BusinessTarget = self.W_Update_an_business_Match_Columns[2]
-                    try:
-                        BusinessTarget.find_element_by_partial_link_text(credential.name).click()
-                    except:
-                        BusinessTarget.find_element_by_partial_link_text(credential.final_name).click()
-                    print ("! - Hicimos click para ingresar a la empresa.")
-                    self.W_Update_an_business_address_step = 2
-                except Exception as err:
-                    print (err)
-
-        if (self.W_Update_an_business_address_step == 2) :
-            self.TimeSleeping(10)
-
-            if (self.Click_by_xpath(self.W_Update_an_business_popup_get_started_button_xpath) == True) :
-                pass
-            self.W_Update_an_business_address_step = 3
-
-        if (self.W_Update_an_business_address_step == 3) :
-
-            #print ("! - Exc : Block 3")
-            Edit_Info_url = self.driver.current_url
-            Edit_Info_url = Edit_Info_url.replace('dashboard', 'edit')
-            try:
-                self.driver.get(Edit_Info_url)
-                self.W_Update_an_business_address_step = 4
-            except Exception as err:
-                print ("! - Error en step 3:")
-                print(err)
-
-        if (self.W_Update_an_business_address_step == 4) :
-            Data = dict()
-
-
-            print (credential.raw_data)
-
-
-            Data['address'] = credential.final_address
-            Data['address2'] = credential.final_address_2
-            Data['city'] = credential.final_city
-            Data['zipcode'] = credential.final_zip_code
-            Data['state'] = credential.final_state
-            Data['change_xpath'] = self.W_Update_an_business_button_change_address_of_business
-            Data['address_xpath'] = self.W_Update_an_business_button_input_address_street_address_of_business
-            Data['address_2_expand_xpath'] = self.W_Update_an_business_button_expand_address_street_2_address_of_business
-            Data['address_2_xpath'] = self.W_Update_an_business_button_input_address_street_2_address_of_business
-            Data['city_xpath'] = self.W_Update_an_business_button_input_address_city_of_business
-            Data['state_xpath'] = self.W_Update_an_business_button_combobox_address_state_of_business
-            Data['zipcode_xpath'] = self.W_Update_an_business_button_input_address_zipcode_of_business
-            Data['apply_xpath'] = self.W_Update_an_business_button_apply_address_of_business
-
-            self.TimeSleeping(6)
-            print ("! - Here we are going to update address for a business")
-
-            if (self.UpdateBusiness_in_info_page_address(Data) == True) :
-                print ("Change of business done for address")
-            else :
-                print ("We could not change address" )
-            self.W_Update_an_business_address_step = 5
-
-        if (self.W_Update_an_business_address_step == 5) :
-            #credential.report_renamed()
-            print ("! - La empresa ha sido cambiada de direccion. ")
-            self.UpdateBusinessChangeAddress = True
-            TWatch.ListThreads['UpdateBusiness'].cancel()
-
-
 
     def UpdateBusiness_in_info_page_address(self, Params) :
 
         print ("! - Internal: Starting process of changing for:  - " + "address")
         self.TimeSleeping(1)
+        import pdb; pdb.set_trace()
         if (self.Click_by_xpath(Params['change_xpath']) == True ):
             print ("[Button.Change] - Done")
         else:
@@ -870,7 +744,7 @@ class GBusiness (Manage_Selenium):
             self.TimeSleeping(1)
             if (self.Click_by_xpath(Params['address_2_expand_xpath']) == True) :
                 print ("[Button.Expand.Address2] - Done")
-                if (self.FillField_by_xpath(Params['address2'], Params['address_2_xpath'], True)  == True) :
+                if (self.FillField_by_xpath(Params['address2'], Params['address_2_expand_xpath'], True)  == True) :
                     print ("[Fill.Expand.Address2] - Done")
                 else:
                     print ("[Button.Expand.Address2] - Error")
@@ -952,48 +826,46 @@ class GBusiness (Manage_Selenium):
                 response = click_apply(Params['apply'])
         return response
 
-    def ObtainParam_ToUpdate_Business (self, key, value):
-
-        '''
-        [ self.W_Update_an_business_button_change_name_of_business ]
-        [ self.W_Update_an_business_button_input_name_of_business ]
-        [ self.W_Update_an_business_button_apply_name_of_business ]
-
-        [ self.W_Update_an_business_button_change_category_of_business ]
-        [ self.W_Update_an_business_button_input_category_of_business ]
-        [ self.W_Update_an_business_button_apply_category_of_business ]
-
-        [ self.W_Update_an_business_button_change_description_of_business ]
-        [ self.W_Update_an_business_button_input_description_of_business ]
-        [ self.W_Update_an_business_button_apply_description_of_business ]
-
-        [ self.W_Update_an_business_button_change_website_of_business ]
-        [ self.W_Update_an_business_button_input_website_of_business ]
-        [ self.W_Update_an_business_button_apply_website_of_business ]
-        '''
+    def ObtainParam_ToUpdate_Business (self, key, credential):
 
         ReturnValue = dict()
 
         if (key == 'name') :
+            ReturnValue['value'] = credential.name
             ReturnValue['change'] = self.W_Update_an_business_button_change_name_of_business
             ReturnValue['input'] = self.W_Update_an_business_button_input_name_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_name_of_business
         elif (key == 'category') :
+            ReturnValue['value'] = credential.category
             ReturnValue['change'] = self.W_Update_an_business_button_change_category_of_business
             ReturnValue['input'] = self.W_Update_an_business_button_input_category_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_category_of_business
         elif (key == 'description') :
+            ReturnValue['value'] = credential.description
             ReturnValue['change'] = self.W_Update_an_business_button_change_description_of_business
             ReturnValue['input'] = self.W_Update_an_business_button_input_description_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_description_of_business
         elif (key == 'website') :
+            ReturnValue['value'] = credential.website
             ReturnValue['change'] = self.W_Update_an_business_button_change_website_of_business
             ReturnValue['input'] = self.W_Update_an_business_button_input_website_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_website_of_business
+        elif (key == 'address') :
+            ReturnValue['address'] = credential.final_address
+            ReturnValue['address2'] = credential.final_address_2
+            ReturnValue['city'] = credential.final_city
+            ReturnValue['zipcode'] = credential.final_zip_code
+            ReturnValue['state'] = credential.final_state
+            ReturnValue['change_xpath'] = self.W_Update_an_business_button_change_address_of_business
+            ReturnValue['address_xpath'] = self.W_Update_an_business_button_input_address_street_address_of_business
+            ReturnValue['address_xpath'] = self.W_Update_an_business_button_expand_address_street_2_address_of_business
+            ReturnValue['address_2_expand_xpath'] = self.W_Update_an_business_button_input_address_street_2_address_of_business
+            ReturnValue['city_xpath'] = self.W_Update_an_business_button_input_address_city_of_business
+            ReturnValue['state_xpath'] = self.W_Update_an_business_button_combobox_address_state_of_business
+            ReturnValue['zipcode_xpath'] = self.W_Update_an_business_button_input_address_zipcode_of_business
+            ReturnValue['apply_xpath'] = self.W_Update_an_business_button_apply_address_of_business
         else :
-            print ("! - Printing right now value inneed. ")
             return False
-        ReturnValue['value'] = value
         return ReturnValue
 
     def W_Verify_an_business(self, credential):
@@ -1284,7 +1156,7 @@ class Renamer(): #Master for robot
             for credential in self.credential_list:
 
                 counter += 1
-                '''
+
                 if all([
                     credential.final_name,
                     credential.final_website,
@@ -1297,7 +1169,29 @@ class Renamer(): #Master for robot
                     credential.date_validation
                 ]):
                     continue
-                '''
+
+
+                Credential_elements = list()
+                Credential_elements.append(credential.name)
+                Credential_elements.append(credential.final_name)
+                Credential_elements.append(credential.final_website)
+                Credential_elements.append(credential.final_address)
+                Credential_elements.append(credential.final_city)
+                Credential_elements.append(credential.final_state)
+                Credential_elements.append(credential.final_zip_code)
+                Credential_elements.append(credential.final_country)
+
+                print (Credential_elements)
+                Invalid_Credential = False
+                for item in Credential_elements:
+                    if (item == None or item == '' or item == "None"):
+                        Invalid_Credential = True
+
+                        continue
+                if (Invalid_Credential == True):
+                    print ("See up >> Skipping credential. Incomplete")
+                    continue
+
                 OGAuth.setDefault_initValues()
                 GBusiness_handle.setDefault_initValues()
                 print(credential.name, credential.email, credential.password, credential.recovery_email)
@@ -1324,31 +1218,37 @@ class Renamer(): #Master for robot
                     print ("Skipping credential")
                     continue
 
-
-                VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
-
                 '''
                 if not credential.date_renamed: # Can we rename this business? YES
-                    Data=dict()
-                    Data['credential'] = credential
-                    Data['Parameters'] = dict(
-                        Name=True,
-                        Category=False
-                    )
                     #Calling MWatcher to start process of Update
-                    BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', credential, True)
-                    UpdateAdress = MWatcher(0.5, 'UpdateBusiness_address', 'GBusiness_handle', 'W_Update_an_business_address' , 'TWatch_UpdateanBusinessAddress', credential, True)
-
+                    Data = dict()
+                    Data['credential'] = credential
+                    Data['actions']['name'] = True
+                    Data['actions']['category'] = True
+                    Data['actions']['description'] = True
+                    Data['actions']['website'] = True
+                    Data['actions']['address'] = False
+                    BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', Data, True)
                 if not credential.date_validation:
                     #Calling MWatcher to start process of Verification
                     VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
+                '''
+                print ("Updating address -- ")
+                Data = dict()
+                Data['credential'] = credential
+                Data['actions'] = dict()
+                Data['actions']['name'] = False
+                Data['actions']['category'] = False
+                Data['actions']['description'] = False
+                Data['actions']['website'] = False
+                Data['actions']['address'] = True
+                #Calling MWatcher to start process of Update business (Addresss)
+                BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', Data, True)
+
 
                 print ("!- Hemos concluido con la credenecial de business: " + credential.name )
-
-
                 GBusiness_handle.driver.quit()
-                '''
-                GBusiness_handle.driver.quit()
+
         self.Finished_app()
 
 
