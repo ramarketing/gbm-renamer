@@ -386,8 +386,6 @@ class Google_auth(Manage_Selenium):
                     self.driver.quit()
                     TWatch.ListThreads['controller_login'].cancel()
                 else:
-                    import pdb
-                    pdb.set_trace()
                     print(self.driver.current_url.find('https://myaccount.google.com'))
                     if(self.driver.current_url.find('https://myaccount.google.com') != -1):
                         print ("! Login successfull.. ")
