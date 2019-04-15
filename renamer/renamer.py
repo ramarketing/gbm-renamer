@@ -454,7 +454,7 @@ class GBusiness (Manage_Selenium):
         self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match.append('//*[@id="c2"]/div[3]/div')
         self.W_Verify_an_business_Target_is_this_your_busines_apply = list()
         self.W_Verify_an_business_Target_is_this_your_busines_apply.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/button')
-
+        self.W_Verify_an_business_Target_is_this_your_busines_apply.append('//*[@id="i4"]/div[3]/div')
 
         self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button = list()
         self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[2]/button[2]/span')
@@ -858,22 +858,22 @@ class GBusiness (Manage_Selenium):
         ReturnValue = dict()
 
         if (key == 'name') :
-            ReturnValue['value'] = credential.name
+            ReturnValue['value'] = credential.final_name
             ReturnValue['change'] = self.W_Update_an_business_button_change_name_of_business
             ReturnValue['input'] = self.W_Update_an_business_button_input_name_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_name_of_business
         elif (key == 'category') :
-            ReturnValue['value'] = credential.category
+            ReturnValue['value'] = credential.final_category
             ReturnValue['change'] = self.W_Update_an_business_button_change_category_of_business
             ReturnValue['input'] = self.W_Update_an_business_button_input_category_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_category_of_business
         elif (key == 'description') :
-            ReturnValue['value'] = credential.description
+            ReturnValue['value'] = credential.final_description
             ReturnValue['change'] = self.W_Update_an_business_button_change_description_of_business
             ReturnValue['input'] = self.W_Update_an_business_button_input_description_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_description_of_business
         elif (key == 'website') :
-            ReturnValue['value'] = credential.website
+            ReturnValue['value'] = credential.final_website
             ReturnValue['change'] = self.W_Update_an_business_button_change_website_of_business
             ReturnValue['input'] = self.W_Update_an_business_button_input_website_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_website_of_business
@@ -945,12 +945,13 @@ class GBusiness (Manage_Selenium):
             print ("! - Detecting if we are in special case: Is this your business?")
             self.TimeSleeping(3)
 
+
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_is_this_your_business_title, 'Is this your busine') == True):
                 print ("! - Aplicando click Doesn't match")
                 if (self.Click_by_xpath(self.W_Verify_an_business_Target_is_this_your_busines_doesnt_match) == True):
-
                     if (self.Click_by_xpath(self.W_Verify_an_business_Target_is_this_your_busines_apply) == True) :
                         self.W_Verify_an_business_step = 222
+
             else :
                 self.W_Verify_an_business_step = 222
 
@@ -1196,7 +1197,6 @@ class Renamer(): #Master for robot
                 ]):
                     continue
 
-
                 Credential_elements = list()
                 Credential_elements.append(credential.name)
                 Credential_elements.append(credential.final_name)
@@ -1206,9 +1206,6 @@ class Renamer(): #Master for robot
                 Credential_elements.append(credential.final_state)
                 Credential_elements.append(credential.final_zip_code)
                 Credential_elements.append(credential.final_country)
-
-                print (Credential_elements)
-                '''
                 Invalid_Credential = False
                 for item in Credential_elements:
                     if (item == None or item == '' or item == "None"):
@@ -1216,9 +1213,9 @@ class Renamer(): #Master for robot
 
                         continue
                 if (Invalid_Credential == True):
-                    print ("See up >> Skipping credential. Incomplete")
+                    print ("Skipping credential...")
                     continue
-                '''
+
                 OGAuth.setDefault_initValues()
                 GBusiness_handle.setDefault_initValues()
                 print(credential.name, credential.email, credential.password, credential.recovery_email)
