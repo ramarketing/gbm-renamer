@@ -386,6 +386,8 @@ class Google_auth(Manage_Selenium):
                     self.driver.quit()
                     TWatch.ListThreads['controller_login'].cancel()
                 else:
+                    import pdb
+                    pdb.set_trace()
                     print(self.driver.current_url.find('https://myaccount.google.com'))
                     if(self.driver.current_url.find('https://myaccount.google.com') != -1):
                         print ("! Login successfull.. ")
@@ -438,6 +440,7 @@ class GBusiness (Manage_Selenium):
         self.W_Verify_an_business_Target_TBody_Locations_xpath = list()
         self.W_Verify_an_business_Target_TBody_Locations_xpath.append('//*[@id="main_viewpane"]/c-wiz[1]/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody')
         self.W_Verify_an_business_Target_TBody_Locations_xpath.append('//*[@id="main_viewpane"]/c-wiz[1]/c-wiz/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody')
+        self.W_Verify_an_business_Target_TBody_Locations_xpath.append('//*[@id="yDmH0d"]/c-wiz/div[2]/div[1]/c-wiz/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody')
         self.W_Verify_an_business_Target_Text_to_sendVerify_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[2]/button[2]'
         self.W_Verify_an_business_Target_Text_Box_Enter6Digit_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p'
         self.W_Verify_an_business_Target_EnterVerifyCode_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[2]/div[1]/div/div[1]/input'
@@ -1244,11 +1247,12 @@ class Renamer(): #Master for robot
                     print ("Skipping credential")
                     continue
 
-                '''
+
                 if not credential.date_renamed: # Can we rename this business? YES
                     #Calling MWatcher to start process of Update
                     Data = dict()
                     Data['credential'] = credential
+                    Data['actions'] = dict()
                     Data['actions']['name'] = True
                     Data['actions']['category'] = True
                     Data['actions']['description'] = True
@@ -1258,7 +1262,7 @@ class Renamer(): #Master for robot
                 if not credential.date_validation:
                     #Calling MWatcher to start process of Verification
                     VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
-                '''
+
                 print ("Updating address -- ")
                 Data = dict()
                 Data['credential'] = credential
@@ -1270,7 +1274,6 @@ class Renamer(): #Master for robot
                 Data['actions']['address'] = True
                 #Calling MWatcher to start process of Update business (Addresss)
                 BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', Data, True)
-
 
                 print ("!- Hemos concluido con la credenecial de business: " + credential.name )
                 GBusiness_handle.driver.quit()
