@@ -435,10 +435,16 @@ class GBusiness (Manage_Selenium):
         # Return from control Flow  - END
 
         #Handlers_XPath para (W_Verify_an_business) - BEGIN
+
+
+        # FOR OBTAIN TBODY FOR TABLE IN BUSSINES.GOOGLE.COM/LOCATIONS
+        # TBODY
         self.W_Verify_an_business_Target_TBody_Locations_xpath = list()
         self.W_Verify_an_business_Target_TBody_Locations_xpath.append('//*[@id="main_viewpane"]/c-wiz[1]/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody')
         self.W_Verify_an_business_Target_TBody_Locations_xpath.append('//*[@id="main_viewpane"]/c-wiz[1]/c-wiz/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody')
         self.W_Verify_an_business_Target_TBody_Locations_xpath.append('//*[@id="yDmH0d"]/c-wiz/div[2]/div[1]/c-wiz/div/c-wiz[3]/div/content/c-wiz[2]/div[2]/table/tbody')
+
+        ### PENDING TO ORGANIZE - BEGIN ###
         self.W_Verify_an_business_Target_Text_to_sendVerify_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[2]/button[2]'
         self.W_Verify_an_business_Target_Text_Box_Enter6Digit_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/p'
         self.W_Verify_an_business_Target_EnterVerifyCode_xpath = '//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[1]/div[2]/div[1]/div/div[1]/input'
@@ -456,6 +462,7 @@ class GBusiness (Manage_Selenium):
         self.W_Verify_an_business_Target_is_this_your_busines_apply.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div[2]/button')
         self.W_Verify_an_business_Target_is_this_your_busines_apply.append('//*[@id="i4"]/div[3]/div')
 
+
         self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button = list()
         self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[2]/div/div/div/div[1]/div/div[2]/button[2]/span')
         self.W_Update_an_business_popup_get_started_button_xpath = '//*[@id="js"]/div[10]/div/div[2]/div[3]/div/content'
@@ -463,68 +470,105 @@ class GBusiness (Manage_Selenium):
 
         self.W_Update_an_business_button_edit_name_in_info_page_xpath = '//*[@id="ow47"]/div[2]/svg'
         self.W_Update_an_business_button_edit_category_in_info_page_xpath = '//*[@id="ow48"]/div[2]/svg'
+        ### PENDING TO ORGANIZE - END ###
 
+        # UPDATE BUSINESS (BUSINESS.GOOGLE.COM/EDIT/ID-OF-BUSINESS)
+        # XPATH HANDLERS LIST
+
+        # NAME
+        # CHANGE
         self.W_Update_an_business_button_change_name_of_business = list()
         self.W_Update_an_business_button_change_name_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[2]/div[1]')
         self.W_Update_an_business_button_change_name_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[2]')
+        self.W_Update_an_business_button_change_name_of_business.append('//*[@id="ow44"]/div[1]')
+        self.W_Update_an_business_button_change_name_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[2]/div[1]')
+        #INPUT
         self.W_Update_an_business_button_input_name_of_business = list()
         self.W_Update_an_business_button_input_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input')
-        self.W_Update_an_business_button_input_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input')
+        self.W_Update_an_business_button_input_name_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/input')
+        #APPLY
         self.W_Update_an_business_button_apply_name_of_business = list()
         self.W_Update_an_business_button_apply_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_name_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
+        self.W_Update_an_business_button_apply_name_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
-        self.W_Update_an_business_button_change_category_of_business = '//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[3]/div[1]'
-        self.W_Update_an_business_button_input_category_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/div[1]/input[2]'
-        self.W_Update_an_business_button_apply_category_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
+        #CATEGORY
+        # CHANGE
+        self.W_Update_an_business_button_change_category_of_business = list()
+        self.W_Update_an_business_button_change_category_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[3]/div[1]')
+        self.W_Update_an_business_button_change_category_of_business.append('//*[@id="ow45"]/div[1]')
+        # INPUT
+        self.W_Update_an_business_button_input_category_of_business = list()
+        self.W_Update_an_business_button_input_category_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/div[1]/input[2]')
+        self.W_Update_an_business_button_input_category_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/div[1]/input[2]')
+        # APPLY
+        self.W_Update_an_business_button_apply_category_of_business = list()
+        self.W_Update_an_business_button_apply_category_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span')
+        self.W_Update_an_business_button_apply_category_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
-        self.W_Update_an_business_button_change_description_of_business = '//*[@id="ow36"]/div[1]/div[2]/content/div[11]/div[2]/div'
-        self.W_Update_an_business_button_input_description_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div[1]/textarea'
-        self.W_Update_an_business_button_apply_description_of_business = '//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span'
+        #DESCRIPTION
+        # CHANGE
+        self.W_Update_an_business_button_change_description_of_business = list()
+        self.W_Update_an_business_button_change_description_of_business.append('//*[@id="ow36"]/div[1]/div[2]/content/div[11]/div[2]/div')
+        self.W_Update_an_business_button_change_description_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[11]/div[2]/div')
+        self.W_Update_an_business_button_change_description_of_business.append('//*[@id="ow51"]/div[2]/div[1]/span[1]')
+        # INPUT
+        self.W_Update_an_business_button_input_description_of_business = list()
+        self.W_Update_an_business_button_input_description_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div[1]/textarea')
+        self.W_Update_an_business_button_input_description_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[4]/div/div[1]/div[1]/textarea')
+        # APPLY
+        self.W_Update_an_business_button_apply_description_of_business = list()
+        self.W_Update_an_business_button_apply_description_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span')
+        self.W_Update_an_business_button_apply_description_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
+        # WEBSITE
+        # CHANGE
         self.W_Update_an_business_button_change_website_of_business = list()
         self.W_Update_an_business_button_change_website_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[9]')
         self.W_Update_an_business_button_change_website_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[9]')
+        self.W_Update_an_business_button_change_website_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[9]/div[2]/div[1]/span[1]')
+        # INPUT
         self.W_Update_an_business_button_input_website_of_business = list()
         self.W_Update_an_business_button_input_website_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input')
         self.W_Update_an_business_button_input_website_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input')
+        # APPLY
         self.W_Update_an_business_button_apply_website_of_business = list()
         self.W_Update_an_business_button_apply_website_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_website_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
+        # ADDRESS
+        # CHANGE
         self.W_Update_an_business_button_change_address_of_business = list()
         self.W_Update_an_business_button_change_address_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[4]/div[3]/span')
         self.W_Update_an_business_button_change_address_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[4]/div[3]/span')
-
+        self.W_Update_an_business_button_change_address_of_business.append('//*[@id="ow46"]/div[2]/span')
+        # INPUT - ADDRESS 1
         self.W_Update_an_business_button_input_address_street_address_of_business = list()
         self.W_Update_an_business_button_input_address_street_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[2]/input')
-        self.W_Update_an_business_button_input_address_street_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[2]/input')
-
-        #Address
+        # EXPAND - ADDRESS 2
         self.W_Update_an_business_button_expand_address_street_2_address_of_business = list()
         self.W_Update_an_business_button_expand_address_street_2_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[3]')
-
+        # INPUT - ADDRESS 2
         self.W_Update_an_business_button_input_address_street_2_address_of_business = list()
         self.W_Update_an_business_button_input_address_street_2_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[3]/input')
-
+        # INPUT - CITY
         self.W_Update_an_business_button_input_address_city_of_business = list()
         self.W_Update_an_business_button_input_address_city_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[5]/input')
         self.W_Update_an_business_button_input_address_city_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[4]/input')
-
-
+        # COMBOBOX - STATE
         self.W_Update_an_business_button_combobox_address_state_of_business = list()
         self.W_Update_an_business_button_combobox_address_state_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[5]/div[3]/div')
         self.W_Update_an_business_button_combobox_address_state_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[6]/div[3]/div')
-
+        self.W_Update_an_business_button_combobox_address_state_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[6]/div[2]/div[2]')
+        # COMBOBOX - PLACEHOLDER
         self.W_Update_an_business_button_combobox_address_state_of_business_placeholder = list()
         self.W_Update_an_business_button_combobox_address_state_of_business_placeholder.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[5]/div[2]/div[1]')
         self.W_Update_an_business_button_combobox_address_state_of_business_placeholder.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[6]/div[2]/div[1]')
-
-
+        #  INPUT - ADDRESS
         self.W_Update_an_business_button_input_address_zipcode_of_business = list()
         self.W_Update_an_business_button_input_address_zipcode_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[6]/input')
         self.W_Update_an_business_button_input_address_zipcode_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[3]/div[1]/div/div/div[2]/div/div/div[7]/input')
-
+        # APPLY
         self.W_Update_an_business_button_apply_address_of_business = list()
         self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_address_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[3]/content/span')
@@ -791,6 +835,9 @@ class GBusiness (Manage_Selenium):
         def _click_change(item):
             print ("! - Internal: Starting process of changing for:  - " + str(key))
             self.TimeSleeping(1)
+            print ("Checking UpadteBussiness_in_info_page")
+            print ("Use self.Click_by_xpath(item)")
+            import pdb; pdb.set_trace()
             if (self.Click_by_xpath(item) == True ):
                 print (" [Button.Change] - Done")
                 return True
@@ -863,7 +910,7 @@ class GBusiness (Manage_Selenium):
             ReturnValue['input'] = self.W_Update_an_business_button_input_name_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_name_of_business
         elif (key == 'category') :
-            ReturnValue['value'] = credential.final_category
+            ReturnValue['value'] = credential.final_category_1
             ReturnValue['change'] = self.W_Update_an_business_button_change_category_of_business
             ReturnValue['input'] = self.W_Update_an_business_button_input_category_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_category_of_business
