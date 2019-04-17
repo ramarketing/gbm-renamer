@@ -1035,7 +1035,7 @@ class GBusiness (Manage_Selenium):
             TextButton = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_Text_to_sendVerify_xpath)
 
             '''
-            1. ¿The phone number is connected?
+            1. The phone number is connected?
             yes. Check for the last existing code
             no. Purchase the number
             '''
@@ -1215,10 +1215,9 @@ class Renamer(): #Master for robot
 
         counter = 0
 
-        page = 1
-        while page == 1 or self.credential_list.next:
+        while self.credential_list.count:
             if self.credential_list.count == 0:
-                print('Ya no hay más items.')
+                print('Ya no hay mas items.')
                 break
             elif counter == self.credential_list.count:
                 print('Cambiando de página')

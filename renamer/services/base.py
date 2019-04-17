@@ -3,6 +3,10 @@ from urllib.parse import urlparse, parse_qs
 import requests
 
 from config import API_ROOT, API_USERNAME, API_PASSWORD
+from logger import Logger
+
+
+logging = Logger()
 
 
 class BaseEntity(object):
@@ -187,6 +191,14 @@ class BaseService:
         return self._request(method, endpoint, **kwargs)
 
     def _request(self, method, endpoint, in_raw=False, **kwargs):
+        log_kwargs = kwargs.copy()
+        if 'headers' in log_kwargs:
+            log_kwargs.pop('headers')
+        logging(instance=self.__class__, data={
+            'method': method,
+            'endpoint': endpoint,
+            'data': log_kwargs
+        })
         r = getattr(requests, method)(endpoint, **kwargs)
         if in_raw:
             return r

@@ -32,7 +32,7 @@ class Business(BaseEntity):
         )
         return self.service.request(
             'post', pk=self.pk, extra='get-validation-code', data=data,
-             in_raw=True
+            in_raw=True
         )
 
     def report_fail(self):
@@ -92,3 +92,11 @@ class BusinessService(BaseService):
     endpoint = '/renamer/business/'
     entity = Business
     entity_list = BusinessList
+
+    def get_list(self, **kwargs):
+        kwargs['is_renamed'] = 3
+        kwargs['to_rename'] = 2
+        kwargs['is_fail'] = 3
+        kwargs['is_success'] = 3
+        kwargs['is_validated'] = 3
+        return super().get_list(**kwargs)
