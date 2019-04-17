@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 #Natives from Py
 import os
 import platform
@@ -497,10 +500,13 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_change_category_of_business = list()
         self.W_Update_an_business_button_change_category_of_business.append('//*[@id="main_viewpane"]/div[2]/div/div/div[1]/div[2]/content/div[3]/div[1]')
         self.W_Update_an_business_button_change_category_of_business.append('//*[@id="ow45"]/div[1]')
+        self.W_Update_an_business_button_change_category_of_business.append('//*[@id="ow34"]/div[1]/div[2]/content/div[3]/div[1]')
+        self.W_Update_an_business_button_change_category_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[3]/div[1]')
         # INPUT
         self.W_Update_an_business_button_input_category_of_business = list()
         self.W_Update_an_business_button_input_category_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/div[1]/input[2]')
         self.W_Update_an_business_button_input_category_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/div[1]/input[2]')
+        self.W_Update_an_business_button_input_category_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div[1]/div[1]/input[2]')
         # APPLY
         self.W_Update_an_business_button_apply_category_of_business = list()
         self.W_Update_an_business_button_apply_category_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span')
@@ -512,6 +518,11 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_change_description_of_business.append('//*[@id="ow36"]/div[1]/div[2]/content/div[11]/div[2]/div')
         self.W_Update_an_business_button_change_description_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[11]/div[2]/div')
         self.W_Update_an_business_button_change_description_of_business.append('//*[@id="ow51"]/div[2]/div[1]/span[1]')
+        self.W_Update_an_business_button_change_description_of_business.append('//*[@id="ow34"]/div[1]/div[2]/content/div[11]/div[2]/span')
+        self.W_Update_an_business_button_change_description_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[11]/div[1]/svg/path')
+        self.W_Update_an_business_button_change_description_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[11]/div[3]/svg')
+        self.W_Update_an_business_button_change_description_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[11]/div[2]')
+        self.W_Update_an_business_button_change_description_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[11]/div[2]/span')
         # INPUT
         self.W_Update_an_business_button_input_description_of_business = list()
         self.W_Update_an_business_button_input_description_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div/div[1]/div[1]/textarea')
@@ -531,11 +542,12 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_input_website_of_business = list()
         self.W_Update_an_business_button_input_website_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input')
         self.W_Update_an_business_button_input_website_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input')
+        self.W_Update_an_business_button_input_website_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[4]/div[1]/div[1]/div/div[1]/input')
         # APPLY
         self.W_Update_an_business_button_apply_website_of_business = list()
         self.W_Update_an_business_button_apply_website_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_website_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
-
+        self.W_Update_an_business_button_apply_website_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[5]/div[2]/content/span')
         # ADDRESS
         # CHANGE
         self.W_Update_an_business_button_change_address_of_business = list()
@@ -728,26 +740,26 @@ class GBusiness (Manage_Selenium):
                 if (not value) :
                     print ("Skipping process, why value for {} is false".format(key))
                     continue
-                print ("El valor de key: " + str(key)  + "  y el valor de value: " + str(value))
+                print ("Updating: " + str(key))
                 Target_for_change = self.ObtainParam_ToUpdate_Business(key, credential)
                 if (Target_for_change == False) :
                     print ("! - Key value no exist to update")
                     continue
                 self.TimeSleeping(1)
                 if (key == 'address'):
-
                     if (self.UpdateBusiness_in_info_page_address(Target_for_change) == True) :
-
                         print ("Updating Address")
                     else:
-
                         print ("Updating Address fail")
                 else:
-                    if (self.UpdateBusiness_in_info_page(Target_for_change, key, value) == True) :
+                    if (self.UpdateBusiness_in_info_page(Target_for_change, key) == True) :
                         print ("Change of business done for : " + str(key))
                     else :
                         self.W_renaming_step_fail = True
                         print ("We could not change this value: " + (key))
+                # Better way to close pop-pup in this page.
+                self.driver.refresh()
+                self.TimeSleeping(10)
             self.W_Update_an_business_step = 5
 
         if (self.W_Update_an_business_step == 5) :
@@ -831,13 +843,11 @@ class GBusiness (Manage_Selenium):
         return True
 
 
-    def UpdateBusiness_in_info_page(self, Params, key, value) :
+    def UpdateBusiness_in_info_page(self, Params, key) :
         def _click_change(item):
             print ("! - Internal: Starting process of changing for:  - " + str(key))
             self.TimeSleeping(1)
             print ("Checking UpadteBussiness_in_info_page")
-            print ("Use self.Click_by_xpath(item)")
-            import pdb; pdb.set_trace()
             if (self.Click_by_xpath(item) == True ):
                 print (" [Button.Change] - Done")
                 return True
@@ -847,7 +857,7 @@ class GBusiness (Manage_Selenium):
 
         def _fill_field(field):
             self.TimeSleeping(1)
-            if (self.FillField_by_xpath(value, field, True)  == True) :
+            if (self.FillField_by_xpath(Params['value'], field, True)  == True) :
                 print (" [Fill.Change] - Done")
                 return True
             else:
@@ -866,6 +876,7 @@ class GBusiness (Manage_Selenium):
             return True
 
         def click_change(change):
+            self.TimeSleeping(1)
             if isinstance(change, list):
                 for item in change:
                     response = _click_change(item)
@@ -875,6 +886,7 @@ class GBusiness (Manage_Selenium):
                 return _click_change(change)
 
         def fill_field(field):
+            self.TimeSleeping(1)
             if isinstance(field, list):
                 for item in field:
                     response = _fill_field(item)
@@ -884,6 +896,7 @@ class GBusiness (Manage_Selenium):
                 return _fill_field(field)
 
         def click_apply(apply):
+            self.TimeSleeping(1)
             if isinstance(apply, list):
                 for item in apply:
                     response = _click_apply(item)
@@ -894,10 +907,13 @@ class GBusiness (Manage_Selenium):
                 return _click_apply(apply)
 
         response = click_change(Params['change'])
+        #import pdb; pdb.set_trace()
         if response:
             response = fill_field(Params['input'])
+            #import pdb; pdb.set_trace()
             if response:
                 response = click_apply(Params['apply'])
+                #import pdb; pdb.set_trace()
         return response
 
     def ObtainParam_ToUpdate_Business (self, key, credential):
@@ -1035,7 +1051,7 @@ class GBusiness (Manage_Selenium):
             TextButton = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_Text_to_sendVerify_xpath)
 
             '''
-            1. The phone number is connected?
+            1. ¿The phone number is connected?
             yes. Check for the last existing code
             no. Purchase the number
             '''
@@ -1243,8 +1259,10 @@ class Renamer(): #Master for robot
                 ]):
                     continue
 
+                if (credential.name == None or credential.name == "" or \
+                    credential.name == "None" ) :
+                    print ("This credential haven't var: name, Skipping...")
                 Credential_elements = list()
-                Credential_elements.append(credential.name)
                 Credential_elements.append(credential.final_name)
                 Credential_elements.append(credential.final_website)
                 Credential_elements.append(credential.final_address)
@@ -1252,15 +1270,18 @@ class Renamer(): #Master for robot
                 Credential_elements.append(credential.final_state)
                 Credential_elements.append(credential.final_zip_code)
                 Credential_elements.append(credential.final_country)
-                Invalid_Credential = False
-                for item in Credential_elements:
-                    if (item == None or item == '' or item == "None"):
-                        Invalid_Credential = True
 
-                        continue
-                if (Invalid_Credential == True):
-                    print ("Skipping credential...")
+                #Getting some value to rename:
+                #Giving opportunity to rename only values valid.
+                Credential_elements_purged = [x for x in Credential_elements if x != None and x != ""]
+                if (len(Credential_elements_purged)  < 1) :
+                    print ("Incomplete Credential, Skipping.")
+                    print (Credential_elements)
                     continue
+
+                print ("Dump:: Credential_elements")
+                print (Credential_elements)
+
 
                 OGAuth.setDefault_initValues()
                 GBusiness_handle.setDefault_initValues()
@@ -1288,18 +1309,28 @@ class Renamer(): #Master for robot
                     print ("Skipping credential")
                     continue
 
+                def Credential_Capable (item):
+                    if (item != None and item != "" and item != "None"):
+                        return True
+                    else:
+                        return False
 
                 if not credential.date_renamed: # Can we rename this business? YES
                     #Calling MWatcher to start process of Update
                     Data = dict()
                     Data['credential'] = credential
                     Data['actions'] = dict()
-                    Data['actions']['name'] = True
-                    Data['actions']['category'] = True
-                    Data['actions']['description'] = True
-                    Data['actions']['website'] = True
+                    Data['actions']['name'] = Credential_Capable(credential.final_name)
+                    Data['actions']['category'] = Credential_Capable(credential.final_category_1)
+                    Data['actions']['description'] = Credential_Capable(credential.final_description)
+                    Data['actions']['website'] = Credential_Capable(credential.final_website)
                     Data['actions']['address'] = False
                     BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', Data, True)
+
+                print ("We are done testing business renamer")
+                print ("stop me")
+                time.sleep(1000)
+
                 if not credential.date_validation:
                     #Calling MWatcher to start process of Verification
                     VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
