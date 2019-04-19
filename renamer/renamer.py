@@ -1020,18 +1020,21 @@ class GBusiness (Manage_Selenium):
 
         if (self.W_Verify_an_business_step == 222) :
             # XPATH for button text: self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button
+            print ("self.W_Verify_an_business_step == 222")
             self.TimeSleeping(5)
-
+            import pdb; pdb.set_trace()
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button, 'Tex') == True) :
                 if (self.Click_by_xpath(self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button) == True) :
-                    self.W_Verify_an_business_step == 2
-            else :
+                    self.W_Verify_an_business_step = 22
+            else:
                 print ("! - We are skipping this credential, because it has not verification via text messsage.")
                 credential.report_fail()
                 TWatch.ListThreads['VerifyBusiness'].cancel()
 
         if (self.W_Verify_an_business_step == 2) :
+            print ("Step 2 - Verify an business")
             self.TimeSleeping(5)
+            import pdb; pdb.set_trace()
             GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber_xpath)
             if not GB_phoneNumber:
                 TWatch.ListThreads['VerifyBusiness'].cancel()
@@ -1315,6 +1318,7 @@ class Renamer(): #Master for robot
                     else:
                         return False
 
+                '''
                 if not credential.date_renamed: # Can we rename this business? YES
                     #Calling MWatcher to start process of Update
                     Data = dict()
@@ -1326,15 +1330,16 @@ class Renamer(): #Master for robot
                     Data['actions']['website'] = Credential_Capable(credential.final_website)
                     Data['actions']['address'] = False
                     BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', Data, True)
-
-                print ("We are done testing business renamer")
-                print ("stop me")
-                time.sleep(1000)
-
+                '''
+                '''
                 if not credential.date_validation:
                     #Calling MWatcher to start process of Verification
                     VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
+                '''
 
+                '''
+                '''
+                '''
                 print ("Updating address -- ")
                 Data = dict()
                 Data['credential'] = credential
@@ -1346,7 +1351,7 @@ class Renamer(): #Master for robot
                 Data['actions']['address'] = True
                 #Calling MWatcher to start process of Update business (Addresss)
                 BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', Data, True)
-
+                '''
                 print ("!- Hemos concluido con la credenecial de business: " + credential.name )
                 GBusiness_handle.driver.quit()
 
