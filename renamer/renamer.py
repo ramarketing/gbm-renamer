@@ -422,6 +422,7 @@ class GBusiness (Manage_Selenium):
         # Control of flow Verify_an_business_step - BEGIN
         self.W_Verify_an_business_step = 0
         self.W_Verify_an_business_Match = False
+        self.VerifyProcessCanContinue = False
         # Control of flow Verify_an_business_step - END
 
         # Control of flow Verify_an_business_step - BEGIN
@@ -431,6 +432,7 @@ class GBusiness (Manage_Selenium):
 
         self.W_Update_an_business_address_step = 0
         self.W_Update_an_business_address_Match = False
+
 
 
         # Return from control Flow  - BEGIN
@@ -1003,7 +1005,11 @@ class GBusiness (Manage_Selenium):
                 self.W_Verify_an_business_step = 22
                 self.TimeSleeping(1)
 
-        if (self.W_Verify_an_business_step == 22) :
+        if (self.VerifyProcessCanContinue == False):
+            # Stoping process verify
+            TWatch.ListThreads['VerifyBusiness'].cancel()
+
+        if (self.W_Verify_an_business_step == 22 and self.VerifyProcessCanContinue == True) :
 
             print ("! - Detecting if we are in special case: Is this your business?")
             self.TimeSleeping(3)
@@ -1022,7 +1028,6 @@ class GBusiness (Manage_Selenium):
             # XPATH for button text: self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button
             print ("self.W_Verify_an_business_step == 222")
             self.TimeSleeping(5)
-            import pdb; pdb.set_trace()
             if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button, 'Tex') == True) :
                 if (self.Click_by_xpath(self.W_Verify_an_business_Target_Chosse_a_way_to_verify_text_button) == True) :
                     self.W_Verify_an_business_step = 22
@@ -1034,7 +1039,6 @@ class GBusiness (Manage_Selenium):
         if (self.W_Verify_an_business_step == 2) :
             print ("Step 2 - Verify an business")
             self.TimeSleeping(5)
-            import pdb; pdb.set_trace()
             GB_phoneNumber = self.GettingElement_by_xpath(self.W_Verify_an_business_Target_PhoneNumber_xpath)
             if not GB_phoneNumber:
                 TWatch.ListThreads['VerifyBusiness'].cancel()
@@ -1318,7 +1322,14 @@ class Renamer(): #Master for robot
                     else:
                         return False
 
-                '''
+
+
+                VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
+                GBusiness_handle.driver.execute_script("window.open('');")
+                time.sleep(5)
+                GBusiness_handle.driver.switch_to.window(GBusiness_handle.driver.window_handles[1])
+                GBusiness_handle.driver.get("http://google.com")
+                time.sleep(5)
                 if not credential.date_renamed: # Can we rename this business? YES
                     #Calling MWatcher to start process of Update
                     Data = dict()
@@ -1330,11 +1341,10 @@ class Renamer(): #Master for robot
                     Data['actions']['website'] = Credential_Capable(credential.final_website)
                     Data['actions']['address'] = False
                     BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', Data, True)
-                '''
+
                 '''
                 if not credential.date_validation:
                     #Calling MWatcher to start process of Verification
-                    VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
                 '''
 
                 '''
