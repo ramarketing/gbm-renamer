@@ -514,6 +514,24 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_apply_category_of_business.append('//*[@id="js"]/div[11]/div/div[2]/content/div/div[5]/div[2]/content/span')
         self.W_Update_an_business_button_apply_category_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
+
+        #SERVICE AREAS
+        # CHANGE
+        self.W_Update_an_business_button_change_service_areas_of_business = list()
+        self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="ow92"]/div[1]/svg')
+        self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="ow92"]/div[2]/span')
+        self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="ow92"]/div[2]')
+        self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="ow92"]/div[3]/svg')
+        # INPUT
+        self.W_Update_an_business_button_input_service_areas_of_business = list()
+        self.W_Update_an_business_button_input_service_areas_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div/div/div[1]/div/div/div[1]/div[2]/div[2]')
+        # CLEAR
+        self.W_Update_an_business_button_clear_service_areas_of_business = list()
+        self.W_Update_an_business_button_clear_service_areas_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[2]/div/content/span')
+        # APPLY
+        self.W_Update_an_business_button_clear_service_areas_of_business = list()
+        self.W_Update_an_business_button_clear_service_areas_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
+
         #DESCRIPTION
         # CHANGE
         self.W_Update_an_business_button_change_description_of_business = list()
