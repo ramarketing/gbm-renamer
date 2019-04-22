@@ -701,7 +701,7 @@ class GBusiness (Manage_Selenium):
         print ("self.W_Update_an_business_step: " + str(self.W_Update_an_business_step))
         # 1 - Lista de negocios - BEGIN
         if (self.W_Update_an_business_step == 0) :
-            self.TimeSleeping(0.25) #Sleeping 0.25 Seconds
+            self.TimeSleeping(0.25) #Sleeping 025 Seconds
             print ("! - Redirigiendo a la lista de negocios de Google Business")
             self.GoLocationsPage()
             self.W_Update_an_business_step = 1
@@ -711,8 +711,10 @@ class GBusiness (Manage_Selenium):
             Request_Match = self.Business_Listing(credential, 'open')
             if (Request_Match == 'NoMatch'):
                 credential.report_fail()
+                self.W_Update_an_business_Match = False
                 TWatch.ListThreads['UpdateBusiness'].cancel()
             elif (Request_Match == True):
+                self.W_Update_an_business_Match = True
                 self.W_Update_an_business_step = 2
             self.TimeSleeping(0.25) #Sleeping 0.25 Seconds
 
@@ -1269,6 +1271,7 @@ class Renamer(): #Master for robot
                 if (credential.name == None or credential.name == "" or \
                     credential.name == "None" ) :
                     print ("This credential haven't var: name, Skipping...")
+
                 Credential_elements = list()
                 Credential_elements.append(credential.final_name)
                 Credential_elements.append(credential.final_website)
@@ -1288,7 +1291,6 @@ class Renamer(): #Master for robot
 
                 print ("Dump:: Credential_elements")
                 print (Credential_elements)
-
 
                 OGAuth.setDefault_initValues()
                 GBusiness_handle.setDefault_initValues()
@@ -1323,13 +1325,19 @@ class Renamer(): #Master for robot
                         return False
 
 
-
                 VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
+                if (GBusiness_handle.W_Update_an_business_Match == False):
+                    GBusiness_handle.driver.quit()
+                    print ("Skipping Credential, Match not found")
+                    continue
+
                 GBusiness_handle.driver.execute_script("window.open('');")
                 time.sleep(5)
                 GBusiness_handle.driver.switch_to.window(GBusiness_handle.driver.window_handles[1])
                 GBusiness_handle.driver.get("http://google.com")
                 time.sleep(5)
+
+
                 if not credential.date_renamed: # Can we rename this business? YES
                     #Calling MWatcher to start process of Update
                     Data = dict()
