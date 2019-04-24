@@ -30,6 +30,66 @@ from logger import Logger
 from messages import *
 from services import BusinessService
 
+states_map = {
+        'AK': 'Alaska',
+        'AL': 'Alabama',
+        'AR': 'Arkansas',
+        'AS': 'American Samoa',
+        'AZ': 'Arizona',
+        'CA': 'California',
+        'CO': 'Colorado',
+        'CT': 'Connecticut',
+        'DC': 'District of Columbia',
+        'DE': 'Delaware',
+        'FL': 'Florida',
+        'GA': 'Georgia',
+        'GU': 'Guam',
+        'HI': 'Hawaii',
+        'IA': 'Iowa',
+        'ID': 'Idaho',
+        'IL': 'Illinois',
+        'IN': 'Indiana',
+        'KS': 'Kansas',
+        'KY': 'Kentucky',
+        'LA': 'Louisiana',
+        'MA': 'Massachusetts',
+        'MD': 'Maryland',
+        'ME': 'Maine',
+        'MI': 'Michigan',
+        'MN': 'Minnesota',
+        'MO': 'Missouri',
+        'MP': 'Northern Mariana Islands',
+        'MS': 'Mississippi',
+        'MT': 'Montana',
+        'NA': 'National',
+        'NC': 'North Carolina',
+        'ND': 'North Dakota',
+        'NE': 'Nebraska',
+        'NH': 'New Hampshire',
+        'NJ': 'New Jersey',
+        'NM': 'New Mexico',
+        'NV': 'Nevada',
+        'NY': 'New York',
+        'OH': 'Ohio',
+        'OK': 'Oklahoma',
+        'OR': 'Oregon',
+        'PA': 'Pennsylvania',
+        'PR': 'Puerto Rico',
+        'RI': 'Rhode Island',
+        'SC': 'South Carolina',
+        'SD': 'South Dakota',
+        'TN': 'Tennessee',
+        'TX': 'Texas',
+        'UT': 'Utah',
+        'VA': 'Virginia',
+        'VI': 'Virgin Islands',
+        'VT': 'Vermont',
+        'WA': 'Washington',
+        'WI': 'Wisconsin',
+        'WV': 'West Virginia',
+        'WY': 'Wyoming'
+}
+
 
 class ThreadsWatch:
     def __init__(self):
@@ -173,7 +233,10 @@ class Manage_Selenium (Tools) :
 
     def FillField_by_xpath(self, string, xpath, Enter=False):
         if isinstance(xpath, list) :
+
             for item in xpath :
+                print (item)
+                print ("Interando dentro de field")
                 try:
                     target = self.driver.find_element_by_xpath(item)
                     self.TimeSleeping(1)
@@ -187,7 +250,7 @@ class Manage_Selenium (Tools) :
                         target.send_keys(string)
                     return True
 
-                except NoSuchElementException:
+                except (NoSuchElementException, ElementNotInteractableException) as e:
                     continue
 
             return False
@@ -195,7 +258,9 @@ class Manage_Selenium (Tools) :
         try:
             target = self.driver.find_element_by_xpath(xpath)
             self.TimeSleeping(1)
-        except NoSuchElementException:
+        except:
+            print ("Dentro del error 262")
+
             return False
         try:
             target.clear()
@@ -335,7 +400,7 @@ class Google_auth(Manage_Selenium):
                 if (self.FillField_by_xpath(credential.password, self.Target_Password_field_by_xpath, True) == True):
                     self.LoginStep_ghost = 21
                     print ("# Success to FillField: Password also with Enter")  #OK
-
+                # New update Pending : https://www.google.com/search?client=ubuntu&channel=fs&q=Histronica&ie=utf-8&oe=utf-8
                 if (self.LoginStep_ghost == 21) :
                     self.TimeSleeping(2)
                     if (self.Get_outerHTML_and_check_partial_text_via_xpath(self.Target_Wrong_Password_message_by_xpath, Step2_Target_PTXT_Error_Password) == True) :
@@ -522,15 +587,22 @@ class GBusiness (Manage_Selenium):
         self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="ow92"]/div[2]/span')
         self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="ow92"]/div[2]')
         self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="ow92"]/div[3]/svg')
+        self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[5]/div[2]/span')
+        self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[5]/div[1]/svg')
+        self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[5]/div[2]/div')
+        self.W_Update_an_business_button_change_service_areas_of_business.append('//*[@id="main_viewpane"]/c-wiz[1]/div/div[1]/div[2]/content/div[5]/div[3]/svg')
         # INPUT
         self.W_Update_an_business_button_input_service_areas_of_business = list()
+        self.W_Update_an_business_button_input_service_areas_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[4]/div/div[1]/div/div/div/div/div/div/div[1]/div[2]/div[1]/div/div[1]/input')
         self.W_Update_an_business_button_input_service_areas_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[1]/div/div/div/div[1]/div/div/div[1]/div[2]/div[2]')
+        self.W_Update_an_business_button_input_service_areas_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[4]/div/div[1]/div/div/div/div/div/div/div[1]/div[2]/div[1]')
         # CLEAR
         self.W_Update_an_business_button_clear_service_areas_of_business = list()
         self.W_Update_an_business_button_clear_service_areas_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[4]/div/div[2]/div/content/span')
         # APPLY
-        self.W_Update_an_business_button_clear_service_areas_of_business = list()
-        self.W_Update_an_business_button_clear_service_areas_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
+        self.W_Update_an_business_button_apply_service_areas_of_business = list()
+        self.W_Update_an_business_button_apply_service_areas_of_business.append('//*[@id="js"]/div[10]/div/div[2]/content/div/div[5]/div[2]/content/span')
+        self.W_Update_an_business_button_apply_service_areas_of_business.append('//*[@id="js"]/div[9]/div/div[2]/content/div/div[5]/div[2]/content/span')
 
         #DESCRIPTION
         # CHANGE
@@ -759,6 +831,9 @@ class GBusiness (Manage_Selenium):
             print ("! - Here we are going to update business")
             self.W_renaming_step_fail = False
             for key, value in actions.items():
+                #DEBUG - SERVICE AREA
+                if (key != "service_area") :
+                    continue
                 if (not value) :
                     print ("Skipping process, why value for {} is false".format(key))
                     continue
@@ -867,7 +942,6 @@ class GBusiness (Manage_Selenium):
 
     def UpdateBusiness_in_info_page(self, Params, key) :
         def _click_change(item):
-            print ("! - Internal: Starting process of changing for:  - " + str(key))
             self.TimeSleeping(1)
             print ("Checking UpadteBussiness_in_info_page")
             if (self.Click_by_xpath(item) == True ):
@@ -928,14 +1002,22 @@ class GBusiness (Manage_Selenium):
             else:
                 return _click_apply(apply)
 
+        self.TimeSleeping(1)
         response = click_change(Params['change'])
-        #import pdb; pdb.set_trace()
+
+        if (response == True and 'clear' in Params == True):
+            self.TimeSleeping(1)
+            response_ignore = click_change(Params['clear'])
         if response:
+            # response = fill_field('//*[@id="js"]/div[9]/div/div[2]/content/div/div[4]/div/div[1]/div/div/div/div/div/div/div[1]/div[2]/div[1]/div/div[1]/input')
+
+
             response = fill_field(Params['input'])
-            #import pdb; pdb.set_trace()
+            self.TimeSleeping(1)
             if response:
+                self.TimeSleeping(1)
                 response = click_apply(Params['apply'])
-                #import pdb; pdb.set_trace()
+
         return response
 
     def ObtainParam_ToUpdate_Business (self, key, credential):
@@ -952,6 +1034,12 @@ class GBusiness (Manage_Selenium):
             ReturnValue['change'] = self.W_Update_an_business_button_change_category_of_business
             ReturnValue['input'] = self.W_Update_an_business_button_input_category_of_business
             ReturnValue['apply'] = self.W_Update_an_business_button_apply_category_of_business
+        elif (key == 'service_area') :
+            ReturnValue['value'] = credential.final_city + ', ' + credential.final_state
+            ReturnValue['change'] = self.W_Update_an_business_button_change_service_areas_of_business
+            ReturnValue['clear'] = self.W_Update_an_business_button_clear_service_areas_of_business
+            ReturnValue['input'] = self.W_Update_an_business_button_input_service_areas_of_business
+            ReturnValue['apply'] = self.W_Update_an_business_button_apply_service_areas_of_business
         elif (key == 'description') :
             ReturnValue['value'] = credential.final_description
             ReturnValue['change'] = self.W_Update_an_business_button_change_description_of_business
@@ -1012,6 +1100,7 @@ class GBusiness (Manage_Selenium):
             Request_Match = self.Business_Listing(credential, 'verify')
             if (Request_Match == 'NoMatch'):
                 credential.report_fail()
+                self.W_Update_an_business_Match = False
                 TWatch.ListThreads['VerifyBusiness'].cancel()
             elif (Request_Match == 'Published'):
                 credential.report_validation()
@@ -1023,6 +1112,7 @@ class GBusiness (Manage_Selenium):
                 TWatch.ListThreads['VerifyBusiness'].cancel()
             elif (Request_Match == 'Verification required' or  Request_Match == 'Pending verification') :
                 self.W_Verify_an_business_step = 22
+                self.W_Update_an_business_Match = True
                 self.TimeSleeping(1)
 
         if (self.VerifyProcessCanContinue == False):
@@ -1281,8 +1371,6 @@ class Renamer(): #Master for robot
                     credential.final_state,
                     credential.final_zip_code,
                     credential.final_country,
-                    credential.date_renamed,
-                    credential.date_validation
                 ]):
                     continue
 
@@ -1314,6 +1402,11 @@ class Renamer(): #Master for robot
                 GBusiness_handle.setDefault_initValues()
                 print(credential.name, credential.email, credential.password, credential.recovery_email)
 
+                #Manual mapping
+                for k, v in states_map.items():
+                    if (k == credential.final_state) :
+                        credential.final_state = v
+
                 if (self.verification_of_credential(credential) == False) :
                     logger(instance_itself=self.NameClass_itSelf(), data=Skiping_to_next_credential)
                     print (Skiping_to_next_credential)
@@ -1336,11 +1429,7 @@ class Renamer(): #Master for robot
                     print ("Skipping credential")
                     continue
 
-                def Credential_Capable (item):
-                    if (item != None and item != "" and item != "None"):
-                        return True
-                    else:
-                        return False
+
 
 
                 VerifyBusiness = MWatcher(0.5, 'VerifyBusiness', 'GBusiness_handle', 'W_Verify_an_business' , 'TWatch_VerifyBusiness', credential, True)
@@ -1355,15 +1444,20 @@ class Renamer(): #Master for robot
                 GBusiness_handle.driver.get("http://google.com")
                 time.sleep(5)
 
+                def Credential_Capable (item):
+                    if (item != None and item != "" and item != "None"):
+                        return True
+                    else:
+                        return False
 
-                if not credential.date_renamed: # Can we rename this business? YES
-                    #Calling MWatcher to start process of Update
+                if True: # Can we rename this business? YES
                     Data = dict()
                     Data['credential'] = credential
                     Data['actions'] = dict()
                     Data['actions']['name'] = Credential_Capable(credential.final_name)
                     Data['actions']['category'] = Credential_Capable(credential.final_category_1)
                     Data['actions']['description'] = Credential_Capable(credential.final_description)
+                    Data['actions']['service_area'] = Credential_Capable(credential.final_state)
                     Data['actions']['website'] = Credential_Capable(credential.final_website)
                     Data['actions']['address'] = False
                     BusinessUpdate = MWatcher(0.5, 'UpdateBusiness', 'GBusiness_handle', 'W_Update_an_business' , 'TWatch_UpdateanBusiness', Data, True)
