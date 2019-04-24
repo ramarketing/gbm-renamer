@@ -832,8 +832,8 @@ class GBusiness (Manage_Selenium):
             self.W_renaming_step_fail = False
             for key, value in actions.items():
                 #DEBUG - SERVICE AREA
-                if (key != "service_area") :
-                    continue
+                #if (key != "service_area") :
+                #    continue
                 if (not value) :
                     print ("Skipping process, why value for {} is false".format(key))
                     continue
